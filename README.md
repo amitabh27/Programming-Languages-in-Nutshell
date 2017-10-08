@@ -1,7 +1,7 @@
 # Programming-Languages-in-Nutshell
 
-Functional Programming
-Scripting
-Databases
-Object Oriented Computing 
+Functional Programming<br>
+Scripting<br>
+Databases<br>
+Object Oriented Computing <br>
 Distributed Computing
