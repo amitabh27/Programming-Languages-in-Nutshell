@@ -1,0 +1,841 @@
+========================================================================================================================
+Basics of Neo4j
+========================================================================================================================
+
+Neo4j is a one of the popular Graph Databases and CQL stands for Cypher Query Language. Neo4j is written in Java Language.
+Graph Database is also known as Graph Database Management System or GDBMS.
+
+===============
+Graph Database
+===============
+
+Graph Database is a database which stores data in the form of graph structures. It stores our application's data in terms of nodes, relationships and properties. 
+Just like RDBMS stores data in the form of "rows,columns" of Tables, GDBMS stores data in the form of "graphs".
+
+Comparison between RDBMs and GDBMS :
+Table-Graph
+row-node
+clomun-properties and its values
+constraints-relationships
+join-traversal.
+
+// Neo4j Server Capacity :
+Nodes-35 billion.
+Relationships-35 billion.
+Labels-275 billion.
+
+//Drawbacks : 
+Above capacity and its inability to support sharding.
+
+================
+Data Model
+================
+Neo4j Graph Database follows the Property Graph Model to store and manages its data.
+
+Property Graph Model rules:
+
+Represents data in Nodes, Relationships and Properties
+Both Nodes and Relationships contains properties
+Relationships connects nodes
+Properties are key-value pairs
+Nodes are represented using circle and Relationships are represented using arrow keys.
+Relationships have directions: Unidirectional and Bidirectional.
+Each Relationship contains "Start Node" or "From Node" and "To Node" or "End Node"
+
+In Property Graph Data Model, Relationships should be directional. If we try to create Relationships without Direction, then it will throw an error message.
+In Neo4j also, Relationships should be directional. If we try to create Relationships without Direction, then Neo4j will throw an error message saying that 
+"Relationships should be directional".
+
+=================
+Building blocks
+=================
+
+// Node :
+
+Node is a fundamental unit of a Graph. It contains properties with key-value pairs.
+Eg:
+"Employee" Node
+empno:123
+name:"xyz"
+address:"abc"
+
+
+// Properties :
+Property is a key-value pair to describe a Graph Nodes and Relationships
+Key = Value
+
+Where Key is a String
+Value may be represented by using any Neo4j Data types.
+
+// Relationships :
+ It connects two nodes as show below.
+
+Emp and Dept are two different nodes. "WORKS_FOR" is a relationship between Emp and Dept nodes.
+As it denotes arrow mark from Emp to Dept, then this relationship describes like
+Emp WORKS_FOR Dept
+Each relationship contains one start node and one end node.
+Here "Emp" is a start node
+"Dept" is an end node
+
+As this relationship arrow marks/represents a relationship from "Emp" node to "Dept" node, this relationship is known as "Incoming Relationship" to "Dept" Node
+And "Outgoing Relationship" to "Emp" node.
+
+Like Nodes, Relationships also can contain properties as key-value pairs.
+
+Here "WORKS_FOR" relationship has one property as key-value pair
+Id=123
+It represents an Id of this relationship.
+
+
+// Labels:
+
+Label associates a common name to set of Nodes or Relationships. A Node or Relationship can contain one or more labels. 
+We can create new labels to existing Nodes or Relationships. We can remove existing labels from existing Nodes or Relationships.
+Eg:
+"Emp","Dept","Works_For".
+
+// Neo4j Data browser :
+
+url : http://localhost:7474/browser/
+
+Neo4j Data Browser is used to execute CQL commands and see output the output.
+Here we need to execute all CQL commands at dollar prompt: "$"
+Type commands after dollar symbol and click on "Execute" button to run your commands.
+It interacts with Neo4j Database Server, retrieve and display results just below to that dollar prompt.
+Use "UI View" button to see results in diagrams format. Above diagram shows results in "UI View" format.
+Use "Grid View" button to see results in Grid View. Below diagram shows same results in "Grid View" format.
+
+When we use "Grid View" to see our Query results, we can export them into a file in two different formats : CSV and JSON.
+However if we use "UI View" to see our Query results, we can export them into a file in only one different format : JSON.
+
+=========================================================================================================================
+CQL
+=========================================================================================================================
+
+Neo4j CQL Data types :
+
+boolean	It is used to represent boolean literals: true, false.
+byte	It is used to represent 8-bit integers.
+short	It is used to represent 16-bit integers.
+int	It is used to represent 32-bit integers.
+long	It is used to represent 64-bit integers.
+float	It is used to represent 32-bit floating-point numbers.
+double	It is used to represent 64-bit floating-point numbers.
+char	It is used to represent 16-bit characters.
+String	It is used represent Strings.
+
+
+// CQL Create :
+
+Neo4j CQL CREATE A Node Without Properties:
+
+CREATE (<node-name>:<label-name>)
+
+Neo4j Database Server uses this <node-name> to store this node details in Database.As a Neo4j DBA or Developer, we cannot use it to access node details.
+Neo4j Database Server creates a <label-name> as an alias to internal node name.As a Neo4j DBA or Developer, we should use this label name to access node details.
+
+Eg:
+CREATE (emp:Employee)
+
+Neo4j CQL CREATE A Node With Properties:
+
+CREATE (
+   <node-name>:<label-name>
+   { 	
+      <Property1-name>:<Property1-Value>
+      ........
+      <Propertyn-name>:<Propertyn-Value>
+   }
+)
+
+
+Eg:
+CREATE (dept:Dept { deptno:10,dname:"Accounting",location:"Hyderabad" })
+
+CREATE (emp:Employee{id:123,name:"Lokesh",sal:35000,deptno:10})
+
+
+// CQL Match :
+
+Neo4j CQL MATCH command is used -
+
+To get data about nodes and properties from database
+To get data about nodes, relationships and properties from database
+
+MATCH command syntax:
+MATCH 
+(
+   <node-name>:<label-name>
+)
+
+<node-name>	It is a node name we are going to create.
+<label-name>	It is a node label name
+
+Alone it cannot be used to retrieve data.
+
+// CQL Return :
+
+To retrieve some or all properties of relationships and nodes.
+
+syntax:
+RETURN 
+   <node-name>.<property1-name>,
+   ........
+   <node-name>.<propertyn-name>
+
+<node-name>	It is a node name we are going to create.
+<Property1-name>...<Propertyn-name>	Properties are key-value pairs. <Property-name> defines the name of the property which is going to assign to a creating Node
+
+Alone it cannot be used to retrieve data.
+
+
+---------------------Neo4j CQL MATCH + RETURN -------------------
+
+MATCH (dept: Dept)
+RETURN dept.deptno,dept.dname
+
+returns all rows from node with label "Dept".
+
+--------------------Neo4j CQL CREATE MATCH RETURN--------------
+
+Eg: how to create two Nodes with Properties and Relationship between those two nodes .
+
+We are going to create two nodes : Customer and CreditCard with relationships.
+
+Customer node contains :id, name, dob properties
+CreditCard node contains: id, number, cvv, expiredate properties
+Customer to CreditCard Relationship: DO_SHOPPING_WITH
+CreditCard to Customer Relationship: ASSOCIATED_WITH
+
+CREATE (e:Customer{id:"1001",name:"Abc",dob:"01/10/1982"})
+CREATE (cc:CreditCard{id:"5001",number:"1234567890",cvv:"888",expiredate:"20/17"})
+
+
+We can use Neo4j CQL CREATE command to create relationships between two nodes in the following scenarios. These scenarios are applicable for both Uni and Bi-directional relationships.
+
+Create Relationship without Properties between two existing Nodes:---------------------------------------------------------
+
+Syntax:
+MATCH (<node1-label-name>:<node1-name>),(<node2-label-name>:<node2-name>)
+CREATE  
+	(<node1-label-name>)-[<relationship-label-name>:<relationship-name>]->(<node2-label-name>)
+RETURN <relationship-label-name>
+
+MATCH,CREATE,RETURN	They are Neo4J CQL keywords.
+<node1-name>	It is a name of "From Node" used to create a Relationship.
+<node1-label-name>	It is a label name of "From Node" used to create a Relationship.
+<node2-name>	It is a name of "To Node" used to create a Relationship.
+<node2-label-name>	It is a label name of "To Node" used to create a Relationship.
+<relationship-name>	It is a name of a Relationship.
+<relationship-label-name>	It is a label name of a Relationship.
+
+In this syntax, RETURN clause is optional. If we want to see results immediately, then use it. Otherwise we can omit this clause.
+
+First verifing whether the nodes have ben created:
+MATCH (e:Customer) 
+RETURN e
+MATCH (cc:CreditCard) 
+RETURN cc
+
+MATCH (e:Customer),(cc:CreditCard) 
+CREATE (e)-[r:DO_SHOPPING_WITH ]->(cc) 
+
+Verifying whether relationship has been created:
+MATCH (e)-[r:DO_SHOPPING_WITH ]->(cc) 
+RETURN r
+
+
+Create Relationship with Properties between two existing Nodes :----------------------------------------------------------------
+
+Syntax:
+MATCH (<node1-label-name>:<node1-name>),(<node2-label-name>:<node2-name>)
+CREATE  
+	(<node1-label-name>)-[<relationship-label-name>:<relationship-name>
+	{<define-properties-list>}]->(<node2-label-name>)
+RETURN <relationship-label-name>
+
+Eg:
+MATCH (cust:Customer),(cc:CreditCard) 
+CREATE (cust)-[r:DO_SHOPPING_WITH{shopdate:"12/12/2014",price:55000}]->(cc) 
+RETURN r
+
+
+Create Relationship without Properties between two new Nodes:-------------------------------------------------------------------
+
+Syntax:
+CREATE  
+   (<node1-label-name>:<node1-name>)-
+   [<relationship-label-name>:<relationship-name>]->
+   (<node1-label-name>:<node1-name>)
+RETURN <relationship-label-name>
+
+Eg:
+CREATE (fb1:FaceBookProfile1)-[like:LIKES]->(fb2:FaceBookProfile2) 
+
+fb1 and FaceBookProfile1 are node name and node label name of "From Node" respectively.
+fb2 and FaceBookProfile2 are node name and node label name of "To Node" respectively.
+
+Verifying relationship:
+MATCH (fb1:FaceBookProfile1)-[like:LIKES]->(fb2:FaceBookProfile2) 
+RETURN like
+
+
+Create Relationship with Properties between two new Nodes:---------------------------------------------------------------------------
+
+CREATE  
+	(<node1-label-name>:<node1-name>{<define-properties-list>})-
+	[<relationship-label-name>:<relationship-name>{<define-properties-list>}]
+	->(<node1-label-name>:<node1-name>{<define-properties-list>})
+RETURN <relationship-label-name>
+
+CREATE (video1:YoutubeVideo1{title:"Action Movie1",updated_by:"Abc",uploaded_date:"10/10/2010"})
+-[movie:ACTION_MOVIES{rating:1}]->
+(video2:YoutubeVideo2{title:"Action Movie2",updated_by:"Xyz",uploaded_date:"12/12/2012"}) 
+
+Verifying:
+MATCH (video1:YoutubeVideo1)-[movie:ACTION_MOVIES]->(video2:YoutubeVideo2) 
+RETURN movie
+
+// Retrieving node details from relationships which they are a part of :
+
+MATCH 
+(<node1-label-name>)-[<relationship-label-name>:<relationship-name>]->(<node2-label-name>)
+RETURN <relationship-label-name>
+
+Eg:
+MATCH (cust) - [r-DO_SHOPPING_WITH]->(cc)
+RETURN cust,cc
+
+
+Create Relationship with/without Properties between two exiting Nodes with WHERE clause:-----------------------------------------------------------
+(see below where clause)
+
+
+
+// NEO4j CREATE LABEL :
+
+Single Label to a Node:
+CREATE (<node-name>:<label-name>)
+CREATE (google1:GooglePlusProfile)
+
+Multiple Labels to a Node:
+CREATE (<node-name>:<label-name1>:<label-name2>.....:<label-namen>)
+CREATE (m:Movie:Cinema:Film:Picture)
+
+Single Label to a Relationship:
+CREATE (<node1-name>:<label1-name>)-
+	[(<relationship-name>:<relationship-label-name>)]
+	->(<node2-name>:<label2-name>)
+
+CREATE (p1:Profile1)-[r1:LIKES]->(p2:Profile2)
+
+// Neo4j WHERE Clause:
+
+Simple WHERE clause syntax
+WHERE <condition>
+
+Complex WHERE clause syntax
+WHERE <condition> <boolean-operator> <condition>
+
+<condition> syntax:
+<property-name> <comparison-operator> <value>
+
+WHERE  It is a Neo4j CQL keyword.
+<property-name>	It is a property name of a Node or a Relationship.
+<comparison-operator>	It is a one of the Neo4j CQL Comparison operators.
+<value>	It is a literal value like number literal, string literal etc.
+
+BOOLEAN Operators:AND,OR,NOT,XOR.
+COMPARISON Operators: >,<,>=,<=,=,<>(not equal to)
+
+Eg:
+MATCH (emp:Employee) 
+WHERE emp.name = 'Abc'
+RETURN emp
+
+MATCH (emp:Employee) 
+WHERE emp.name = 'Abc' OR emp.name = 'Xyz'
+RETURN emp
+
+Creating relationships with where clause :
+
+MATCH (<node1-label-name>:<node1-name>),(<node2-label-name>:<node2-name>) 
+WHERE <condition>
+CREATE (<node1-label-name>)-[<relationship-label-name>:<relationship-name>
+       {<relationship-properties>}]->(<node2-label-name>) 
+
+MATCH (cust:Customer),(cc:CreditCard) 
+WHERE cust.id = "1001" AND cc.id= "5001" 
+CREATE (cust)-[r:DO_SHOPPING_WITH{shopdate:"12/12/2014",price:55000}]->(cc) 
+RETURN r
+
+
+// DELETE command :
+
+DELETE <node-name-list>
+
+--only node
+MATCH (e: Employee) DELETE e
+
+--Node with relationship
+MATCH (cc: CreditCard)-[rel]-(c:Customer) 
+DELETE cc,c,rel
+
+
+// REMOVE Command:
+
+Neo4j CQL REMOVE command is used:
+
+To remove labels of a Node or a Relationship
+To remove properties of a Node or a Relationship
+
+REMOVE <property-name-list>
+
+<property-name-list> syntax
+<node-name>.<property1-name>,
+<node-name>.<property2-name>, 
+.... 
+<node-name>.<propertyn-name> 
+
+Eg:
+MATCH (book { id:122 })
+REMOVE book.price
+RETURN book
+
+
+MATCH (dc:DebitCard) 
+REMOVE dc.cvv
+RETURN dc
+
+
+--removing multiple properties
+REMOVE <label-name-list>
+
+<label-name-list> syntax
+<node-name>:<label1-name>,
+<node-name>:<label2-name>, 
+.... 
+<node-name>:<labeln-name> 
+
+--removing unwanted label from a node
+MATCH (m:Movie) 
+REMOVE m:Picture
+
+
+// Neo4j SET Clause :
+
+Neo4j CQL has provided SET clause to perform the following.
+
+Add new properties to existing Node or Relationship
+Add or Update Properties values
+
+SET  <property-name-list>
+
+<property-name-list> syntax:
+<node-label-name>.<property1-name>,
+<node-label-name>.<property2-name>, 
+.... 
+<node-label-name>.<propertyn-name> 
+
+MATCH (dc:DebitCard)
+SET dc.atm_pin = 3456
+RETURN dc
+
+
+// Neo4j ORDER BY clause :
+
+By default, it sorts rows in ascending order. If we want to sort them in descending order, we need to use DESC clause
+
+ORDER BY  <property-name-list>  [DESC]	
+
+<property-name-list> syntax:
+<node-label-name>.<property1-name>,
+<node-label-name>.<property2-name>, 
+.... 
+<node-label-name>.<propertyn-name> 
+
+MATCH (emp:Employee)
+RETURN emp.empid,emp.name,emp.salary,emp.deptno
+ORDER BY emp.name
+
+
+// Neo4j Union Clause:
+
+It combines and returns common rows from two set of results into a single set of results. It does not return duplicate rows from two nodes.
+UNION Clause syntax:
+
+<MATCH Command1>
+   UNION
+<MATCH Command2>
+
+If both queries does not return same column names and data types, then it throws an error.
+
+MATCH (cc:CreditCard) RETURN cc.id,cc.number
+UNION
+MATCH (dc:DebitCard) RETURN dc.id,dc.number
+
+Above throws an error : ALL subqueries in an union must have same column names.
+
+Eg:
+MATCH (cc:CreditCard)
+RETURN cc.id as id,cc.number as number,cc.name as name,
+   cc.valid_from as valid_from,cc.valid_to as valid_to
+UNION
+MATCH (dc:DebitCard)
+RETURN dc.id as id,dc.number as number,dc.name as name,
+   dc.valid_from as valid_from,dc.valid_to as valid_to
+
+// UNION ALL Clause :
+
+It combines and returns all rows from two set of results into a single set of results. It returns duplicate rows also from two nodes.
+
+Restriction:
+Result column types and names from two set of results have to match that means column names should be same and column's data types should be same.
+
+<MATCH Command1>
+UNION ALL
+<MATCH Command2>
+
+Eg:
+MATCH (cc:CreditCard)
+RETURN cc.id as id,cc.number as number,cc.name as name,
+   cc.valid_from as valid_from,cc.valid_to as valid_to
+UNION ALL
+MATCH (dc:DebitCard)
+RETURN dc.id as id,dc.number as number,dc.name as name,
+   dc.valid_from as valid_from,dc.valid_to as valid_to
+
+
+// LIMIT Clause :
+
+Syntax:
+LIMIT <number>
+
+This example demonstrates how to use CQL LIMIT clause to reduce the number of records return by a MATCH + RETURN Query.
+
+MATCH (emp:Employee)
+RETURN
+emp.id,emp.name,emp.sal
+LIMIT 2
+
+It returns only two results from Top as we have defined limit = 2. That means first two rows.
+
+// SKIP Clause :
+
+SKIP <number>
+
+This example demonstrates how to use CQL SKIP clause to reduce the number of records return by a MATCH + RETURN Query.
+
+MATCH (emp:Employee)
+RETURN
+emp.id,emp.name,emp.sal
+SKIP 2
+
+It returns only two results from Bottom as we have defined skip = 2. That means last two rows sice the employee node had 4 rows,first 2 were skipped.
+
+
+// Neo4j Merge :
+
+Neo4j CQL MERGE command searches for given pattern in the graph, if it exists then it returns the results
+If it does NOT exist in the graph, then it creates new node/relationship and returns the results.
+
+MERGE (<node-name>:<label-name>
+{
+   <Property1-name>:<Pro<rty1-Value>
+   .....
+   <Propertyn-name>:<Propertyn-Value>
+})
+
+Eg:
+Creating a profile node:
+CREATE (gp1:GoogleProfile1 {Id: 201401, Name:"Apple"})
+
+Creating another node with same name and properties:
+CREATE (gp1:GoogleProfile1 {Id: 201401, Name:"Apple"})
+
+Now,
+MATCH (gp1:GoogleProfile1)
+Return gp1.Id,gp1.Name
+
+The rows returned by it have same ids and name.
+It returns two nodes thus CREATE command does not checks whether a node being created is unique or not.
+
+Now since MERGE is a combination of CREATE and MATCH. It first matches the existing rows with the one it is going to create,since the below id already exists,it updates
+the same row.
+MERGE (gp2:GoogleProfile2{
+Id:201402,NAME:"Nokia"})
+
+
+
+// Neo4j NULL :
+
+Neo4j CQL treats null value as missing value or undefined value to properties of a Node or Relationship.
+When we create a Node with existing Node label name without specifying its properties values, then it creates a new Node with NULL property values.
+
+MATCH (e:Employee) 
+RETURN e.id,e.name,e.sal,e.deptno
+
+It returns 4 rows(say).
+CREATE (e:Employee)  //node with null properties.
+
+MATCH (e:Employee) 
+RETURN e.id,e.name,e.sal,e.deptno
+
+It returns 5 rows.Fifth row has null values.
+
+---null check 
+MATCH (e:Employee) 
+WHERE e.id IS NOT NULL
+RETURN e.id,e.name,e.sal,e.deptno
+
+// Neo4j IN :
+
+IN[<Collection-of-values>]
+
+MATCH (e:Employee) 
+RETURN e.id,e.name,e.sal,e.deptno
+
+MATCH (e:Employee) 
+WHERE e.id IN [123,124]
+RETURN e.id,e.name,e.sal,e.deptno
+
+// Neo4j Id :
+
+In Neo4j, "Id" is a default internal property for both Nodes and Relationships. 
+That means, when we create a new Node or Relationship, Neo4j Database Server will assign a number for internal usage. It is incremented automatically.
+
+Maximum value of Id Property of Node's is around 35 Billion.
+Maximum value of Id Property of Relationship's is around 35 Billion.
+
+//Neo 4j CQL String functions:
+
+UPPER	It is used to change all letters into upper case letters.
+UPPER (<input-string>)
+<input-string> may be a property name of a node or relationship from Neo4J Database.
+
+MATCH (e:Employee) 
+RETURN e.id,UPPER(e.name),e.sal,e.deptno
+
+LOWER	It is used to change all letters into lower case letters.
+LOWER (<input-string>)
+
+SUBSTRING	It is used to get substring of a given String.
+SUBSTRING(<input-string>,<startIndex> ,<endIndex>)
+
+MATCH (e:Employee) 
+RETURN e.id,SUBSTRING(e.name,0,2),e.sal,e.deptno
+
+REPLACE	It is used to replace a substring with give substring of a String.
+
+// Neo4j aggregate functions:
+
+COUNT	It returns the number of rows returned by MATCH command.
+MAX	It returns the maximum value from a set of rows returned by MATCH command.
+MIN	It returns the minimum value from a set of rows returned by MATCH command.
+SUM	It returns the summation value of all rows returned by MATCH command.
+AVG	It returns the average value of all rows returned by MATCH command.
+
+COUNT(<value>)
+MATCH (e:Employee) RETURN COUNT(*)
+
+MAX(<property-name> )
+MIN(<property-name> )
+
+AVG(<property-name> )
+SUM(<property-name> )
+
+
+MATCH (e:Employee) 
+RETURN SUM(e.sal),AVG(e.sal)
+
+
+//Neo4j Relationship functions  :
+
+Startnode :
+It takes a string as an input and convert into upper case letters. All CQL Functions should use "( )" brackets.
+returns startnode of a movie.
+
+STARTNODE (<relationship-label-name>)
+
+MATCH (a)-[movie:ACTION_MOVIES]->(b) 
+RETURN STARTNODE(movie)
+
+
+
+Endnode :
+
+ENDNODE (<relationship-label-name>)
+
+MATCH (a)-[movie:ACTION_MOVIES]->(b) 
+RETURN ENDNODE(movie)
+
+ID and Type:
+Returming id and type properties of a relationship.
+
+MATCH (a)-[movie:ACTION_MOVIES]->(b) 
+RETURN ID(movie),TYPE(movie)
+
+
+Neo4j CQL Index :
+
+Neo4j CQL has provided "CREATE INDEX" command to create indexes on NODE's or Relationship's properties.
+
+CREATE INDEX ON :<label_name> (<property_name>)
+
+Eg:
+CREATE INDEX ON :Customer (name)
+
+DROP INDEX ON :<label_name> (<property_name>)
+
+//Neo4j Unique constraint :
+
+CREATE CONSTRAINT ON (<label_name>)
+ASSERT <property_name> IS UNIQUE
+
+suppose DB already has duplicate rows:
+CREATE CONSTRAINT ON (cc:CreditCard)
+ASSERT cc.number IS UNIQUE
+Then if we try to create the UNIQUE constraint on number property, then it throws error saying that duplicate nodes are available.
+
+After deleting those rows;
+CREATE CONSTRAINT ON (cc:CreditCard)
+ASSERT cc.number IS UNIQUE
+
+//checking whether constraint is working
+
+--number:222222 already exists in a row So,
+
+CREATE (cc:CreditCard {id:22,number:222222,name:'BBB',
+	   expiredate:'10/10/2017',cvv:222})
+
+this leads to contraint violation exception.
+
+--Dropping unique constraint
+
+DROP CONSTRAINT ON (<label_name>)
+ASSERT <property_name> IS UNIQUE
+
+DROP CONSTRAINT ON (cc:CreditCard)
+ASSERT cc.number IS UNIQUE
+
+========================================================================================================================
+Neo4j and Java
+========================================================================================================================
+
+Architecture : Client <-----> Neo4j Natine Java API & Neo4j CYPHER Java API <----->Neo4j drivers <------->Neo4j Database
+
+Neo4j Native Java API Example
+This example demonstrates how to develop a Java application in Eclipse IDE to develop and test Neo4j Native Java API Example.
+
+
+package com.tp.neo4j.java.examples;
+
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+public class Neo4jJavaAPIDBOperation {
+public static void main(String[] args) {
+	GraphDatabaseFactory dbFactory = new GraphDatabaseFactory();
+	GraphDatabaseService db= dbFactory.newEmbeddedDatabase("C:/TPNeo4jDB"); //creating DB
+	try (Transaction tx = db.beginTx()) {    //Starting Neo4j Database transaction to commit our changes
+
+		Node javaNode = db.createNode(Tutorials.JAVA); //creating node
+		javaNode.setProperty("TutorialID", "JAVA001");   //adding properties
+		javaNode.setProperty("Title", "Learn Java");
+		javaNode.setProperty("NoOfChapters", "25");
+		javaNode.setProperty("Status", "Completed");				
+		
+		Node scalaNode = db.createNode(Tutorials.SCALA);
+		scalaNode.setProperty("TutorialID", "SCALA001");
+		scalaNode.setProperty("Title", "Learn Scala");
+		scalaNode.setProperty("NoOfChapters", "20");
+		scalaNode.setProperty("Status", "Completed");
+		
+		Relationship relationship = javaNode.createRelationshipTo  //creating relationship and its properties.
+		(scalaNode,TutorialRelationships.JVM_LANGIAGES);
+		relationship.setProperty("Id","1234");
+		relationship.setProperty("OOPS","YES");
+		relationship.setProperty("FP","YES");
+		
+		tx.success();
+	}
+	   System.out.println("Done successfully");
+}
+}
+
+If our Neo4j Server is up and running by referring our newly created database, then we cannot execute our program as the server is already got lock for this database.
+So when we execute our previous program, we will get some error stack trace
+java.io.IOException: Couldn't lock lock file C:\TPNeo4jDB\lock because another process already holds the lock.
+To avoid this issue, first stop our server, then execute the program.
+Because by default Neo4j DB Server accepts only one lock at a time. In Realtime applications, Ne04J DBA people will update DB properties to allow some number of locks 
+at a time
+
+
+
+Neo4j Cypher Java API Example:
+
+This example demonstrates how to develop a Java application in Eclipse IDE to develop and test Neo4j Cypher Java API Example
+
+package com.tp.neo4j.java.cql.examples;
+
+import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.cypher.javacompat.ExecutionResult;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+public class JavaNeo4jCQLRetrivalTest {
+    
+   public static void main(String[] args) {
+      GraphDatabaseFactory graphDbFactory = new GraphDatabaseFactory();
+
+      GraphDatabaseService graphDb = graphDbFactory.newEmbeddedDatabase("C:/TPNeo4jDB");
+
+      ExecutionEngine execEngine = new ExecutionEngine(graphDb);
+      ExecutionResult execResult = execEngine.execute("MATCH (java:JAVA) RETURN java");
+      String results = execResult.dumpToString();
+      System.out.println(results);
+   }
+}
+
+
+
+If our Neo4j Server is up and running by referring our newly created database, then we cannot execute our program as the server is already got lock for this database.
+So when we execute our previous program, we will get some error stack trace
+java.io.IOException: Couldn't lock lock file C:\TPNeo4jDB\lock because another process already holds the lock.
+To avoid this issue, first stop our server, then execute the program.
+Because by default Neo4j DB Server accepts only one lock at a time. In Realtime applications, Ne04J DBA people will update DB properties to allow some number of locks 
+at a time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
