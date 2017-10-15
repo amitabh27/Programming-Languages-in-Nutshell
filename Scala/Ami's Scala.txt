@@ -1,0 +1,4934 @@
+=======================================================================================================================
+Background of Scala
+=======================================================================================================================
+
+It runs on the standard Java platform and it interoperates
+seamlessly with all Java libraries. It’s a great language for writing
+scripts that pull together Java components. But it can play out its strengths
+even more for building large systems and frameworks of reusable components.
+
+Scala is a blend of object-oriented and functional programming
+concepts in a statically typed language
+
+==========================
+Scala Interpreter
+==========================
+
+The easiest way to get started with Scala is by using the Scala interpreter,
+which is an interactive “shell” for writing Scala expressions and programs.
+
+You use it by typing scala at a command prompt:1
+$ scala
+Welcome to Scala version 2.6.1final.
+Type in expressions to have them evaluated.
+Type :help for more information.
+scala>
+After you type an expression, such as 1 + 2, and hit return:
+scala> 1 + 2
+The interpreter will print:
+res0: Int = 3
+
+This line includes:
+• an automatically generated or user-defined name to refer to the computed
+value (res0, which means result 0)
+• a colon (:)
+• the type of the expression and its resulting value (Int)
+• an equals sign (=)
+• the value resulting from evaluating the expression (3)
+
+
+Values of class Int correspond to Java’s int values. More generally, all of Java’s
+primitive types have corresponding classes in the scala package. For
+example, scala.Boolean corresponds to Java’s boolean primitive type.
+
+When you compile your Scala code to Java bytecodes, the Scala compiler will use Java’s primitive types
+where possible to give you the performance benefits of the primitive types.
+
+The resX identifier may be used in later lines. For instance, since res0
+was set to 3 previously, res0 * 3 will be 9:
+scala> res0 * 3
+res1: Int = 9
+
+To print the necessary, but not sufficient, Hello, world! greeting, type:
+scala> println("Hello, world!")
+Hello, world!
+The println function prints the passed string to the standard output, similar
+to System.out.println in Java.
+
+
+//Defining some variables
+
+Scala has two kinds of variables, vals and vars. vals are similar to final
+variables in Java. Once initialized, a val can never be reassigned. vars, by
+contrast, are similar to non-final variables in Java. A var can be reassigned
+throughout its lifetime. 
+
+Here’s a val definition:
+scala> val msg = "Hello, world!"
+msg: java.lang.String = Hello, world!
+
+
+This statement introduces msg as a name for the String "Hello world!".
+The type of msg is java.lang.String, because Scala strings are implemented
+by Java’s String class.
+
+
+When the Scala interpreter (or compiler) can infer a type, it is usually best to let it do so rather than
+fill the code with unnecessary, explicit type annotations. You can, however,
+specify a type explicitly if you wish, and sometimes you probably should.
+
+In contrast to Java, where you specify a variable’s type before its name, in Scala you specify a variable’s type after its name, separated by
+a colon. For example:
+scala> val msg2: java.lang.String = "Hello again, world!"
+msg2: java.lang.String = Hello again, world!
+
+Or, since java.lang types are visible with their simple names in Scala
+programs, simply:
+
+scala> val msg3: String = "Hello yet again, world!"
+msg3: String = Hello yet again, world!
+
+Going back to the original msg, now that it is defined, you can use it as you’d
+expect, for example:
+scala> println(msg)
+Hello, world!
+
+
+What you can’t do with msg, given that it is a val, not a var, is reassign it.For example, see how the interpreter complains when you attempt the
+following:
+scala> msg = "Goodbye cruel world!"
+<console>:7: error: assignment to immutable value
+msg = "Goodbye cruel world!"
+ˆ
+
+If reassignment is what you want, you’ll need to use a var, as in:
+scala> var greeting = "Hello, world!"
+greeting: java.lang.String = Hello, world!
+Since greeting is a var not a val, you can reassign it later.
+
+
+
+To enter something into the interpreter that spans multiple lines, just keep typing after the first line. If the code you typed so far is not complete, the
+interpreter will respond with a vertical bar on the next line.
+scala> val multiLine =
+| "This is the next line."
+multiLine: java.lang.String = This is the next line.
+
+If you realize you have typed something wrong, but the interpreter is still
+waiting for more input, you can escape by pressing enter twice:
+scala> val oops =
+|
+|
+You typed two blank lines. Starting a new command.
+scala>
+
+
+
+//defining some functions
+
+Here’s how you do that in Scala:
+scala> def max(x: Int, y: Int): Int = {
+| if (x > y)
+| x
+| else
+| y
+| }
+max: (Int,Int)Int
+
+Function definitions start with def. The function’s name, in this case max, is
+followed by a comma-separated list of parameters in parentheses. A type annotation
+must follow every function parameter, preceded by a colon, because
+the Scala compiler (and interpreter, but from now on we’ll just say compiler)
+does not infer function parameter types.
+
+After the close parenthesis
+of max’s parameter list you’ll find another “: Int” type annotation.
+This one defines the result type of the max function itself
+
+If the function has only one staetment,
+you can optionally leave off the curly braces. Thus,
+you could alternatively write the max function like this:
+scala> def max2(x: Int, y: Int) = if (x > y) x else y
+max2: (Int,Int)Int
+Once you have defined a function, you can call it by name, as in:
+scala> max(3, 5)
+res6: Int = 5
+
+
+Here’s the definition of a function that takes no parameters and returns no
+usable result:
+scala> def greet() = println("Hello, world!")
+greet: ()Unit
+
+When you define the greet() function, the interpreter will respond with
+greet: ()Unit. “greet” is, of course, the name of the function. The empty
+parentheses indicates the function takes no parameters. And Unit is greet’s
+result type. A result type of Unit indicates the function returns no usable
+value. Scala’s Unit type is similar to Java’s void type, and in fact every
+void-returning method in Java is mapped to a Unit-returning method in
+Scala.
+
+
+If a function takes no parameters, as is the case with greet(), you can
+call it with or without parentheses:
+scala> greet()
+Hello, world!
+scala> greet // This is bad style
+Hello, world!
+
+The recommended style for such function invocations is that if the function
+performs an operation, invoke it with empty parentheses. If the function
+returns a conceptual property, leave the empty parentheses off.
+
+Moreover, when you define a function that takes no parameters and returns a conceptual property, you should leave the empty parentheses off, like
+this:
+scala> def greeting = "Hello, world!"
+greeting: java.lang.String
+
+Such functions are called parameterless functions. This style of function
+definition supports the uniform access principle, which states that client code
+should look the same whether it is accessing a val or a parameterless function.
+
+
+Although greeting is a function, it can only be invoked without
+parentheses:
+scala> println(greeting)
+Hello, world!
+
+If you attempt to invoke greeting with an empty parameter list, your program will not compile, even though greeting is a function:
+
+scala> println(greeting())
+<console>:6: error: wrong number of arguments for method
+apply: (Int)Char in class RichString
+println(greeting())
+ˆ
+
+The uniform access principle allows you to change a parameterless function
+definition into a val without needing to change client code. One benefit of
+requiring an equals sign before the body of a function is that you can change
+a parameterless function definition into a val definition simply by changing
+the def into a val, for example:
+
+scala> val greeting = "Hello, world!"
+greeting: java.lang.String = Hello, world!
+
+If
+you wish to exit the interpreter, you can do so by entering :quit or :q.
+scala> :quit
+$
+
+//writing some scala scripts
+
+A script is just a sequence of
+statements in a file that will be executed sequentially. Put this into a file
+named hello.scala:
+println("Hello, world, from a script!")
+then run:
+$ scala hello.scala
+And you should get yet another greeting:
+Hello, world, from a script!
+
+Command line arguments to a Scala script are available via a Scala array
+named args. In Scala, arrays are zero based, as in Java, but you access
+an element by specifying an index in parentheses rather than square brackets.
+So the first element in a Scala array named steps is steps(0), not
+steps[0], as in Java. To try this out, type the following into a new file
+named helloarg.scala:
+// Say hello to the first argument
+println("Hello, " + args(0) + "!")
+
+then run:
+$ scala helloarg.scala planet
+In this command, "planet" is passed as a command line argument, which
+is accessed in the script as args(0). Thus, you should see:
+Hello, planet!
+Note also that this script included a comment. As with Java, the Scala compiler
+will ignore characters between // and the next end of line, as well as
+any characters between /* and */. This example also shows Strings being
+concatenated with the + operator. This works as you’d expect. The expression
+"Hello, " + "world!" will result in the string "Hello, world!".
+
+
+you can run a Scala script as a shell script by placing this at
+the top of your script::
+
+::n#!
+@echo off
+call scala n%0 n%*
+goto :eof
+::!n#
+
+
+//looping in scala
+
+------while
+
+You write while loops in Scala in much the same way as in Java. Try out a
+while by typing the following into a file name printargs.scala:
+
+var i = 0
+while (i < args.length) {
+println(args(i))
+i += 1
+}
+println()
+
+
+-------for and foreach
+
+For example, another
+(far more concise) way to print each command line argument is:
+args.foreach(arg => println(arg))
+In this code, you call the foreach method on args, and pass in a function. In
+this case, you’re passing in a function literal that takes one parameter named
+arg. The body of the function is println(arg). If you type the above code
+into a new file named pa.scala, and execute with the command:
+$ scala pa.scala Concise is nice
+You should see:
+Concise
+is
+nice
+
+
+If an function
+literal consists of one statement that takes a single argument, you need not
+explicitly name and specify the argument.11 Thus, the following code also
+works:
+args.foreach(println)
+
+
+for (arg <-args)
+println(arg)
+The parentheses after the for in this for expression contain arg <-args.
+To the right of <-is the familiar args array. To the left
+of the <-symbol
+is “arg,” the name of a val (not a var). For each element
+of the args array, a new arg val will be created and initialized to the element
+value, and the body of the for will be executed
+
+
+=========================================================================================================================
+Advanced specifications of Scala
+=========================================================================================================================
+
+In order to adapt the functional style of programming(Scala) try to minimize the use of vars and use vals as muchas possible.
+
+From a class blueprint, you
+can instantiate objects, or class instances, by using new. For example, the
+following Scala code instantiates a new String and prints it out:
+val s = new String("Hello, world!")
+println(s)
+
+
+The main difference is that instead
+of the angle brackets used for this purpose in Java, in Scala you use square
+brackets. Here’s an example:
+val greetStrings = new Array[String](3)
+greetStrings(0) = "Hello"
+greetStrings(1) = ", "
+greetStrings(2) = "world!nn"
+for (i <0
+to 2)
+print(greetStrings(i))
+In this example, greetStrings is a value of type Array[String] (say
+this as, “an array of string”) that is initialized to length 3 by passing the value 3 to a constructor in parentheses in the first line of code
+
+Had you been in a more explicit mood, you could have specified the type
+of greetStrings explicitly like this:
+val greetStrings: Array[String] = new Array[String](3)
+
+
+-----------------Lists
+
+Scala’s List
+is designed to enable a functional style of programming. Creating a List is
+easy, you just say:
+val oneTwoThree = List(1, 2, 3)
+This establishes a new val named oneTwoThree, which is initalized with a
+new List[Int] with the integer element values 1, 2 and 3
+
+Because Lists
+are immutable, they behave a bit like Java Strings in that when you call
+a method on one that might seem by its name to imply the List will be
+mutated, it instead creates a new List with the new value and returns it.
+
+for eg:
+List has a method named ::: that prepends a passed List to the
+List on which ::: was invoked. Here’s how you use it:
+val oneTwo = List(1, 2)
+val threeFour = List(3, 4)
+val oneTwoThreeFour = oneTwo ::: threeFour
+println(oneTwo + " and " + threeFour + " were not mutated.")
+println("Thus, " + oneTwoThreeFour + " is a new List.")
+Type this code into a new file called listcat.scala and execute it with
+scala listcat.scala, and you should see:
+List(1, 2) and List(3, 4) were not mutated.
+Thus, List(1, 2, 3, 4) is a new List.
+
+Perhaps the most common operator you’ll use with Lists
+is ::, which is pronounced “cons.” Cons prepends a new element to the
+beginning of an existing List, and returns the resulting List.3 For example,
+if you type the following code into a file named consit.scala:
+val twoThree = List(2, 3)
+val oneTwoThree = 1 :: twoThree
+println(oneTwoThree)
+And execute it with scala consit.scala, you should see:
+List(1, 2, 3)
+
+Given that a shorthand way to specify an empty List is Nil, one way
+to initialize new Lists is to string together elements with the cons operator,
+with Nil as the last element.4 For example, if you type the following code
+into a file named consinit.scala:
+val oneTwoThree = 1 :: 2 :: 3 :: Nil
+println(oneTwoThree)
+And execute it with scala consinit.scala, you should again see:
+List(1, 2, 3)
+
+
+// Methods :
+
+List() 	Creates an empty List
+Nil 	An empty List
+
+List("Cool", "tools", "rule") Creates a new List[String] with
+the three values "Cool", "tools",
+and "rule"
+
+val thrill = "Will" :: "fill" ::
+"until" :: Nil
+Creates a new List[String] with
+the three values "Will", "fill",
+and "until"
+
+List("a", "b") ::: List("c", "d") Creates a new List[String] with
+values "a", "b", "c", and "d"
+
+thrill(2) Returns the 2nd element (zero based)
+of the thrill List (returns
+"until")
+
+
+thrill.count(s => s.length == 4) Counts the number of String
+elements in thrill that have length
+4 (returns 2)
+
+thrill.drop(2) Returns the thrill List without its
+first 2 elements (returns
+List("until"))
+
+thrill.dropRight(2) Returns the thrill List without its
+rightmost 2 elements (returns
+List("Will"))
+
+thrill.exists(s => s == "until") Determines whether a String
+element exists in thrill that has the
+value "until" (returns true)
+
+thrill.filter(s => s.length == 4) Returns a List of all elements, in
+order, of the thrill List that have
+length 4 (returns
+List("Will", "fill"))
+
+thrill.forall(s =>
+s.endsWith("l"))
+Indicates whether all elements in the
+thrill List end with the letter "l"
+(returns true)
+
+thrill.foreach(s => print(s)) Executes the print statement on
+each of the Strings in the thrill
+List (prints "Willfilluntil")
+
+thrill.foreach(print) Same as the previous, but more
+concise (also prints
+"Willfilluntil")
+
+thrill.head Returns the first element in the
+thrill List (returns "Will")
+
+thrill.init Returns a List of all but the last
+element in the thrill List (returns
+List("Will", "fill"))
+
+thrill.isEmpty Indicates whether the thrill List
+is empty (returns false)
+
+thrill.last Returns the last element in the
+thrill List (returns "until")
+
+thrill.length Returns the number of elements in
+the thrill List (returns 3)
+
+thrill.map(s => s + "y") Returns a List resulting from adding
+a "y" to each String element in the
+thrill List (returns
+List("Willy", "filly", "untily"))
+
+thrill.remove(s => s.length == 4) Returns a List of all elements, in
+order, of the thrill List except
+those that have length 4 (returns
+List("until"))
+
+thrill.reverse Returns a List containing all
+elements of the thrill List in
+reverse order (returns
+List("until", "fill", "Will"))
+
+thrill.sort((s, t) =>
+s.charAt(0).toLowerCase <
+t.charAt(0).toLowerCase)
+Returns a List containing all
+elements of the thrill List in
+alphabetical order of the first
+character lowercased (returns
+List("fill", "until", "Will"))
+
+thrill.tail Returns the thrill List minus its
+first element (returns
+List("fill", "until"))
+
+
+
+-------Tuples
+
+
+Like Lists, tuples are immutable, but unlike
+Lists, tuples can contain different types of elements. Thus whereas a List
+might be a List[Int] or a List[String], a tuple could contain both an Int
+and a String at the same time.
+
+val pair = (99, "Luftballons")
+println(pair._1)
+println(pair._2)
+
+
+The actual type of a tuple depends on the number of elements it contains
+and the types of those elements. Thus, the type of (99, "Luftballons")
+is Tuple2[Int, String]. The type of ('u', 'r', "the", 1, 4, "me") is
+Tuple6[Char, Char, String, Int, Int, String]
+
+
+--------------------Sets
+
+the Scala API contains a base trait(Interface like in Java) for Sets, where a trait
+is similar to a Java interface.
+
+Scala then provides two subtraits, one for mutable Sets and another for immutable
+Sets
+
+Thus, if you want to use a HashSet, you can choose
+between mutable and immutable varieties depending upon your needs.
+
+Eg:
+
+//mutable set 
+
+import scala.collection.mutable.HashSet
+val jetSet = new HashSet[String]
+jetSet += "Lear"
+jetSet += ("Boeing", "Airbus")
+println(jetSet.contains("Cessna"))
+
+
+Note that just as with Lists and Arrays, when you create a Set, you need to parameterize it with a type (in
+this case, String), since every object in a Set must share the same type
+
+//immutable set 
+
+If you want an immutable Set, you can take advantage of a factory
+method defined in scala.collection.Set’s companion object, which is
+imported automatically into every Scala source file. Just say:
+val movieSet = Set("Hitch", "Poltergeist", "Shrek")
+println(movieSet)
+
+
+-------------------Map
+
+
+As with Sets, Scala
+provides mutable and immutable versions of Map, using a class hierarchy.
+
+Eg :
+
+//mutable
+
+import scala.collection.mutable.HashMap
+val treasureMap = new HashMap[Int, String]
+treasureMap += (1 >
+"Go to island.")
+treasureMap += (2 >
+"Find big X on ground.")
+treasureMap += (3 >
+"Dig.")
+println(treasureMap(2))
+
+
+//immutable 
+
+val romanNumeral = Map(
+1 ->"I",
+2 ->"II",
+3 ->"III",
+4 ->"IV",
+5 ->"V"
+)
+println(romanNumeral(4))
+In numerals.scala you take advantage of the fact that the immutable
+Map trait is automatically imported into any Scala source file. Thus when
+you say Map in the first line of code, the Scala interpreter knows you mean
+scala.collection.immutable.Map
+
+
+-------------------Classes
+
+class SimpleGreeter {
+val greeting = "Hello, world!"
+def greet() = println(greeting)
+}
+val g = new SimpleGreeter
+g.greet()
+
+One difference between Java and Scala involves
+constructors. In Java, classes have constructors, which can take parameters,
+whereas in Scala, classes can take parameters directly. The Scala
+notation is more concise—class parameters can be used directly in the body
+of the class; there’s no need to define fields and write assignments that copy
+constructor parameters into fields
+
+class FancyGreeter(greeting: String) {
+def greet() = println(greeting)
+}
+val g = new FancyGreeter("Salutations, world")
+g.greet()
+
+
+//validating the incoming string in above example
+
+class CarefulGreeter(greeting: String) {
+if (greeting == null)
+throw new NullPointerException("greeting was null")
+def greet() = println(greeting)
+}
+new CarefulGreeter(null)
+
+
+
+//constructor overloading 
+
+In Java, you sometimes give classes multiple constructors with overloaded
+parameter lists. You can do that in Scala as well, however you must
+pick one of them to be the primary constructor, and place those constructor
+parameters directly after the class name. You then place any additional
+auxiliary constructors in the body of the class.
+
+
+class RepeatGreeter(greeting: String, count: Int) {
+def this(greeting: String) = this(greeting, 1)
+def greet() = {
+for (i <1
+to count)
+println(greeting)
+}
+}
+val g1 = new RepeatGreeter("Hello, world", 3)
+g1.greet()
+val g2 = new RepeatGreeter("Hi there!")
+g2.greet()
+
+
+//static in Scala
+
+Another area in which Scala departs from Java is that you can’t have
+any static fields or methods in a Scala class. Instead, Scala allows you to
+create singleton objects using the keyword object. A singleton object cannot,
+and need not, be instantiated with new. It is essentially automatically
+instantiated the first time it is used, and as the “singleton” in its name implies,
+there is only ever one instance. A singleton object can share the same
+name with a class, and when it does, the singleton is called the class’s companion
+object.
+
+// The WorldlyGreeter class
+class WorldlyGreeter(greeting: String) {
+def greet() {
+val worldlyGreeting = WorldlyGreeter.worldify(greeting)
+println(worldlyGreeting)
+}
+}
+// The WorldlyGreeter companion object
+object WorldlyGreeter {
+def worldify(s: String) = s + ", world!"
+}
+
+
+In this file, you define both a class, with the class keyword, and
+a companion object, with the object keyword. Both types are named
+WorldlyGreeter. One way to think about this if you are coming from
+a Java programming perspective is that any static methods that you would
+have placed in class WorldlyGreeter in Java, you’d put in companion
+object WorldlyGreeter in Scala. Note also that in the first line of the
+greet method in class WorldlyGreeter, you invoke the companion object’s
+worldify method using a syntax similar to the way you invoke static
+methods in Java: the companion object name, a dot, and the method name
+
+In java you’d put class SpeedRacer in file SpeedRacer.java—in Scala, you can
+name .scala files anything you want, no matter what Scala classes or code
+you put in them.
+
+
+--------------------Traits
+
+Scala includes a construct called a trait, which is similar in spirit to Java’s interface
+
+One main difference between Java
+interfaces and Scala traits is that whereas all methods in Java interfaces are
+by definition abstract, you can give methods real bodies with real code in
+Scala traits. Here’s an example:
+
+trait Friendly {
+def greet() = "Hi"
+}
+
+In this example, the greet method returns the String "Hi". If you are
+coming from Java, this greet method may look a little funny to you, as
+if greet() is somehow a field being initialized to the String value "Hi".
+What is actually going on is that lacking an explicit return statement, Scala
+methods will return the value of the last expression. In this case, the value of
+the last expression is "Hi", so that is returned. A more verbose way to say
+the same thing would be:
+
+trait Friendly {
+def greet(): String = {
+return "Hi"
+}
+}
+
+
+Regardless of how your write the methods, however, the key point is that
+Scala traits can actually contain non-abstract methods. Another difference
+between Java interfaces and Scala traits is that whereas you implement Java
+interfaces, you extend Scala traits. Other than this implements/extends difference,
+however, inheritance when you are defining a new type works in
+Scala similarly to Java. In both Java and Scala, a class can extend one (and
+only one) other class. In Java, an interface can extend zero to many interfaces.
+Similarly in Scala, a trait can extend zero to many traits. In Java, a
+class can implement zero to many interfaces. Similarly in Scala, a class can
+extend zero to many traits; implements is not a keyword in Scala.
+Here’s an example:
+class Dog extends Friendly {
+override def greet() = "Woof"
+}
+In this example, class Dog extends trait Friendly. This inheritance relationship
+implies much the same thing as interface implementation does in
+Java. You can assign a Dog instance to a variable of type Friendly. For
+example:
+var pet: Friendly = new Dog
+println(pet.greet())
+When you invoke the greet method on the Friendly pet variable, it
+will use dynamic binding, as in Java, to determine which implementation of
+the method to call. In this case, class Dog overrides the greet method, so
+Dog’s implementation of greet will be invoked
+
+
+
+Note that one difference with
+Java is that to override a method in Scala, you must precede the method’s
+def with override. If you attempt to override a method without specifying
+override, your Scala code won’t compile.
+Finally, one quite significant difference between Java’s interfaces and
+Scala’s traits is that in Scala, you can mix in traits at instantiation time. For
+example, consider the following trait:
+
+trait ExclamatoryGreeter extends Friendly {
+override def greet() = super.greet() + "!"
+}
+Trait ExclamatoryGreeter extends trait Friendly and overrides the
+greet method. ExclamatoryGreeter’s greet method first invokes the superclass’s
+greet method, appends an exclamation point to whatever the superclass’s
+greet method returns, and returns the resulting String. With
+this trait, you can mix in its behavior at instantiation time using the with
+keyword. Here’s an example:
+val pup: Friendly = new Dog with ExclamatoryGreeter
+println(pup.greet())
+
+
+Eg:
+
+To give all these concepts a try, type the following code into a file named
+friendly.scala:
+trait Friendly {
+def greet() = "Hi"
+}
+class Dog extends Friendly {
+override def greet() = "Woof"
+}
+class HungryCat extends Friendly {
+override def greet() = "Meow"
+}
+class HungryDog extends Dog {
+override def greet() = "I'd like to eat my own dog food"
+}
+trait ExclamatoryGreeter extends Friendly {
+override def greet() = super.greet() + "!"
+}
+var pet: Friendly = new Dog
+println(pet.greet())
+pet = new HungryCat
+println(pet.greet())
+pet = new HungryDog
+println(pet.greet())
+pet = new Dog with ExclamatoryGreeter
+println(pet.greet())
+pet = new HungryCat with ExclamatoryGreeter
+println(pet.greet())
+pet = new HungryDog with ExclamatoryGreeter
+println(pet.greet())
+When you run the friendly.scala script, it will print:
+Woof
+Meow
+I'd like to eat my own dog food
+Woof!
+Meow!
+I'd like to eat my own dog food!
+
+=========================================================================================================================
+Classes and Objects
+=========================================================================================================================
+
+//objects and variables
+
+When writing the code of a Scala program, you create and interact with
+objects. To interact with a particular object, you can use a variable that
+refers to the object. You can define a variable with either a val or var, and
+assign an object to it with =. For example, when you write:
+val i = 1
+You create an Int object with the value 1 and assign it to a variable (in this
+case, a val) named i. Similarly, when you write:
+var s = "Happy"
+You create a String object with the value "Happy" and assign it to a variable
+(in this case, a var) named s.
+
+
+the difference between the two
+kinds of variable, val and var, is that a val will always refer to the object
+with which it is initialized, whereas a var can be made to refer to different
+objects over time. For example, even though the var named s from the
+previous example was initialized with the String "Happy", you could later
+make s refer to a different String:
+s = "Programming"
+
+
+The var s initially referred to "Happy", but now refers to
+"Programming". Were you to attempt such a reassignment on a val, you
+would get a compiler error.
+To interact with an object, you must go through a variable that refers to
+that object. For example, to find the length of the String "Programming",
+to which variable s currently refers, you can invoke the length method2 on
+s:
+s.length
+
+
+Another eg:
+
+var tomato = 7
+Here’s how you can give it a second name tag:
+var tomahto = tomato
+In this line of code, you defined another variable, a var named tomahto,
+and initialized it with the object to which tomato refers (the Int with the
+value 7). Both tomato and tomahto now refer to the same object, thus you
+can think of this as a 7 with two name tags.
+
+tomahto = 8
+
+Now you have a 7 with the name tag tomato and an 8 with the name tag
+tomahto.
+
+If you want to really shake things up, though, try this:
+tomato = tomahto
+Now the 8 has two names
+
+At this point in your program, that 7 has become unreachable.
+No variable refers to it—it has no name tags—so there is no way your
+program can interact with it anymore. Therefore any memory it consumes
+has become available to be automatically reclaimed by the runtime
+
+
+
+// Classes and Types :
+
+
+class House {
+// class definition goes here
+}
+You can create House objects (also called instances of class House) with:
+new House
+You may wish to assign the new House to a variable so you can interact with
+it later:
+val h1 = new House
+And just as a builder could construct many houses from one blueprint, you
+can construct many objects from one class:
+val h2 = new House
+val h3 = new House
+You now have three House objects
+
+
+you can also specify the type of a variable explicitly
+like this:
+
+val h4: House = new House
+The type of a variable determines what kind of objects can be assigned
+to it. If you attempt to assign a String to a variable of type House, for
+example, it won’t compile, because a String is not a House:
+var h5: House = "a String" // This won't compile
+
+
+// Fields and Methods
+
+For example, if you
+defined a ChecksumCalculator class and gave it a var field named sum:
+class ChecksumCalculator {
+var sum = 0
+}
+and you instantiated it twice with:
+val cc = new ChecksumCalculator
+val dd = new ChecksumCalculator
+
+Since sum, a field declared inside class ChecksumCalculator, is a var,
+not a val, you can later reassign to sum a different Int value, like this:
+
+cc.sum=8
+dd.sum=2
+
+what you can’t do with cc or dd given that they are vals, not vars, is reassign a
+different object to them. For example, the following attempt would fail:
+// Won't compile, because cc is a val
+cc = new ChecksumCalculator
+What you can count on, then, is that cc will always refer to the same
+ChecksumCalculator object with which you initialize it, but the fields contained
+inside that object might change over time.
+
+
+class ChecksumCalculator {
+private var sum = 0
+}
+Given this definition of ChecksumCalculator, any attempt to access sum
+from the outside of the class would fail:
+val cc2 = new ChecksumCalculator
+cc2.sum = 3 // Won't compile, because sum is private
+//only class members can access private members of class
+
+
+
+Note that the way you make members public in Scala is by not explicitly
+specifying any access modifier. Put another way, where you’d say “public”
+in Java, you simply say nothing in Scala. Public is Scala’s default access
+level.
+
+
+Here’s an example in which a String is converted
+to Unit, because that’s the declared result type of the method:
+scala> def f: Unit = "this String gets lost"
+
+f: Unit
+The Scala compiler treats a method defined in the procedure style, i.e., with
+curly braces but no equals sign, essentially the same as a method that explicitly
+declares its result type to be Unit. Here’s an example:
+scala> def g { "this String gets lost too" }
+g: Unit
+The gotcha occurs, therefore, if you intend to return a non-Unit value, but
+forget the equals sign. To get what you want, you’ll need to insert the equals
+sign:
+scala> def h = { "this String gets returned!" }
+h: java.lang.String
+scala> h
+res3: java.lang.String = this String gets returned!
+
+
+val a = 1
+val a = 2 // Does not compile
+println(a)
+You can, on the other hand, define a variable in an inner scope that has the
+same name as a variable in an outer scope. The following script would compile
+and run:
+val a = 1;
+{
+val a = 2 // Compiles just fine
+a
+}
+println(a)
+
+The main reason Scala differs from Java in this regard is that shadowing
+enables a more forgiving interpreter environment. Consider the following:
+scala> val a = 1
+a: Int = 1
+scala> val a = 2
+a: Int = 2
+scala> println(a)
+2
+In the interpreter, unlike in a regular Scala program, you can reuse variable
+names to your heart’s content.
+The reason you can do this is that implicitly, the interpreter
+creates a new nested scope for each new statement you type in.
+
+You can type one if you want but you don’t have to if the statement appears
+by itself on a single line. Thus, code like the following does not need any
+semicolons:
+val prod = 15
+var k = prod.toString.length
+while (k < 4) {
+print(" ")
+k += 1
+}
+print(prod)
+A semicolon is only required if you write several statements on a single line:
+val prod = 15; var k = prod.toString.length
+while (k < 4) { print(" "); k += 1 }
+print(prod)
+
+Occasionally, however, Scala will split a statement into two parts against
+your wishes:
+x
++ y
+This parsers as two statements x and +y. If you intend to parse it as one
+statement x + y, you can always wrap it in parentheses:
+(x
++ y)
+Alternatively, you can put the + at the end of a line. For just this reason,
+whenever you are chaining an infix operation such as +, it is a common Scala
+style to put the operators at the end of the line instead of the beginning:
+x +
+y +
+z
+
+
+=========================================================================================================================
+Basic types and operations
+=========================================================================================================================
+
+//basic types
+
+Value 		Type 				Range
+Byte 		8-bit signed two’s complement integer	 (-27 to 27 - 1, inclusive)
+Short 		16-bit signed two’s complement integer 	(-215 to 215 - 1, inclusive)
+Int 		32-bit signed two’s complement integer 	(-231 to 231 - 1, inclusive)
+Long 		64-bit signed two’s complement integer 	(-263 to 263 - 1, inclusive)
+Char 		16-bit unsigned Unicode character	 (0 to 216 - 1, inclusive)
+String		 a sequence of Chars
+Float		 32-bit IEEE 			754 single-precision float
+Double		 64-bit IEEE 7			54 double-precision float
+Boolean 		true or false
+
+
+// Integer Literals
+
+Integer literals for the types Int, Long, Short, and Byte come in three
+forms: decimal, hexadecimal, and octal.
+
+The way an integer literal begins indicates the base of the number. If the number begins with a 0x or 0X, it is
+hexadecimal (base 16), and may contain upper or lowercase digits A through
+F as well as 0 through 9. 
+Some examples are:
+scala> val hex = 0x5
+hex: Int = 5
+scala> val hex2 = 0x00FF
+hex2: Int = 255
+scala> val magic = 0xcafebabe
+magic: Int = 889275714
+
+If the number begins with a zero, it is
+octal (base 8), and may only contain digits 0 through 7. Some examples are:
+scala> val oct = 035 // (35 octal is 29 decimal)
+oct: Int = 29
+scala> val nov = 0777
+nov: Int = 511
+scala> val dec = 0321
+dec: Int = 209
+
+If the number begins with a non-zero digit, it is decimal (base 10). For
+example:
+scala> val dec1 = 31
+dec1: Int = 31
+scala> val dec2 = 255
+dec2: Int = 255
+scala> val dec3 = 20
+dec3: Int = 20
+
+If an integer literal ends in an L or l, it is a Long, otherwise it is an Int.
+Some examples of Long integer literals are:
+scala> val prog = 0XCAFEBABEL
+prog: Long = 3405691582
+scala> val tower = 35L
+tower: Long = 35
+scala> val of = 31l
+of: Long = 31
+
+If an Int literal is assigned to a variable of type Short or Byte, the
+literal is treated as if it were a Short or Byte type so long as the literal value
+is within the valid range for that type. For example:
+scala> val little: Short = 367
+little: Short = 367
+scala> val littler: Byte = 38
+littler: Byte = 38
+
+
+// Floating point literals
+
+Floating point literals are made up of decimal digits, optionally containing a
+decimal point, and optionally followed by an E or e and an exponent. Some
+examples of floating point literals are:
+scala> val big = 1.2345
+big: Double = 1.2345
+scala> val bigger = 1.2345e1
+bigger: Double = 12.345
+scala> val biggerStill = 123E45
+biggerStill: Double = 1.23E47
+
+If a floating point literal ends in a F or f, it is a Float, otherwise it is a
+Double. Optionally, a Double floating point literal can end in D or d. Some
+examples of Float literals are:
+scala> val little = 1.2345F
+little: Float = 1.2345
+scala> val littleBigger = 3e5f
+littleBigger: Float = 300000.0
+That last value expressed as a Double could take these (as well as other)
+forms:
+scala> val anotherDouble = 3e5
+anotherDouble: Double = 300000.0
+scala> val yetAnother = 3e5D
+yetAnother: Double = 300000.0
+
+//character literals
+
+Character literals can be any Unicode character between single quotes, such
+as:
+scala> val a = 'A'
+a: Char = A
+In addition to providing an explicit character between the single quotes, you
+can provide an octal or hex number for the character code point preceded
+by a backslash. The octal number must be between 'n0' and 'n377'. For
+example, the Unicode character code point for the letter A is 101 octal. Thus:
+scala> val c = 'n101'
+c: Char = A
+A character literal in hex form must have four digits and be preceded by a
+nu, as in:
+scala> val d = 'nu0041'
+d: Char = A
+scala> val f = 'nu005a'
+f: Char = Z
+There are also a few character literals represented by special escape sequences,
+shown in Table 5.2.
+For example:
+scala> val backslash = 'nn'
+backslash: Char = n
+
+Literal Meaning
+\n line feed (nu000A)
+\b backspace (nu0008)
+\t tab (nu0009)
+\f form feed (nu000C)
+\r carriage return (nu000D)
+\" double quote (nu0022)
+\' single quote (nu0027)
+\n backslash (nu005C)
+
+
+// String literals
+
+The usual notation for a string literal is to surround a number of characters
+by double quotes ("):
+scala> val hello = "hello"
+hello: java.lang.String = hello
+The syntax of the characters within the quotes is the same as with character
+literals. For example:
+scala> val escapes = "nnn"n'"
+escapes: java.lang.String = n"'
+This syntax is awkward for multi-line strings that contain a lot of escape
+sequences. For those, Scala includes a special syntax for multi-line strings.
+You start and end a multi-line string with three quotation marks in a row
+(""").
+
+println("""Welcome to Ultamix 3000.
+Type "HELP" for help.""")
+Running this code does not produce quite what is desired, however:
+
+Welcome to Ultamix 3000.
+Type "HELP" for help.
+
+The issue is that the leading spaces before the second line are included in
+the string! To help with this common situation, the String class includes a
+method call stripMargin. To use this method, put a pipe character (|) at
+the front of each line, and then call stripMargin on the whole string:
+println("""|Welcome to Ultamix 3000.
+|Type "HELP" for help.""".stripMargin)
+Now the code behaves as desired:
+Welcome to Ultamix 3000.
+Type "HELP" for help.
+
+
+
+// Boolean Literals
+
+scala> val bool = true
+bool: Boolean = true
+scala> val fool = false
+fool: Boolean = false
+
+
+// Arithmetic operations
+
+that the floating point remainder you get with % is not the one
+defined by the IEEE 754 standard. The IEEE 754 remainder uses rounding
+division, not truncating division, in calculating the remainder, so it is quite
+different from the integer remainder operation. If you really want an IEEE
+754 remainder, you can call IEEEremainder on scala.Math, as in:
+scala> Math.IEEEremainder(11.0, 4.0)
+res14: Double = 1.0
+
+//Boolean operations
+
+scala> 1 > 2
+res16: Boolean = false
+scala> 1 < 2
+res17: Boolean = true
+
+scala> 1.0 <= 1.0
+res18: Boolean = true
+scala> 3.5f >= 3.6f
+res19: Boolean = false
+scala> 'a' >= 'A'
+res20: Boolean = true
+scala> val thisIsBoring = !true
+thisIsBoring: Boolean = false
+scala> !thisIsBoring
+res21: Boolean = true
+
+The logical methods, logical-and (&&), and logical-or (||), take Boolean
+operands in infix notation, and yield a Boolean result. For example:
+scala> val toBe = true
+toBe: Boolean = true
+scala> val question = toBe || !toBe
+question: Boolean = true
+scala> val paradox = toBe && !toBe
+paradox: Boolean = false
+
+Short-circuiting : If the result of a boolean expresson can be determined only from the LHS operand then there is no need of evaluatinf RHS operand.
+Eg: If LHS of && is false then there is no need of evaluating RHS.
+
+scala> def salt() = { println("salt"); false }
+salt: ()Boolean
+scala> def pepper() = { println("pepper"); true }
+pepper: ()Boolean
+
+salt
+res22: Boolean = false
+scala> pepper() && salt()
+pepper
+salt
+res23: Boolean = false
+
+//object equality
+
+If you want to compare two objects to see if they are equal, you should
+usually use either ==, or its inverse !=. Here are a few simple examples:
+scala> 1 == 2
+res24: Boolean = false
+scala> 1 != 2
+res25: Boolean = true
+scala> 2 == 2
+res26: Boolean = true
+These operations actually apply to all objects, not just basic types. For example,
+you can use it to compare lists:
+scala> List(1,2,3) == List(1,2,3)
+res27: Boolean = true
+scala> List(1,2,3) == List(4,5,6)
+res28: Boolean = false
+
+
+Going further, you can compare two objects that have different types:
+scala> 1 == 1.0
+res29: Boolean = true
+scala> List(1,2,3) == "hello"
+res30: Boolean = false
+You can even compare against null, or against things that might be null.
+No exception will be thrown:
+scala> List(1,2,3) == null
+res31: Boolean = false
+scala> null == List(1,2,3)
+res32: Boolean = false
+
+
+scala> ("he" + "llo") == "hello"
+res33: Boolean = true
+
+//Bitwise operations
+
+scala> 1 & 2
+res34: Int = 0
+scala> 1 | 2
+res35: Int = 3
+scala> 1 ˆ 3
+res36: Int = 2
+scala> 1
+res37: Int = 2
+The first expression, 1 & 2, bitwise-ands each bit in 1 (0001) and 2
+(0010), which yields 0 (0000). The second expression, 1 | 2, bitwiseors
+each bit in the same operands, yielding 3 (0011). The third expression,
+1 ˆ 3, bitwise-xors each bit in 1 (0001) and 3 (0011), yielding 2
+(0010). The final expression, 1, inverts each bit in 1 (0001), yielding -2
+(111111111111111111111111111110).
+Scala integer types also offer three shift methods: shift left (<<), shift
+right (>>), and unsigned shift right (>>>).
+
+
+The shift methods, when used in
+infix operator notation, shift the integer value on the left of the operator by
+the amount specified by the integer value on the right. Shift left and unsigned
+shift right fill with zeroes as they shift. Shift right fills with the highest bit
+(the sign bit) of the left hand value as it shifts. Here are some examples:
+scala> 1
+>> 31
+res38: Int = 1
+scala> 1
+>>> 31
+res39: Int = 1
+
+scala> 1 << 2
+res40: Int = 4
+In the first example, 1
+>> 31, -1 (binary
+11111111111111111111111111111111) is shifted to the right 31 bit
+positions. Since an Int consists of 32 bits, this operation effectively moves
+the leftmost bit over until it becomes the rightmost bit.10 Since the >>
+method fills with ones as it shifts right, because the leftmost bit of -1 is 1, the
+result is identical to the original left operand, 32 one bits, or -1. In the second
+example, 1
+>>> 31, the leftmost bit is again shifted right until it is in the
+rightmost position, but this time filling with zeros along the way. Thus the result
+this time is binary 00000000000000000000000000000001, or 1. In the
+final example, 1 << 2, the left operand, 1, is shifted left two position (filling
+in with zeros), resulting in binary 00000000000000000000000000000100,
+or 4.
+
+
+//operator precedence
+same as in Java.
+(all other special characters)
+* / %
++ :
+= !
+< >
+&
+ˆ
+|
+(all letters)
+
+========================================================================================================================
+Functional Objects
+========================================================================================================================
+
+let us consider a class with methods to perform operations on rational numbers.
+
+class Rational(n: Int, d: Int) {
+val numer: Int = n
+val denom: Int = d
+def add(that: Rational): Rational =
+new Rational(numer * that.denom + that.numer * denom,
+denom * that.denom)
+def sub(that: Rational): Rational =
+new Rational(numer * that.denom that.
+numer * denom,
+denom * that.denom)
+def mul(that: Rational): Rational =
+new Rational(numer * that.numer, denom * that.denom)
+def div(that: Rational): Rational =
+new Rational(numer * that.denom, denom * that.numer)
+}
+
+
+//Class Parameters and constructors
+
+In Scala,
+classes can take parameters directly, whereas in Java, classes have constructors,
+which can take parameters. The Scala notation is more concise – class
+parameters can be used directly in the body of the class; there’s no need to
+define fields and write assignments which copy constructor parameters into
+fields.
+
+In fact, “under the covers”, a Scala class does have a constructor, even
+though it is not directly visible to user programs. This constructor is called
+the primary constructor of the class. It takes the class parameters and executes
+all statements of the class body. You can verify this by adding a print
+statement right into the body of Rational:
+class Rational(n: Int, d: Int) {
+println("created: "+n+"/"+d)
+... // rest of class is as before
+}
+
+By the way, the Scala interpreter shell offers a shortcut here: you can “replay”
+a whole interpreter session using the :replay command
+It will reexecute the commands from 1...n in that session that you would have typed.
+
+Sometimes one wants multiple constructors in a class. Scala supports this as
+well, through auxiliary constructors. An example of a auxiliary constructor
+is found in the following version of Rational:
+class Rational(n: Int, d: Int) {
+def this(n: Int) = this(n, 1)
+println("created: "+n+"/"+d)
+// rest of class is as before
+}
+
+
+//Reimplementing toString()
+
+override def toString() = numer+"/"+denom
+
+Earlier:
+scala> new Rational(1,2)
+res0: Rational = Rational@11af7bb
+
+Now after implementing toString() :
+
+scala> val x = new Rational(1, 3)
+x: Rational = 1/3
+scala> val y = new Rational(5, 7)
+y: Rational = 5/7
+scala> val z = new Rational(3, 2)
+z: Rational = 3/2
+scala> x.add(y).mul(z)
+res7: Rational = 66/42
+
+
+//Private methods and fields
+
+only class members can access them
+
+class Rational(n: Int, d: Int) {
+private def gcd(a: Int, b: Int): Int =
+if (b == 0) a else gcd(b, a % b)
+private val g = gcd(n, d)
+val numer: Int = n / g
+val denom: Int = d / g
+// rest of class as before
+}
+
+
+//Self References
+
+Just like in Java, the reserved word this refers to the currently executing
+object. As an example, consider adding a method, lessThan, which tests
+whether the given rational is smaller than a parameter:
+def lessThan(that: Rational) =
+this.numer * that.denom < that.numer * this.denom
+Here, this.numer refers to the numerator of the object in which the
+lessThan method is executed. You can also leave off the this-prefix and
+write just numer; the two notations are equivalent.
+As an example where you can’t do without this, consider adding a max
+method to class Rational that returns the greater of the given rational number
+and an argument:
+def max(that: Rational) =
+if (this.lessThan(that)) that else this
+Here, the first this is redundant, you could have equally well written
+(lessThan(that)). But the second this represents the result of the
+method in the case where the test returns false; if you omit it, there would be
+nothing left to return!
+
+
+// Defining operators
+
+class Rational(n: Int, d: Int) {
+def this(n: Int) = this(n, 1)
+private def gcd(a: Int, b: Int): Int =
+if (b == 0) a else gcd(b, a % b)
+private val g = gcd(n, d)
+val numer: Int = n / g
+val denom: Int = d / g
+def +(that: Rational): Rational =
+new Rational(numer * that.denom + that.numer * denom,
+denom * that.denom)
+def (
+that: Rational): Rational =
+new Rational(numer * that.denom that.
+numer * denom,
+denom * that.denom)
+def *(that: Rational): Rational =
+new Rational(numer * that.numer, denom * that.denom)
+def /(that: Rational): Rational =
+new Rational(numer * that.denom, denom * that.numer)
+override def toString() = numer+"/"+denom
+}
+
+With class Rational changed as above, you can now write
+scala> val x = new Rational(1, 2); val y = new Rational(3, 4)
+x: Rational = 1/2
+y: Rational = 3/4
+scala> (x + y) * x
+res0: Rational = 5/8
+
+
+//identifiers 
+
+
+The ‘$’-character also counts as a letter, however it is reserved for identifiers
+generated by the Scala compiler. Identifiers in user programs should not
+contain ‘$’ character, even though it will compile; if they do this might lead
+to name clashes with identifiers generated by the Scala compiler.
+
+//Method Overloading
+
+class Rational {
+... // as before
+def +(that: Int): Rational = this + new Rational(that)
+def (
+that: Int): Rational = this new
+Rational(that)
+def *(that: Int): Rational = this * new Rational(that)
+def /(that: Int): Rational = this / new Rational(that)
+}
+There are now two versions of each arithmetic operator method: one that
+takes a rational as argument, the other which takes an integer.
+
+
+The process of overloading resolution is very similar to what Java does. In
+every case, the chosen overloaded version is the one which best matches the static type of arguments.
+
+Sometimes there is no unique best matching
+version; in that case the compiler will give you an “ambiguous reference”
+error. To experiment with this, you can enter the following nonsensical line
+in the interpreter:
+val wrong = z * (throw new Error)
+You should get:
+<console>:5: error: ambiguous reference to overloaded definition,
+both method * in class Rational of type (Int)Rational
+and method * in class Rational of type (Rational)Rational
+match argument types (Nothing)
+val wrong = z * (throw new Error)
+
+
+There’s still room for improvement: Now that you can write r * 2, you might
+also want to swap the operands, as in 2 * r. Unfortunately this does not work
+yet:
+scala> 2 * r
+<console>:5: error: overloaded method value * with alternatives
+(Double)Double <and> (Float)Float <and> (Long)Long <and> (Int)Int
+<and> (Char)Int <and> (Short)Int <and> (Byte)Int cannot be
+applied to (Rational)
+val res2 = 2 * r
+
+
+=========================================================================================================================
+Built in Control Structures
+=========================================================================================================================
+
+//if
+
+var filename = "default.txt"
+if (!args.isEmpty)
+filename = args(0)
+
+// if-else
+
+val filename =
+if (!args.isEmpty)
+args(0)
+else
+"default.txt"
+
+Eg : println(if (!args.isEmpty) args(0) else "default.txt")
+
+Lastly, you may have wondered if an if without an else returns a value.
+It does, just not a very useful one. The type of the result is Unit, which as
+mentioned previously, means the expression results in no value. It turns out
+that a value (and in fact, only one value) exists whose type is Unit. It is
+called the unit value and is written (). The existence of () is how Scala’s
+Unit differs from Java’s void. Try this in the interpreter:
+scala> val a = if (false) "hi"
+a: Unit = ()
+scala> val b = if (true) "hi"
+b: Unit = ()
+scala> a == ()
+res0: Boolean = true
+Any type can be implicitly converted to Unit if need be, as illustrated
+here:
+scala> val c: Unit = "hi"
+c: Unit = ()
+
+
+When a value’s type is converted to Unit, all information is lost about
+that value. In essence, () is the value that means no value. Its only purpose is
+to let you use things like if-without-else expressions in contexts where an
+expression is expected. The two other build-in control constructs that result
+in (), while and do loops.
+
+
+// While
+
+def gcdLoop(x: Long, y: Long): Long = {
+var a = x
+var b = y
+while (a != 0) {
+val temp = a
+a = b % a
+b = temp
+}
+b
+}
+
+//Do-While
+
+var line = ""
+do {
+line = readLine
+println("Read: " + line)
+} while (!line.isEmpty)
+As mentioned previously, both while and do loops result in (), the unit
+value.
+
+// for 
+
+---------------Iterating through collections
+
+val filesHere = (new java.io.File(".")).listFiles
+for (file <filesHere)
+println(file)
+
+scala> for (i <1
+to 5)
+| println("Iteration " + i)
+
+for (i <0
+to filesHere.length 1)
+println(filesHere(i))
+This for expression introduces a variable i, sets it in turn to each integer
+between 0 and filesHere.length 1,
+and executes the body of the for
+expression for each setting of i. For each setting of i, the i’th element of
+filesHere is extracted and processed.
+
+-------------------Filtering
+
+for (file <filesHere;
+if file.getName.endsWith(".scala"))
+println(file)
+You could alternatively accomplish the same goal with this code:
+for (file <filesHere)
+if (file.getName.endsWith(".scala"))
+println(file)
+
+for (
+file <filesHere;
+if file.isFile;
+if file.getName.endsWith(".scala")
+) println(file)
+
+
+To make long for expressions easier to read, you can use curly braces instead
+of parentheses. As usual inside curly braces, it is not necessary to put
+semicolons at the ends of lines.
+for {
+file <filesHere
+if file.isFile
+if file.getName.endsWith(".scala")
+} println(file)
+
+
+---------------Nested Iteartion
+
+def grep(pattern: String) =
+for {
+file <filesHere
+if file.getName.endsWith(".scala")
+line <fileLines(
+file)
+if line.trim.matches(pattern)
+} println(file + ": " + line.trim)
+
+
+-----------------MidStream Assignment
+
+def grep(pattern: String) =
+for {
+file <filesHere
+if file.getName.endsWith(".scala")
+line <fileLines(
+file)
+trimmed = line.trim
+if trimmed.matches(pattern)
+} println(file + ": " + trimmed)
+
+-----------------Storing results of for loop's each iteration
+
+While all of the examples so far have operated on the iterated values and then
+forgotten them, you can also generate a value to remember for each iteration.
+You simply prefix the body of the for expression by the keyword yield. For
+example, here is a function that identifies the .scala files and stores them in
+an array:
+def scalaFiles =
+for {
+file <filesHere
+if file.getName.endsWith(".scala")
+} yield file
+Each time the body of the for expression executes it produces one value, in
+this case simply file. When the for expression completes, all of these values
+are returned in a single expression. The type of the resulting collection is
+based on the kind of collections processed in the iteration clauses. In this
+case the result is an array, because filesHere is an array.
+Be careful, by the way, where you place the yield keyword. The syntax
+of a for-yield expression is like this:
+for clauses yield body
+The yield goes before the entire body. Even if the body is a block surrounded
+by curly braces, put the yield before the first curly brace, not before
+the last expression of the block.
+
+
+// Try expressions
+
+---throwing expressions
+
+Throwing an exception looks the same as in Java. You create an exception
+object and then you throw it with the throw keyword:
+throw new NullPointerException
+One note of interest is that throw returns a value, too... sort of. Here is
+an example of “returning” a value from a throw:
+
+val half =
+if (n % 2 == 0)
+n / 2
+else
+throw new Exception("n must be even")
+What happens here is that if n is even, half will be initialized to half of n. If
+n is not even, then an exception will be thrown before half can be initialized
+to anything at all. Because of this, it is safe to treat a thrown exception as
+any kind of value whatsoever
+
+---------Catching exceptions
+
+Catching exceptions
+You catch exceptions using the following syntax:
+try {
+doSomething()
+}
+catch {
+case ex: IOException => println("Oops!")
+case ex: NullPointerException => println("Oops!!")
+}
+
+---------The finally clause
+You can wrap an expression with a finally clause if you want to cause
+some code to execute even if a method is terminated early. For example,
+you might want to be sure an open file gets closed even if a method exits by
+throwing an exception.
+val file = openFile()
+try {
+// use the file
+}
+finally {
+file.close() // be sure to close the file
+}
+
+----------------Yielding a value
+As with most other Scala control structures, try-catch-finally results in a
+value. For example, here is how you can try to parse a URL but use a default
+value if the URL is badly formed:
+val url =
+try {
+new URL(path)
+}
+catch {
+case e: MalformedURLException =>
+new URL("http://www.scalalang.
+org")
+}
+
+
+//match expressions
+
+Match expressions let you select from a number of alternatives,
+just like switch statements in other languages.
+
+As an example, the following code reads a food name from the argument
+list and prints a companion to that food.
+val firstArg = if (args.length > 0) args(0) else ""
+firstArg match {
+case "salt" => println("pepper")
+case "chips" => println("salsa")
+case "eggs" => println("bacon")
+case _ => println("huh?")
+}
+
+The default case is
+specified with an underscore (_), a wildcard symbol frequently used in Scala
+as a placeholder for a completely unknown value.
+
+
+//break and continue not supported in Scala, we have to write code differently to make their absence nothing to us.
+
+========================================================================================================================
+Functions and Closures
+========================================================================================================================
+
+// functions as class members 
+explained previously.
+
+// Nested functions 
+
+def processFile(filename: String, width: Int) {
+def processLine(filename: String, width: Int, line: String) {
+if (line.length > width) print(filename+": "+line)
+}
+val source = Source.fromFile(filename)
+for (line <source.
+getLines) {
+processLine(filename, width, line)
+}
+}
+
+
+// First class Functions
+
+In addition to methods and nested functions, Scala also offers first-class functions.
+At runtime, first-class functions are represented by objects called function
+values. Like other values, function values can be passed as parameters
+to other functions, returned as results, or assigned to variables. In the source
+code, you can express first-class functions in a shorthand form called function
+literals.
+
+Here is a simple example of a function literal that adds one to a number:
+(x: Int) => x + 1
+The => designates that this function converts the thing on the left (any integer
+x) to the thing on the right (x + 1). So, this is a function mapping any integer
+x to x + 1.
+Function values are objects, so you can store them in variables if you
+like. They are functions, too, so you can invoke them using the function-call
+notation. Here is an example of both activities:
+scala> var increase = (x: Int) => x + 1
+increase: (Int) => Int = <function>
+scala> increase(10)
+res0: Int = 11
+As with any other var, you can assign a different function value to increase
+whenever you like. For example:
+scala> increase = (x: Int) => x + 9999
+increase: (Int) => Int = <function>
+scala> increase(10)
+res2: Int = 10009
+If you want to have more than one statement in the function literal, surround
+it by curly braces and put one statement per line. Just like a method, when
+the function value is invoked, all of the statements will be executed, and the
+value returned from the function is whatever the expression on the last line
+generates.
+scala> increase = (x: Int) => {
+| println("Line 1")
+| println("Line 2")
+| println("Line 3")
+| x + 1
+| }
+
+
+increase: (Int) => Int = <function>
+scala> increase(10)
+Line 1
+Line 2
+Line 3
+res4: Int = 11
+
+
+Careful library writers will give you a lot of opportunities to use first-class
+functions. For example, a foreach method is available for all collections.2
+It takes a function as an argument and invokes that function on each of its
+elements. Here is how it can be used to print out all of the elements of a list:
+scala> val someNumbers = List(11,
+10,
+5,
+0, 5, 10)
+someNumbers: List[Int] = List(11,
+10,
+5,
+0, 5, 10)
+scala> someNumbers.foreach((x: Int) => println(x))
+11
+10
+5
+0
+5
+10
+
+---filter method
+
+scala> someNumbers.filter((x: Int) => x > 0)
+res6: List[Int] = List(5, 10)
+
+
+//placeholder syantax
+
+To make a function literal even more concise, you can use underscores as
+placeholders for one or more parameters, so long as each parameter appears
+only one time within the function literal. For example, _ > 0 is very short notation
+for a function that checks whether a value is greater than zero. Here’s
+an example:
+scala> someNumbers.filter(_ > 0)
+res10: List[Int] = List(5, 10)
+
+you can specify the types using a colon, like this:
+scala> val f = (_: Int) + (_: Int)
+f: (Int, Int) => Int = <function>
+scala> f(5, 10)
+res12: Int = 15
+
+//partially applied functions
+
+Although the previous examples substitute underscores in place of individual
+parameters, you can also replace an entire parameter list with an underscore.
+For example, instead of writing println(_), you can write println _.
+Here’s an example:
+someNumbers.foreach(println _)
+Scala treats this short form exactly as if you had written the following:
+someNumbers.foreach(x => println(x))
+
+Another Eg:
+
+scala> def sum(a: Int, b: Int, c: Int) = a + b + c
+sum: (Int,Int,Int)Int
+You could apply the function sum to the arguments 1, 2, and 3 like this:
+scala> sum(1, 2, 3)
+res13: Int = 6
+
+scala> val a = sum _
+a: (Int, Int, Int) => Int = <function>
+
+scala> a(1, 2, 3)
+res14: Int = 6
+
+The Scala compiler
+translates the expression a(1, 2, 3) into an invocation of the function
+value’s apply method, passing in the three arguments 1, 2, and 3. Thus,
+a(1, 2, 3) is a short form for:
+scala> a.apply(1, 2, 3)
+res15: Int = 6
+
+Another eg:
+
+scala> val b = sum(1, _: Int, 3)
+b: (Int) => Int = <function>
+
+scala> b(2)
+res5: Int = 6
+In this case, apply invoked sum(1, 2, 3).
+scala> b(5)
+res6: Int = 9
+
+
+// Closures
+
+scala> var more = 1
+more: Int = 1
+scala> val addMore = (x: Int) => x + more
+addMore: (Int) => Int = <function>
+scala> addMore(10)
+res18: Int = 11
+The function value (the object) that’s created at runtime from this function
+literal is called a closure
+
+scala> more = 9999
+more: Int = 9999
+scala> addMore(10)
+res20: Int = 10009
+
+Eg:
+
+scala> val someNumbers = List(11,
+10,
+5,
+0, 5, 10)
+someNumbers: List[Int] = List(11,
+10,
+5,
+0, 5, 10)
+scala> var sum = 0
+sum: Int = 0
+scala> someNumbers.foreach(sum += _)
+scala> sum
+res22: Int = 11
+
+Another eg :
+
+scala> val someNumbers = List(11,
+10,
+5,
+0, 5, 10)
+someNumbers: List[Int] = List(11,
+10,
+5,
+0, 5, 10)
+scala> var sum = 0
+sum: Int = 0
+scala> someNumbers.foreach(sum += _)
+scala> sum
+res22: Int = 11
+
+When you call makeIncreaser(1), a closure is created and returned that
+captures the value 1 as the binding for more. Similarly, when you call
+makeIncreaser(9999), a closure that captures the value 9999 for more is
+returned.
+
+When you apply these closures to arguments the result that comes back
+depends on how more was defined when the closure was created:
+scala> inc1(10)
+res23: Int = 11
+scala> inc9999(10)
+res24: Int = 10009
+
+
+//Repeated parameters
+
+Scala allows you to indicate that the last parameter to a function may be
+repeated. This allows clients to pass variable length argument lists to the
+function. To denote a repeated parameter, place an asterisk after the type of
+the parameter. For example:
+scala> def echo(args: String*) = for (arg <args)
+println(arg)
+echo: (String*)Unit
+Defined this way, echo can be called with zero to many String arguments:
+scala> echo()
+scala> echo("one")
+one
+scala> echo("hello", "world!")
+hello
+world!
+scala> echo("1", "2", "3", "4")
+1
+2
+3
+4
+Inside
+
+//Tail Recursion
+
+Functions which call themselves as their
+last action, are called tail recursive. The Scala compiler detects tail recursion
+and replaces it with a jump back to the beginning of the function,
+after updating the function parameters with the new values.
+
+-----Difference between trail recursion and tracing tail-recursion
+
+
+One consequence to watch out for is that a tail-recursive function will not
+build a new stack-frame for each call; all calls will execute in a single stackframe.
+This may surprise a programmer inspecting a stack-trace of a program
+that failed. For instance, consider the function boom, shown next, which calls
+itself recursively a number of times and then crashes:
+scala> def boom(x: Int): Int =
+| if (x == 0) throw new Exception("boom!")
+| else boom(x 1)
++ 1
+boom: (Int)Int
+This function is not tail-recursive because it still performs a (+1) operation
+after the recursive call. Here’s what you’ll get when you run it:
+scala> boom(5)
+java.lang.Exception: boom!
+at .boom(<console>:5)
+at .boom(<console>:6)
+at .boom(<console>:6)
+at .boom(<console>:6)
+at .boom(<console>:6)
+at .boom(<console>:6)
+at .<init>(<console>:6)
+
+You see one entry per recursive call in the stack-trace, as expected. If you
+now modify boom so that it does become tail-recursive:
+scala> def bang(x: Int): Int =
+| if (x == 0) throw new Exception("bang!")
+| else bang(x 1)
+bang: (Int)Int
+You’ll get:
+scala> bang(5)
+java.lang.Exception: bang!
+at .bang(<console>:5)
+at .<init>(<console>:6)
+...
+This time, you see only a single stack-frame for bang. You might think that
+bang crashed before it called itself, but this is not the case. If you think you
+might be confused by tail-call optimizations when looking at a stack-trace,
+you can turn them off by giving a
+g:
+notc
+argument to the scala shell or to the scalac compiler. With that option
+specified, you will get a longer stack trace:
+scala> bang(5)
+java.lang.Exception: bang!
+at .bang(<console>:5)
+at .bang(<console>:5)
+at .bang(<console>:5)
+at .bang(<console>:5)
+at .bang(<console>:5)
+at .bang(<console>:5)
+at .<init>(<console>:6)
+...
+
+
+========================================================================================================================
+Control Abstraction
+========================================================================================================================
+
+
+// Currying
+
+A curried function is applied to multiple argument lists, instead of just
+one. Here’s a regular, not curried function, which adds two Int parameters,
+x and y:
+scala> def plainOldSum(x: Int, y: Int) = x + y
+plainOldSum: (Int,Int)Int
+You invoke it in the usual way:
+scala> plainOldSum(1, 2)
+res46: Int = 3
+
+By contrast, here’s a similar function that’s curried. Instead of one list of two
+Int parameters, you apply this function to two lists of one Int parameter
+each:
+
+scala> def curriedSum(x: Int)(y: Int) = x + y
+curriedSum: (Int)(Int)Int
+Here’s how you invoke it:
+scala> curriedSum(1)(2)
+res47: Int = 3
+
+What’s happening here is that when you invoke curriedSum, you actually
+get two traditional function invocations back to back. The first function
+invocation takes a single Int parameter named x, and returns a function
+value for the second function. This second function takes the Int parameter
+y. 
+
+Here’s a function named first that does in spirit what the first traditional
+function invocation of curriedSum would do:
+scala> def first(x: Int) = (y: Int) => x + y
+first: (Int)(Int) => Int
+Applying 1 to the first function—in other words, invoking the first function
+and passing in 1—yields the second function:
+scala> val second = first(1)
+second: (Int) => Int = <function>
+Applying 2 to the second function yields the result:
+scala> second(2)
+res4: Int = 3
+
+Although these first and second functions are just an illustration of the
+currying process having nothing to do with the curriedSum function, there
+is a way to get an actual reference to curriedSum’s “second” function. You
+can use the placeholder notation to use curriedSum in a partially applied
+function expression, like this:
+scala> val onePlus = curriedSum(1)_
+onePlus: (Int) => Int = <function>
+The underscore in curriedSum(1)_ is a placeholder for the second parameter
+list.2 The result is a reference to a function that, when invoked, adds one
+to its sole Int argument and returns the result:
+scala> onePlus(2)
+res5: Int = 3
+
+
+And here’s how you’d get a function that adds two to its sole Int argument:
+scala> val twoPlus = curriedSum(2)_
+twoPlus: (Int) => Int = <function>
+scala> twoPlus(2)
+res6: Int = 4
+
+
+// Writing new control structures
+
+In languages with first-class functions, you can effectively make new control
+structures even though the syntax of the language is fixed. All you need to
+do is create methods that take functions as arguments.
+
+For example, here is the “twice” control structure, which repeats an operation
+two times and returns the result:
+scala> def twice(op: Double => Double, x: Double) = op(op(x))
+twice: ((Double) => Double,Double)Double
+scala> twice(_ + 1, 5)
+res24: Double = 7.0
+The type of op in this example is Double => Double, which means it is a
+function that takes one Double as an argument and returns another Double.
+
+
+//By Name Parameters
+
+As a concrete example, suppose you want to implement an assertion construct
+called myAssert.3 The myAssert function will take a function value
+as input and consult a flag to decide what to do. If the flag is set, myAssert
+will invoke the passed function and verify that it returns true. If the flag is
+turned off, myAssert will quietly do nothing at all.
+Without using by-name parameters, you could write myAssert like this:
+
+var assertionsEnabled = true
+def myAssert(predicate: () => Boolean) =
+if (assertionsEnabled && !predicate())
+throw new AssertionError
+The definition is fine, but using it is a little bit awkward:
+myAssert(() => 5 > 3)
+You would really prefer to leave out the empty parameter list and => symbol
+in the function literal and write the code like this:
+myAssert(5 > 3) // Won't work, because missing () =>
+By-name parameters exist precisely so that you can do this. To make a byname
+parameter, you give the parameter a type starting with => instead of
+() =>. For example, you could change myAssert’s predicate parameter
+into a by-name parameter by changing its type, “() => Boolean” into
+“=> Boolean.” Here’s how that would look:
+def byNameAssert(predicate: => Boolean) =
+if (assertionsEnabled && !predicate)
+throw new AssertionError
+Now you can leave out the empty parameter in the property you want to
+assert. The result is that using byNameAssert looks exactly like using a
+built-in control structure:
+byNameAssert(5 > 3)
+
+
+=========================================================================================================================
+Composition and inheritance
+=========================================================================================================================
+
+//Abstract Classes
+
+abstract class Element {
+def contents: Array[String]
+def width: Int = ...
+def height: Int = ...
+def above(that: Element): Element = ...
+def beside(that: Element): Element = ...
+}
+
+A class with abstract members must itself be
+declared abstract; this is done by writing an abstract modifier in front of
+the class keyword
+
+The abstract modifier in front of a class signifies that the class may have
+abstract members which do not have an implementation. Therefore, it is not
+permitted to create an object of an abstract class. If you try to write
+scala> new Element
+You should get something like this:
+<console>:5: error: class Element is abstract; cannot be instantiated
+val res6 = new Element
+
+// Uniform Access Principle
+
+The next thing to turn to is the implementation of the concrete methods in
+class Element. Here are the first two:
+
+def width: Int =
+if (height == 0) 0 else contents(0).length
+
+def height: Int = contents.length
+
+The height method returns the number of lines in contents. The width
+method returns the length of the first line, or, if there are no lines in the
+element, zero.
+
+
+This convention supports the uniform access principle, which says that
+client code should not be affected by a decision to implement some attribute
+as a field or as a method. For instance, you could have chosen to implement :
+
+width and height as fields instead of methods, simply by changing the def
+in their definition to a val:
+val width =
+if (contents.length == 0) 0 else contents(0).length
+val height = contents.length
+
+
+But there’s still a slight complication that has to do
+with the way Java handles things. The problem is that Java does not implement
+the uniform access principle. So it’s string.length() in Java, not
+string.length (even though it’s array.length, not array.length()).
+Needless to say, this is very confusing.
+To bridge that gap, Scala is very liberal when it comes to mixing parameterless
+methods and methods with ‘()’ parameters. In particular, you can
+override a ‘()’-method with a parameterless method and vice versa. You can
+also leave out an empty argument list ‘()’ from a method call. For instance,
+the following two lines are both legal in Scala:
+Array(1, 2, 3).toString
+"abc".length
+
+
+// Assertions and assumptions
+
+the width method gives a correct result only if all lines in the array
+have the same length. You can state this property as a set of assertions in
+class Element:
+for (line <contents)
+assert(line.length == width, "element is not rectangular")
+Assertions in Scala are written as calls of a predefined method assert.1
+The expression assert(condition) throws an AssertionError if
+condition does not hold.
+
+Another eg:
+
+failing assertion always indicates that some code is incorrect. The
+incorrect code is not always the code that contains the assertion, however.
+For instance, consider the following function which returns the inverse of its
+floating point argument.
+def inverse(x: Double) = 1 / x
+
+This function will throw an ArithmeticException if x is zero. You could
+specify the legal argument restriction directly, using an assertion:
+def inverse(x: Double) = { assert(x != 0); 1 / x }
+In that case, inverse(0) would throw an AssertionError instead of an
+ArithmeticException.
+
+But in a sense, this is still not right, because it
+is not the inverse method that should be blamed for this fault but its
+caller, which passed the zero argument. In situations like this it is better
+to assume that the argument is non-zero, instead of asserting it. Scala defines
+analogs of both variants of assert which are called assume. Instead
+of throwing an AssertionError like assert does, an assume throws an
+IllegalArgumentException when it fails. So assume clearly blames the
+caller of the method for a failure, not the method itself. Here’s inverse,
+again, using an assume:
+def inverse(x: Double) = { assume(x != 0, "must be nonzero");
+1/x }
+Now if you try to execute inverse(0), you should get:
+java.lang.IllegalArgumentException: assumption failed: must be nonzero
+
+
+//Sub-Classes
+
+You need to create a subclass which extends Element and which implements
+the abstract contents method. Here’s a possible way to do this:
+class ArrayElement(conts: Array[String]) extends Element {
+def contents: Array[String] = conts
+}
+Class ArrayElement is defined to extend class Element. Just like in Java,
+you use an extends clause.
+
+For instance, the contents method in ArrayElement overrides (or, alternatively:
+implements) the abstract method contents in class Element.
+On the other hand, class ArrayElement inherits the width, height,
+above, and beside methods from class Element. For instance, given an
+ArrayElement ae, you can query its width using ae.width, just as if width
+has been defined in class ArrayElement.
+Subtyping means that a value of the subclass can be used wherever a
+value of the superclass is required. For instance, in the value definition
+val e: Element = new ArrayElement(...)
+The variable e is defined to be of type Element, so its initializing value
+should also be an Element. In fact the type of the initializing value is
+ArrayElement.
+
+
+// Namespaces
+
+in Scala it is forbidden to define a field and method
+with the same name in the same class. This contrasts with Java, which allows
+you to declare like-named fields and methods in the same class. For example,
+this Java class would compile just fine:
+// This is Java
+class CompilesFine {
+private int f = 0;
+public int f() {
+return 1;
+}
+}
+
+But the corresponding Scala class would not compile:
+class WontCompile {
+private var f = 0 // Won't compile, because a field
+def f = 1 // and method have the same name
+}
+
+Generally, Scala has just two name spaces for definitions in place of Java’s
+four. Java’s four namespaces are:
+• fields
+• methods
+• types
+• packages
+By contrast, Scala’s two namespaces are:
+• values (fields, methods, and packages)
+• types (class and trait names)
+The reason Scala places fields and methods into the same namespace is precisely
+so you can override a parameterless method with a val, something
+you can’t do with Java.
+
+
+// class parameters
+
+class ArrayElement(x123: Array[String]) extends Element {
+val contents: Array[String] = x123
+}
+
+One can also prefix a class parameter with var, then the corresponding
+field would be reassignable. Finally, it is possible to add modifiers such
+as private, protected, or override to these parametric fields, just as one
+can do for any other class member. Consider for instance the following class
+definition
+class C(override val x: Int, private var y: String, z: Boolean) {}
+This is a shorthand for the following definition of a class C with an overriding
+member x and a private member y.
+class C(xParam: Int, yParam: String, z: Boolean) {
+override val x = xParam
+private var y = yParam
+}
+Both members are initialized from the corresponding parameters
+
+
+
+//Bottom types
+
+Class Null is the type of the null reference; it is a subclass of every
+reference class (i.e., every class which itself inherits from AnyRef). Null is
+not compatible with value types. Therefore, you cannot assign a null value
+to an integer variable, say.
+
+The type Nothing is at the very bottom of Scala’s class hierarchy. It is
+a subtype of every other type. However, there exist no values of this type
+whatsoever. Why does it make sense to have a type without values? One
+use of Nothing is that it signals abnormal termination. For instance there’s
+the error method in the Predef object of Scala’s standard library, which is
+defined as follows.
+
+def error(message: String): Nothing = throw new Error(message)
+
+The return type of error is Nothing, which tells users that the method will
+not return normally (it throws an exception instead). Because Nothing is a
+subtype of every other type, you can use methods like error in very flexible
+ways. For instance:
+
+def divide(x: Int, y: Int): Int =
+if (y != 0) x / y
+else error("can't divide by zero")
+The then-branch of the conditional above has type Int, whereas the else
+branch has type Nothing. Because Nothing is a subtype of Int, the type of
+the whole conditional is Int, as required
+
+
+=========================================================================================================================
+Traits and Mixins
+=========================================================================================================================
+
+A trait definition looks just like a class definition except that it uses the keyword
+trait:
+trait Printable {
+def print() {
+println(this)
+}
+}
+
+Once a trait is defined, it can be mixed into a class using the with keyword.1
+For example, here are a couple of classes that use the above trait:
+class Frog extends Object with Printable {
+override def toString = "a frog"
+}
+Methods inherited via a trait can then be used just like methods inherited
+otherwise:
+scala> val frog = new Frog
+frog: Frog = a frog
+scala> frog.toString
+res0: java.lang.String = a frog
+scala> frog.print()
+a frog
+A trait is also usable as a type. Here is an example using Printable as a
+type:
+scala> val pr: Printable = frog
+pr: Printable = a frog
+scala> pr.print()
+a frog
+
+
+
+
+As a syntactic shorthand, you can extend a trait directly if you do not care
+to extend a more specific superclass. You could have just as well written the
+Frog class like this:
+class Frog extends Printable {
+override def toString = "a frog"
+}
+
+
+// Thin versus Thick Interfaces
+
+One major use of traits is to automatically add methods to a class in terms of
+methods that the class already has. That is, traits can expand a thin interface
+into a thick interface.
+
+Thin versus thick interfaces are a commonly faced trade-off in objectoriented
+design. The trade-off is between the implementors and clients of
+an interface. A thick interface has many methods, which make it convenient
+for the caller. Clients can pick a method that corresponds exactly to the
+functionality they want, instead of having to use a more primitive method
+and write extra code to adapt the method to their needs. A thin interface, on
+the other hand, has fewer methods, and thus is easier to implement. Java’s
+interfaces are most often of the thin kind.
+
+To use traits as interface thickeners, simply define a trait with a small
+number of abstract methods—the thin part of the trait’s interface—and a
+potentially large number of concrete methods, all implemented in terms of
+the abstract methods. Then you can take any class implementing the thin
+version of the interface, mix in the thickening trait, and end up with a class
+that has all of the thick interface available.
+
+
+// Standard Ordered Trait
+
+The standard Ordered trait allows you to implement one method
+and gain access to four different variations.
+
+
+Here is what you might do without the Ordered trait. If you are implementing
+a Book class that has an ordering, you might write the following
+code:
+class Book(val author: String, val title: String) {
+def <(that: Book) =
+(author < that.author) ||
+((author == that.author) && title < that.title)
+def >(that: Book) = that < this
+def <=(that: Book) = (this < that) || (this == that)
+def >=(that: Book) = (this > that) || (this == that)
+override def equals(that: Any) =
+that match {
+case that: Book =>
+(author == that.author) && (title == that.title)
+case _ => false
+}
+}
+
+
+
+
+The Ordered trait can reduce this waste. To use the Ordered trait, your
+class must define a single compare method which does the real work of
+comparison. Then you can mix in Ordered, and clients of your class can use
+four different comparison operations even though you did not define them.
+Here is how it looks for the Book class:
+class Book(val author: String, val title: String)
+extends Ordered[Book]
+{
+def compare(that: Book): Int =
+if (author < that.author) 1
+else if (author > that.author) 1
+else if (title < that.title) 1
+else if (title > that.title) 1
+else 0
+override def equals(that: Any) =
+that match {
+case that: Book => compare(that) == 0
+case _ => false
+}
+}
+
+
+Warning: if you use Ordered, you must still define your own equals()
+method. For technical reasons involving runtime types, this method cannot
+be correctly defined in the Ordered trait itself.
+The complete Ordered trait, minus comments and compatibility cruft, is
+as follows:
+trait Ordered[T] {
+def compare(that: T): Int
+def <(that: T): Boolean = (this compare that) < 0
+def >(that: T): Boolean = (this compare that) > 0
+def <=(that: T): Boolean = (this compare that) <= 0
+def >=(that: T): Boolean = (this compare that) >= 0
+}
+
+
+Similarly traits can be implemented as stackablemodigications .
+
+
+//Locking and loging Queues
+
+The locking logging example involves the following three concepts:
+• Queue: an abstract class that can get and put elements.
+• Locking: a modification of a queue to use locking.
+• Logging: a modification of a queue to log gets and puts.
+
+
+Eg:
+trait Queue {
+def get(): Int
+def put(x: Int)
+}
+trait LockingQueue extends Queue {
+abstract override def get(): Int =
+synchronized { super.get() }
+abstract override def put(x: Int) =
+synchronized { super.put(x) }
+}
+trait LoggingQueue extends Queue {
+def log(message: String) = println(message)
+abstract override def get(): Int = {
+val x = super.get()
+log("got: " + x)
+x
+}
+abstract override def put(x: Int) {
+super.put(x)
+log("put: " + x)
+}
+}
+
+
+There are two new issues introduced by this example that did not appear in
+the hashing examples.
+First, the locking and logging traits specify Queue as a superclass. This
+means that any class they are mixed into, must be a subtype of Queue. The
+hashCode examples only overrode methods from class Any, so it was not
+necessary to specify a superclass. In this example, the traits override methods
+that are specific to Queues.
+Second, these traits make super calls on methods that are declared abstract!
+Such calls are illegal for normal classes, because at runtime they
+will certainly fail. For a trait, however, such a call can succeed, so long as
+the trait is mixed in after another trait which gives a concrete definition to
+the method. This construct is frequently needed with traits that implement
+stackable modifications. To tell the compiler you are doing this on purpose,
+you must mark such methods as abstract override. This combination of
+modifiers is only allowed for members of traits; it makes no sense outside of
+traits.
+By the way, this second issue shows an important difference between
+super calls in traits and super calls in classes. In a class, super calls invoke
+a known method, while in a trait, the method is different for each place in
+the code the trait is mixed in.
+
+
+Stylistically, notice that there is as yet no commitment about which traits
+are used by which class. Clients remain free to select which traits to use
+each time they create a new queue using new. Here is a concrete queue class,
+along with two queue objects using different trait combinations:
+
+import scala.collection.mutable.ArrayBuffer
+class StandardQueue extends Queue {
+private val buf = new ArrayBuffer[Int]
+def get = buf.remove(0)
+def put(x: Int) = buf += x
+}
+val q1 = new StandardQueue with LockingQueue with LoggingQueue
+val q2 = new StandardQueue with LoggingQueue
+
+
+Given these two modification traits, you can use all four combinations of
+mixins: with or without logging, and with or without locking.
+
+val q1 = new StandardQueue with LockingQueue with LoggingQueue
+q1.put(42) // which put is called?
+The first question is, which put method gets invoked by this call? Perhaps
+the rule is that the last superclass wins, in which case LoggingQueue will get
+called. LoggingQueue calls super and then logs the call, and that is it. No
+locking happened! Likewise, if the rule is that the first superclass wins, the
+resulting queue locks accesses but does not log them. Thus neither ordering
+works.
+Your next try might be to make an explicit subclass for locking, logging
+queues. Now you have new problems. for example, suppose you try the
+following:
+trait LockingLoggingQueue extends LockingQueue with LoggingQueue {
+def put(x: Int) = {
+LockingQueue.super.put(x)
+LoggingQueue.super.put(x)
+}
+}
+Now what happens is that the base class’s put method gets called twice–once
+with locking, and once with logging, but in no case with both.
+There is simply no good solution to this problem using multiple inheritance.
+You have to factor the code differently. By contrast, the traits solution
+in Scala is straightforward.
+
+You simply mix in LockingQueue or LoggingQueue, or both, and the Scala treatment of super makes it all work
+out. Something must be different here from multiple inheritance.
+The answer is in linearization.
+
+When you instantiate a class with new,
+Scala takes the class and all of its inherited classes and traits and puts them
+in a single, long, linear order. Then, whenever you call super inside one of
+those classes, the invoked method is the next one up the chain. If all of the
+methods but the last calls super, then the net result is the stackable behavior
+
+Say you have a class C which inherits from a superclass Sup and two
+traits Trait1 and Trait2. Trait2 extends in turn another trait Trait3.
+class Sup
+trait Trait1 extends Sup
+trait Trait2 extends Sup with Trait3
+class C extends Sup with Trait1 with Trait2.
+Then the linearization of C is computed from back to front as follows. The
+last part of the linearization of C is the linearization of class Sup. This linearization
+is copied over without any changes. The second to last part is
+the linearization of the first mixin, trait Trait1, but all classes that are already
+in the linearization of Sup are left out now, so that each class appears
+only once C’s linearization. This is preceded by the linearization of Trait2,
+where again any classes that have already been copied in the linearizations
+of the superclass or the first mixin are left out. Finally, the first class in the
+linearization of C is C itself.
+
+
+Class		 Linearization
+Sup 		Sup, AnyRef, Any
+Trait1		Trait1, Sup, AnyRef, Any
+Trait2 		Trait2, Trait3, Sup, AnyRef, Any
+C 		C, Trait2, Trait3, Trait1, Sup, AnyRef, Any
+
+
+
+========================================================================================================================
+Cases classes and Pattern Matching
+========================================================================================================================
+
+//Case Classes
+
+Eg:
+abstract class Expr
+case class Var(name: String) extends Expr
+case class Number(num: Double) extends Expr
+case class UnOp(operator: String, arg: Expr) extends Expr
+case class BinOp(operator: String,
+left: Expr, right: Expr) extends Expr
+
+There is an abstract base class Expr with four subclasses, one for each kind
+of expressions that’s considered.
+Instead of an abstract class, we could have equally well chosen to model
+the root of that class hierarchy as a trait (modeling it as an abstract class is
+slightly more efficient). The bodies of all five classes are empty. In Scala you
+can leave out the braces around an empty class body if you wish, so class C
+is the same as class C {}.
+
+
+
+The only other noteworthy thing about these declarations is that each subclass
+has a case modifier. Classes with such a modifier are called case
+classes. Using the modifier makes the Scala compiler add some syntactic
+conveniences to your class.
+First, it adds a factory method with the name of the class. This means
+you can write directly, say, Var("x") to construct a Var object instead of the
+slightly longer new Var("x"):
+scala> val v = Var("x")
+v: Var = Var(x)
+scala> val op = BinOp("+", Number(1), v)
+op: BinOp = BinOp(+,Number(1.0),Var(x))
+Second, all arguments in the parameter list of a case class implicitly get a
+val prefix, so they are maintained as fields.
+scala> v.name
+res0: String = x
+scala> op.left
+res1: Expr = Number(1.0)
+
+Third, the compiler adds the “natural” implementations of toString,
+hashCode, and equals to your class. They will print, hash, and compare
+a whole tree consisting of the class and (recursively) all its arguments. Since
+== in Scala always forwards to equals, this means in particular that elements
+of case classes are always compared structurally.
+scala> println(op)
+BinOp(+,Number(1.0),Var(x))
+scala> op.right == Var("x")
+res3: Boolean = true
+All these conventions add a lot of convenience, at a small price. The price
+is that you have to write the case modifier and that your classes and objects
+become a bit larger because additional methods are generated and an implicit
+field is added for each constructor parameter.
+However, the biggest advantage of case classes is that they support pattern
+matching.
+
+
+// Pattern Matching
+
+Let’s say you want to simplify arithmetic expressions of the kinds presented
+above. There is a multitude of possible simplification rules. The following
+three rules just serve as an illustration:
+UnOp("",
+UnOp("",
+e)) => e // Double negation
+BinOp("+", e, Number(0)) => e // Adding zero
+BinOp("*", e, Number(1)) => e // Multiplying by one
+Using pattern matching, these rules can be taken almost as they are to form
+the core of a simplification method in Scala:
+def simplifyTop(expr: Expr): Expr = expr match {
+case UnOp("",
+UnOp("",
+e)) => e // Double negation
+case BinOp("+", e, Number(0)) => e // Adding zero
+case BinOp("*", e, Number(1)) => e // Multiplying by one
+case _ => expr
+}
+Here’s a test application of simplifyTop:
+
+scala> simplifyTop(UnOp("",
+UnOp("",
+Var("x"))))
+res4: Expr = Var(x)
+The right hand side of simplifyTop consists of a match expression. match
+corresponds to switch in Java, but is written after the selector expression.
+I.e. it’s
+selector match { alternatives }
+instead of
+switch (selector) { alternatives }
+A pattern match includes a sequence of alternatives, each starting with the
+keyword case. Each alternative includes a pattern and one or more expressions
+to evaluate if the pattern matches. An arrow symbol => separates the
+pattern from the expressions.
+
+A match expression is evaluated by trying each of the patterns in the
+order they are written. The first pattern that matches is selected, and the part
+following the arrow is selected and executed.
+
+A constant pattern like ""
+or 1 matches values that are equal to the
+constant with respect to ==. A variable pattern like e matches every value.
+The variable then refers to that value in the right hand side of the case clause.
+
+The wildcard pattern “_” also
+matches every value, but it does not introduce a variable name to refer to that
+value. In this example, notice how the match ends with a default case that
+does nothing.
+
+A constructor pattern looks like UnOp("",
+e). This pattern matches all
+values of type UnOp whose first argument matches ""
+and whose second argument
+matches e. Note that the arguments to the constructor are themselves
+patterns. This allows you to write deep patterns like
+UnOp("-",UnOp("-",e))
+using a concise notation.
+
+
+There are three differences to keep in
+mind, however. First, match is an expression in Scala, i.e. it always returns
+a result. Second, Scala’s alternative expressions never “fall through” into
+the next case. Third, if none of the patterns matches, an exception named
+MatchError is thrown. This means you always have to make sure that all
+cases are covered, even if it means adding a default case where there’s nothing
+to do.
+Here’s an example:
+expr match {
+case BinOp(op, left, right) => println(expr+"is a binary operation")
+case _ =>
+}
+The second case is necessary because otherwise the expression above would
+throw a MatchError for every expr argument which is not a BinOp.
+
+
+// Types of Patterns :
+
+
+1. WildCard Pattern
+
+The wildcard pattern _ matches any object whatsoever
+expr match {
+case BinOp(op, left, right) => println(expr+"is a binary operation")
+case _ =>
+}
+It can also be used to ignore parts of an object that you do not care about.
+For example, the above example does not actually care what the elements of
+a binary operation are. It just checks whether it is a binary operation at all.
+Thus the code can just as well use the wildcard pattern for the elements of
+the BinOp:
+expr match {
+case BinOp(_, _, _) => println(expr+"is a binary operation")
+case _ => println("It's something else")
+}
+
+
+2. Constants
+
+A constant pattern matches only itself. Any literal may be used as a constant.
+For example, 5, true, and "hello" are all constant patterns. Also, any
+named value can also be used as a constant. For example, Nil is a pattern that
+matches only the empty list. Here are some examples of constant patterns:
+def describe(x: Any) = x match {
+case 5 => "five"
+case true => "truth"
+case "hello" => "hi!"
+case Nil => "the empty list"
+case _ => "something else"
+}
+Here is how the above pattern match looks in action:
+scala> describe(5)
+res5: java.lang.String = five
+scala> describe(true)
+res6: java.lang.String = truth
+
+
+3. Variables
+
+A variable pattern matches any object, just like a wildcard. Unlike a wildcard,
+Scala binds the variable to whatever the object is. You can then use this
+variable to act on the object further. For example, here is a pattern match that
+has a special case for zero, and a default case for all other values. The default
+cases uses a variable pattern so that it has a name for the value, whatever it
+is.
+10 match {
+case 0 => "zero"
+case somethingElse => "not zero: " + somethingElse
+}
+Variable or constant?
+Constant patterns can have symbolic names. For instance, the following
+works as in Java:
+scala> import Math._
+import Math._
+scala> E match {
+| case Pi => "strange math? Pi = "+Pi
+| case _ => "OK"
+| }
+res10: java.lang.String = OK
+This poses the question how the Scala compiler knows that Pi is a constant
+imported from the java.lang.Math object, and not a variable that stands
+for the selector value itself. Scala uses a simple lexical rule for disambiguation:
+A simple name starting with a lower-case letter is taken to be a pattern
+variable; all other references are taken to be constants. To see the difference,
+create a lower-case alias for pi and try with that:
+scala> val pi = Math.Pi
+pi: Double = 3.141592653589793
+scala> E match {
+| case pi => "strange math? Pi = "+pi
+| }
+res11: java.lang.String = strange math? Pi =
+2.718281828459045
+
+
+4.  Constructors :
+
+Constructors are where pattern matching becomes really powerful. A constructor
+pattern looks like BinOp("+", e, Number(0)). It consists of a
+name (BinOp) and then a number of patterns within parentheses ("+", e,
+and Number(0)). Assuming the name designates a case class, such a pattern
+means to first check that the object is a member of the named case class, and
+then to check that the constructor parameters of the object match the extra
+patterns supplied.
+These extra patterns mean that Scala patterns support deep matches.
+Such patterns not only check the top-level object supplied, but also check
+the contents of the object against further patterns. Since the extra patterns
+can themselves be constructor patterns, you can use them to check arbitrarily
+deep into an object. For example, the pattern BinOp("+", e, Number(0))
+checks that the top-level object is a BinOp, that its third constructor parameter
+is a Number, and that the value field of that number is 0. This pattern is
+one line long yet checks three levels deep.
+
+
+5. Sequences
+
+You can match against sequence types like List or Array just like you match
+against case classes. Use the same syntax, but now you can specify any
+number of elements within the pattern. For example, here is a pattern that
+checks for a three-element list starting with zero:
+case List(0, _, _) => println("found it")
+
+If you want to match against a sequence without specifying how long it
+can be, you can specify _* as the last element of the pattern
+
+case List(0, _*) => println("found it")
+
+
+6. Typed Patterns
+
+Patterns have other uses as well. A form of patterns not seen so far is a convenient
+replacement for Java’s type tests and type casts.
+
+scala> def generalSize(x: Any) = x match {
+| case s: String => s.length
+| case m: Map[_, _] => m.size
+| case _ => 1
+| }
+generalSize: (Any)Int
+scala> generalSize("abc")
+res12: Int = 3
+scala> generalSize(Map(1 >
+'a', 2 >
+'b'))
+res13: Int = 2
+scala> generalSize(Math.Pi)
+res14: Int = 1
+The generalSize method returns the size or length of objects of various
+types. Its argument is of type Any, so it could be any value. If the argument
+is a String, the method returns the string’s length. The pattern s: String is
+a typed pattern; it matches every (non-null) instance of String. The pattern
+variable s then refers to that string.
+Note that, even though s and x refer to the same value, the type of x
+is Any, but the type of s is String. So you can write s.length in the
+alternative expression that corresponds to the pattern, but you could not write
+x.length, because the type Any does not have a length member.
+An equivalent but more long-winded way that achieves the effect of a
+match against a typed pattern employs a type-test followed by a type-cast.
+Scala uses a different syntax than Java for these. To test whether an expression
+expr has type String, say, you write
+expr.isInstanceOf[String]
+To cast the same expression to type String, you would use
+expr.asInstanceOf[String]
+Using a type test and cast, you could rewrite the first case of the previous
+match expression as follows:
+if (x.isInstanceOf[String]) {
+val s = x.asInstanceOf[String]
+
+s.length
+} else ...
+The operators isInstanceOf and asInstanceOf are treated as predefined
+methods of class Any which take a type parameter in square brackets. In fact,
+x.asInstanceOf[String] is a special case of a method invocation with an
+explicit type parameter String
+
+
+7. Type Erasure
+
+Can you also test for a map with specific element types? This would be
+handy, say for testing whether a given value is a map from type Int to type
+Int. Let’s try:
+scala> def isIntIntMap(x: Any) = x match {
+| case m: Map[Int, Int] => true
+| case _ => false
+| }
+warning: there were unchecked warnings; rerun
+with
+unchecked
+for details
+isIntIntMap: (Any)Boolean
+The interpreter emitted an “unchecked warning”. You can find out details by
+starting the interpreter again with the unchecked
+command-line option:
+scala> :quit
+$ scala unchecked
+Welcome to Scala version 2.7.0 (Java HotSpot(TM) Client VM,
+Java 1.5.0_13).
+Type in expressions to have them evaluated.
+Type :help for more information.
+scala> def isIntIntMap(x: Any) = x match {
+| case m: Map[Int, Int] => true
+| case _ => false
+| }
+<console>:5: warning: non variable typeargument
+Int in
+type pattern is unchecked since it is eliminated by erasure
+case m: Map[Int, Int] => true
+
+In fact, Scala uses the erasure model of generics, just like Java does. This
+means that no information about type arguments is maintained at runtime.
+Consequently, there is no way to determine at runtime whether a given Map
+object has been created with two Int arguments, rather than with arguments
+of different types. All the system can do is determine that a value is a Map
+of some arbitrary type parameters. You can verify this behavior by applying
+isIntIntMap to arguments of different instances of class Map:
+scala> isIntIntMap(Map(1 >
+1))
+res15: Boolean = true
+scala> isIntIntMap(Map("abc" >
+"abc"))
+res16: Boolean = true
+The first application returns true, which looks correct, but the second application
+also returns true, which might be a surprise. To alert you to the
+possibly non-intuitive runtime behavior, the compiler emits unchecked warnings
+like the one shown above.
+
+
+The only exception to the erasure rule concerns arrays, because these are
+handled specially in Java as well as in Scala. The element type of an array
+is stored with the array value, so you can pattern match on it. Here’s an
+example:
+scala> def isStringArray(x: Any) = x match {
+| case a: Array[String] => "yes"
+| case x: AnyRef => "no"
+| }
+isStringArray: (Any)java.lang.String
+scala> val as = Array("abc")
+as: Array[java.lang.String] = Array(abc)
+scala> isStringArray(as)
+res17: java.lang.String = yes
+scala> val ai = Array(1, 2, 3)
+ai: Array[Int] = Array(1, 2, 3)
+scala> isStringArray(ai)
+res18: java.lang.String = no
+
+
+8. Variable Binding
+
+In addition to the standalone variable patterns, you can also add a variable
+to any other pattern.
+
+As an example, here is a pattern match that looks for the absolute value
+operation being applied twice in a row. Such an expression can be simplified
+to only take the absolute value one time.
+case UnOp("abs", e@UnOp("abs", _)) => e
+In this example, there is a variable-binding pattern with e as the variable
+and UnOp("abs", _) as the pattern. If the entire pattern match succeeds,
+then the part that matched the UnOp("abs", _) part is made available as
+variable e. As the code is written, e then gets returned as is.
+
+
+// Pattern Guards :
+
+
+Sometimes, syntactic pattern matching is not precise enough. For instance,
+say you are given the task of formulating a simplification rule that replaces
+sum expressions with two identical operands such as e + e by multiplications
+of two, e.g. e * 2. In the language of Expr trees, an expression like :
+
+BinOp("+", Var("x"), Var("x"))
+would be transformed by this rule to
+BinOp("*", Var("x"), Number(2))
+You might try to define this rule as follows:
+scala> def simplifyAdd(e: Expr) = e match {
+| case BinOp("+", x, x) => BinOp("*", x, Number(2))
+| case _ => e
+| }
+<console>:13: error: x is already defined as value x
+case BinOp("+", x, x) => BinOp("*", x, Number(2))
+ˆ
+This fails, because Scala restricts patterns to be linear: a pattern variable
+may only appear once in a pattern. However, you can re-formulate the match
+with a pattern guard:
+scala> def simplifyAdd(e: Expr) = e match {
+| case BinOp("+", x, y) if x == y =>
+| BinOp("*", x, Number(2))
+| case _ =>
+| e
+| }
+simplifyAdd: (Expr)Expr
+
+A pattern guard comes after a pattern and starts with an if. The guard can
+be an arbitrary boolean expression, which typically refers to variables in the
+pattern. If a pattern guard is present, the match succeeds only if the guard
+evaluates to true. Hence, the first case above would only match binary
+operations with two equal operands.
+Other examples of guarded patterns are
+case n: Int if 0 < n => ...
+// match only positive integers
+case s: String if s.charAt(0) == 'a' => ...
+// match only strings starting with the letter ‘a'
+
+
+
+
+// Pattern Overlaps
+
+the default or general cases should be at the bottom in hierarchy.
+If not then they will always be caught rather than the specific cases below OR the compiler might raise an error of unreachable code for the specific cases below which might 
+never be executed due to generic cases above.
+
+
+//Sealed Classes
+
+Whenever you write a pattern match, you need to make sure you have covered
+all of the possible cases. Sometimes you can do this by adding a default
+case at the end of the match, but that only applies if there is a sensible default
+behavior.
+
+A sealed class cannot have any new subclasses added except the ones in the
+same file
+
+To experiment with sealed classes, you could turn the root Expr of the
+arithmetic expression example defined previously into a sealed class:
+sealed abstract class Expr {}
+The four case classes Var, Number, UnOp, and BinOp can stay as they are.
+Now define a pattern match where some of the possible cases are left out:
+def describe(e: Expr): String = e match {
+case Number(x) => "a number"
+case Var(_) => "a variable"
+}
+
+You will get a compiler warning like the following:
+warning: match is not exhaustive!
+missing combination UnOp
+missing combination BinOp
+The warning tells you that there’s a risk your code might produce a
+MatchError exception because some possible patterns (UnOp, BinOp) are
+not handled. The warning points to a potential source of runtime faults, so it
+is usually a welcome help in getting your program right.
+However, at times you might encounter a situation where the compiler
+is too picky in emitting the warning. For instance, you might know from
+the context that you will only ever apply the describe method above to
+expressions that are either Numbers or Vars. So you know that in fact no
+MatchError will be produced. To make the warning go away, you could add
+a third catch-all case to the method, like this:
+def describe(e: Expr): String = (e: @unchecked) match {
+case Number(x) => "a number"
+case Var(_) => "a variable"
+case _ => throw new RuntimeException // Should not happen
+}
+That works, but it is not ideal. You will probably not be very happy that you
+were forced to add code that will never be executed (or so you think), just to
+make the compiler shut up.
+A more lightweight alternative is to add an @unchecked annotation to
+the selector expression of the match. This is done as follows.
+def describe(e: Expr): String = (e: @unchecked) match {
+case Number(x) => "a number"
+case Var(_) => "a variable"
+}
+
+
+
+// The Option Type
+
+Scala has a standard type named Option for optional values. Such a value
+can be of two forms: It can be of the form Some(x) where x is the actual
+value. Or it can be the None object, which represents a missing value.
+Optional values are produced by some of the standard operations on
+Scala’s collections. For instance, the get method of a Map produces
+Some(value) if a value corresponding to a given key has been found, or
+None if the given key is not defined in the Map. Here’s an example:
+scala> val capitals =
+| Map("France" >
+"Paris", "Japan" >
+"Tokyo")
+capitals:
+scala.collection.immutable.Map[java.lang.String,java.lang.String]
+= Map(France >
+Paris, Japan >
+Tokyo)
+scala> capitals get "France"
+res19: Option[java.lang.String] = Some(Paris)
+scala> capitals get "North Pole"
+res20: Option[java.lang.String] = None
+The most common way to take optional values apart is through a pattern
+match. For instance:
+scala> def show(x: Option[String]) = x match {
+| case Some(s) => s
+| case None => "?"
+| }
+show: (Option[String])String
+scala> show(capitals get "Japan")
+res21: String = Tokyo
+scala> show(capitals get "North Pole")
+res22: String = ?
+
+
+========================================================================================================================
+Packages and Imports
+========================================================================================================================
+
+similar like in Java.
+
+package bobsrockets.navigation
+class Navigator { ... }
+
+
+// imports 
+
+package bobsdelights
+trait Fruit {
+val name: String
+val color: Color
+}
+object Fruits {
+object Apple extends Fruit { ... }
+object Orange extends Fruit { ... }
+object Pear extends Fruit { ... }
+val menu = List(Apple, Orange, Pear)
+}
+
+import bobsdelights.Fruit // easy access to Fruit
+import bobsdelights._ // easy access to all members of bobsdelights
+import bobsdelights.Fruits._ // easy access to all members of Fruits
+
+
+Imports in Scala can also rename or hide members. This is done with
+an import selector clause enclosed in braces which follows the object from
+which members are imported. Here are some examples:
+
+import Fruits.{Apple, Orange}
+This imports just the two members Apple and Orange from object Fruits.
+
+import Fruits.{Apple => McIntosh, Orange}
+This imports the two members Apple and Orange from object Fruits. However,
+the Apple object is renamed to McIntosh. So this object can be accessed
+with either Fruits.Apple or McIntosh. A renaming clause is always of the
+form <originalname>=> <newname>.
+
+import java.sql.{Date=>SDate}
+This imports the SQL date class as SDate, so that you can simultaneously
+import the normal Java date class as simply Date.
+
+import java.{sql=>S}
+This imports the SQL package as S, so that you can write things like S.Date.
+
+import Fruits.{_}
+This imports all members from object Fruits, just as import Fruits._ does.
+
+import Fruits.{Apple => McIntosh, _}
+This imports all members from object Fruits but renames Apple to
+McIntosh.
+
+import Fruits.{Pear => _, _}
+This imports all members except Pear. A clause of the form
+<originalname>=> _ excludes <originalname>
+from the names that are
+imported. In a sense, renaming something to _ means hiding it altogether.
+
+
+
+These examples demonstrate the great flexibility Scala offers when it
+comes to importing members selectively and possibly under different names.
+In summary, an import selector can consist of the following:
+• A simple name x. This includes x in the set of imported names.
+• A renaming clause x => y. This makes the member named x visible
+under the name y.
+• A hiding clause x => _. This excludes x from the set of imported
+names.
+• A “catch-all” _. This imports all members except those members mentioned
+in a preceding clause. If a catch-all is given, it must come last
+in the list of import selectors.
+
+
+//Access Modifiers :
+
+--Private members :
+
+similar in Java.
+
+--Protected members :
+
+Access to protected members is a bit more restrictive than in Java. In
+Scala, a protected member is only accessible from subclasses of the class
+in which the member is defined. In Java such accesses are also possible from
+other classes in the same package
+
+--Public members :
+
+Every member not labeled private or protected is assumed to be public.
+There is no explicit modifier for public members. Such members can be
+accessed everywhere.
+
+--Scope of Protection
+
+Access modifiers in Scala can be augmented with qualifiers. A modifier
+of the form private[X] or protected[X] means that access is private or
+protected “up to” X, where X designates some enclosing package, class or
+object.
+
+A definition labeled private[this] is accessible only from
+within the same object that contains the definition. Such a definition is called
+object-private.
+
+
+--Visibility and companion objects
+
+In Java, static members and instance members belong to the same class, so
+access modifiers apply uniformly to them. You have already seen that in
+Scala there are no static members; instead one can have a companion object
+which contains members that exist only once. For instance, in the code below
+object Rocket is a companion of class Rocket.
+class Rocket {
+private def canGetHome = deltaV(fuel) < needed
+}
+object Rocket {
+private def deltaV(fuel: Double) = ...
+def chooseStrategy(rocket: Rocket) {
+if (rocket.canGetHome)
+goHome()
+else
+pickAStar()
+}
+}
+Scala’s access rules privilege companion objects and classes when it comes
+to private or protected accesses. A class shares all its access rights with
+its companion object and vice versa. In particular, an object can access all
+private members of its companion class, just as a class can access all private
+members of its companion object.
+
+
+=======================================================================================================================
+Lists - Advanced
+=======================================================================================================================
+
+// Literals
+
+val fruit = List("apples", "oranges", "pears")
+val nums = List(1, 2, 3, 4)
+val diag3 = List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1))
+val empty = List()
+
+// List types
+
+Like arrays, lists are homogeneous. That is, the elements of a list all have
+the same type. The type of a list which has elements of type T is written
+List[T]. For instance, here are the same four lists defined above with explicit
+types added:
+val fruit: List[String] = List("apples", "oranges", "pears")
+val nums : List[Int] = List(1, 2, 3, 4)
+val diag3: List[List[Int]] = List(List(1, 0, 0),
+List(0, 1, 0),
+List(0, 0, 1))
+val empty: List[Nothing] = List()
+The list type in Scala is covariant. This means that for each pair of types
+S and T, if S is a subtype of T then also List[S] is a subtype of List[T].
+For instance, List[String] is a subtype of List[Object]. This is natural
+because every list of strings can also be seen as a list of objects
+
+//Constructing lists
+
+All lists are built from two fundamental building blocks, Nil and ‘::’ (pronounced
+“cons”). Nil represents an empty list. The infix operator ‘::’ expresses
+list extension at the front. That is, x :: xs represents a list whose
+first element is x, which is followed by (the elements of) list xs. Hence, the
+previous list values above could also have been defined as follows:
+val fruit = "apples" :: ("oranges" :: ("pears" :: Nil))
+val nums = 1 :: (2 :: (3 :: (4 :: Nil)))
+val diag3 = (1 :: (0 :: (0 :: Nil))) ::
+
+
+// Operations
+
+All operations on lists can be expressed in terms of the following three:
+head returns the first element of a list,
+tail returns the list consisting of all elements except the first element,
+isEmpty returns true if the list is empty
+
+The head and tail methods are defined only for non-empty lists. When
+selected from an empty list, they throw an exception. For instance:
+scala> Nil.head
+java.util.NoSuchElementException: head of empty list
+
+
+As an example of how lists can be processed, consider sorting the elements of
+a list of numbers into ascending order. One simple way to do so is insertion
+sort, which works as follows: To sort a non-empty list x :: xs, sort the
+remainder xs and insert the first element x at the right position in the result.
+Sorting an empty list yields the empty list. Expressed as Scala code:
+
+def isort(xs: List[Int]): List[Int] =
+if (xs.isEmpty) Nil
+else insert(xs.head, isort(xs.tail))
+def insert(x: Int, xs: List[Int]): List[Int] =
+if (xs.isEmpty || x <= xs.head) x :: xs
+else xs.head :: insert(x, xs.tail)
+
+
+// List Patterns
+
+Here’s an example of the first kind of pattern:
+scala> val List(a, b, c) = fruit
+a: java.lang.String = apples
+b: java.lang.String = oranges
+c: java.lang.String = pears
+The pattern List(a, b, c) matches lists of length 3, and binds the three elements
+to the pattern variables a, b, c. If you don’t know the number of list
+elements beforehand, it’s better to match with :: instead. For instance, the
+pattern a :: b :: rest matches lists of length 2 or greater:
+
+scala> val a :: b :: rest = fruit
+a: java.lang.String = apples
+b: java.lang.String = oranges
+rest: List[java.lang.String] = List(pears)
+Taking lists apart with patterns is an alternative to taking them apart with the
+basic methods head, tail, and isEmpty. For instance, here’s insertion sort
+again, this time written with pattern matching:
+def isort(xs: List[Int]): List[Int] = xs match {
+case List() => List()
+case x :: xs1 => insert(x, isort(xs1))
+}
+def insert(x: Int, xs: List[Int]): List[Int] = xs match {
+case List() => List(x)
+case y :: ys => if (x <= y) x :: xs
+else y :: insert(x, ys)
+}
+
+
+// Higher order operations 
+
+--Concatenating lists 
+
+An operation similar to ‘::’ is list concatenation, written ‘:::’. Unlike ‘::’,
+‘:::’ takes two lists as arguments The result of xs ::: ys is a new list which
+contains all the elements of xs, followed by all the elements of ys. Here are
+some examples:
+scala> List(1, 2) ::: List(3, 4, 5)
+res0: List[Int] = List(1, 2, 3, 4, 5)
+scala> List() ::: List(1, 2, 3)
+res1: List[Int] = List(1, 2, 3)
+
+--length
+
+The length method computes the length of a list.
+scala> List(1, 2, 3).length
+res3: Int = 3
+
+-- Accessing the end of a list: init and last
+You know already the basic operations head and tail, which respectively
+take the first element of a list, and the rest of the list except the first element.
+They each have a dual operation
+
+last returns the last element of a (non-empty) list, whereas init returns
+a list consisting of all elements except the last one.
+scala> val abcde = List('a', 'b', 'c', 'd', 'e')
+abcde: List[Char] = List(a, b, c, d, e)
+scala> abcde.last
+res4: Char = e
+scala> abcde.init
+res5: List[Char] = List(a, b, c, d)
+Like head and tail, these methods throw an exception when applied on an
+empty list:
+scala> List().init
+java.lang.UnsupportedOperationException: Nil.init
+at scala.List.init(List.scala:544)
+at ...
+scala> List().last
+java.util.NoSuchElementException: Nil.last
+at scala.List.last(List.scala:563)
+at ...
+
+
+-- Reversing lists: reverse
+If at some point in the computation an algorithm demands frequent accesses
+to the end of a list, it’s sometimes better to reverse the list first and work with
+the result instead. Here’s how to do the reversal:
+scala> abcde.reverse
+res6: List[Char] = List(e, d, c, b, a)
+
+Note that, like all other list operations, reverse creates a new list rather than
+changing the one it operates on. Since lists are immutable, such a change
+would not be possible, anyway. To verify this, check that the original value
+of abcde is unchanged after the reverse operation:
+scala> abcde
+res7: List[Char] = List(a, b, c, d, e)
+The reverse, init, and last operations satisfy some laws which can be
+used for reasoning about computations and for simplifying programs.
+1. reverse is its own inverse:
+xs.reverse.reverse = xs
+2. reverse turns init to tail and last to head:
+xs.reverse.init == xs.tail
+xs.reverse.tail == xs.init
+xs.reverse.head == xs.last
+xs.reverse.last == xs.head
+
+
+-- Prefixes and suffixes: drop, take and splitAt
+The drop and take operations generalize tail and init in that they take
+arbitrary prefixes or suffixes of a list. The expression xs take n returns
+the first n elements of the list xs. If n > xs.length, the whole list xs is
+returned. The operation xs drop n returns all elements of list xs except the
+first n ones. If n > xs.length, the empty list is returned.
+The splitAt operation splits the list at a given index, returning a pair of
+two lists. It is defined by the equality
+xs splitAt n = (xs take n, xs drop n)
+However, splitAt avoids traversing the list xs twice. Here are some examples:
+scala> abcde take 2
+res8: List[Char] = List(a, b)
+scala> abcde drop 2
+res9: List[Char] = List(c, d, e)
+scala> abcde splitAt 2
+res10: (List[Char], List[Char]) = (List(a, b),List(c, d, e))
+
+-- Element selection: apply and indices
+Random element selection is supported through the apply method; however
+it is a less common operation for lists than it is for arrays.
+scala> abcde apply 2
+res11: Char = c
+As for all other types, apply is implicitly inserted when an object appears in
+the function position in a method call, so the line above can be shortened to:
+scala> abcde(2)
+res12: Char = c
+One reason why random element selection is less popular for lists than for
+arrays is that xs(n) takes time proportional to the index n. In fact, apply is
+simply defined by a combination of drop and head:
+
+xs apply n = (xs drop n).head
+This definition also makes clear that list indices range from 0 up to the length
+of the list minus one. The indices method returns a list consisting of all
+valid indices of a given list:
+scala> abcde.indices
+res13: List[Int] = List(0, 1, 2, 3, 4)
+res50: List[Int] = List(0, 1, 2, 3, 4)
+
+
+-- Zipping lists: zip
+The zip operation takes two lists and forms a list of pairs:
+scala> abcde.indices zip abcde
+res14: List[(Int, Char)] = List((0,a), (1,b), (2,c), (3,d),
+(4,e))
+If the two lists are of different length, any unmatched elements are dropped:
+scala> val zipped = abcde zip List(1, 2, 3)
+zipped: List[(Char, Int)] = List((a,1), (b,2), (c,3))
+A useful special case is to zip a list with its index. This is done by the
+zipWithIndex method, which pairs every element of a list with the position
+where it appears in the list.
+scala> abcde.zipWithIndex
+res15: List[(Char, Int)] = List((a,0), (b,1), (c,2), (d,3),
+(e,4))
+
+
+-- Displaying lists: toString and mkString
+The toString operation returns the canonical string representation of a list:
+scala> abcde.toString
+res16: String = List(a, b, c, d, e)
+
+Examples:
+scala> abcde mkString ("[", ",", "]")
+res17: String = [a,b,c,d,e]
+scala> abcde mkString ""
+res18: String = abcde
+scala> abcde mkString ("List(", ", ", ")")
+res19: String = List(a, b, c, d, e)
+There are also variants of the mkString methods called addString which
+append the constructed string to a StringBuilder object, rather than returning
+them as result:
+scala> val buf = new StringBuilder
+buf: StringBuilder =
+scala> abcde addString (buf, "(", ";", ")")
+res20: StringBuilder = (a;b;c;d;e)
+
+
+-- Converting lists: elements, toArray, copyToArray
+To convert data between the flat world of arrays and the recursive world of
+lists, you can use method toArray in class List and toList in class Array:
+
+scala> val arr = abcde.toArray
+arr: Array[Char] = Array(a, b, c, d, e)
+scala> arr.toString
+res21: String = Array(a, b, c, d, e)
+scala> arr.toList
+res22: List[Char] = List(a, b, c, d, e)
+There’s also a method copyToArray which copies list elements to successive
+array positions within some destination array. The operation
+xs copyToArray (arr, start)
+copies all elements of the list xs to the array arr, beginning with position
+start. You must ensure that the destination array arr is large enough to
+hold the list in full.
+scala> val arr2 = new Array[Int](10)
+arr2: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+scala> List(1, 2, 3) copyToArray (arr2, 3)
+scala> arr2.toString
+res24: String = Array(0, 0, 0, 1, 2, 3, 0, 0, 0, 0)
+Finally, if you need to access list elements via an iterator, there is the
+elements method:
+scala> val it = abcde.elements
+it: Iterator[Char] = nonempty
+iterator
+scala> it.next
+res25: Char = a
+scala> it.next
+res26: Char = b
+
+
+-- Mapping over lists: map, flatMap and foreach
+An operation xs map f takes as arguments a list xs of type List[T] and
+a function f of type T => U. It returns the list resulting from applying the
+function f to each list element in xs. For instance:
+scala> List(1, 2, 3) map (_ + 1)
+res28: List[Int] = List(2, 3, 4)
+scala> val words = List("the", "quick", "brown", "fox")
+words: List[java.lang.String] = List(the, quick, brown, fox)
+scala> words map (_.length)
+res29: List[Int] = List(3, 5, 5, 3)
+scala> words map (_.toList.reverse.mkString(""))
+res30: List[String] = List(eht, kciuq, nworb, xof)
+The flatMap operator is similar to map, but it takes a function returning a
+list of elements as its right argument. It applies the function to each list and
+returns the concatenation of all function results. The difference between map
+and flatMap is illustrated in the following example:
+scala> words map (_.toList)
+res31: List[List[Char]] = List(List(t, h, e), List(q, u, i,
+c, k), List(b, r, o, w, n), List(f, o, x))
+scala> words flatMap (_.toList)
+res32: List[Char] = List(t, h, e, q, u, i, c, k, b, r, o, w,
+n, f, o, x)
+You see that where map returns a list of lists, flatMap returns a single list in
+which all element lists are concatenated.
+The interplay of map and flatMap is also demonstrated by the following
+expression, which constructs a list of all pairs (i, j) such that 1 <= j < i < 5:
+scala> List.range(1, 5) flatMap (i => List.range(1, i) map (j => (i, j)))
+res33: List[(Int, Int)] = List((2,1), (3,1), (3,2), (4,1),
+(4,2), (4,3))
+
+
+The third map-like operation is foreach. Unlike map and flatMap, foreach
+takes a procedure (a method with result type Unit) as right argument. It
+simply applies the procedure to each list element. The result of the operation
+itself is again Unit; no list of results is assembled. As an example, here is a
+concise way of summing up all numbers in a list:
+scala> var sum = 0
+sum: Int = 0
+scala> List(1, 2, 3, 4, 5) foreach (sum += _)
+scala> sum
+res35: Int = 15
+
+
+-- Filtering lists: filter, partition, find, takeWhile, dropWhile, and
+span
+
+The operation xs filter p takes as arguments a list xs of type List[T]
+and a predicate function p of type T => Boolean. It yields the list of all
+elements x in xs for which p(x) is true. For instance:
+scala> List(1, 2, 3, 4, 5) filter (_ % 2 == 0)
+res36: List[Int] = List(2, 4)
+scala> words filter (_.length == 3)
+res37: List[java.lang.String] = List(the, fox)
+The partition method is like filter, but returns a pair of lists. One list
+contains all elements for which the predicate is true, the other list contains
+all elements for which the predicate is false. It is defined by the equality:
+xs partition p = (xs filter p(_), xs filter !p(_))
+Example:
+scala> List(1, 2, 3, 4, 5) partition (_ % 2 == 0)
+res38: (List[Int], List[Int]) = (List(2, 4),List(1, 3, 5))
+The find method is also similar to filter but it returns the first element
+satisfying a given predicate, rather than all such elements. The operation
+xs find p takes a list xs and a predicate p as arguments. It returns an optional
+value. If there is an element x in xs for which p(x) is true, Some(x)
+is returned. Otherwise, if p is false for all elements, None is returned. Examples:
+scala> List(1, 2, 3, 4, 5) find (_ % 2 == 0)
+res39: Option[Int] = Some(2)
+scala> List(1, 2, 3, 4, 5) find (_ <= 0)
+res40: Option[Int] = None
+The takeWhile and dropWhile operators also take a predicate as right argument.
+The operation xs takeWhile p takes the longest prefix of list xs
+such that every element in the prefix satisfies p. Analogously, the operation
+xs dropWhile p removes the longest prefix from list xs such that every
+element in the prefix satisfies p. Examples:
+scala> List(1, 2, 3, 4,
+5) takeWhile (_ > 0)
+res41: List[Int] = List(1, 2, 3)
+scala> words dropWhile (_ startsWith "t")
+res42: List[java.lang.String] = List(quick, brown, fox)
+The span method combines takeWhile and dropWhile in one operation,
+just like splitAt combines take and drop. It returns a pair of two lists,
+defined by the equality
+xs span p = (xs takeWhile p, xs dropWhile p)
+Like splitAt, span avoids to traverse the list xs twice.
+scala> List(1, 2, 3, 4,
+5) span (_ > 0)
+res43: (List[Int], List[Int]) = (List(1, 2, 3),List(4,
+5))
+
+
+-- Predicates over lists: forall and exists
+The operation xs forall p takes as arguments a list xs and a predicate p. Its
+result is true if all elements in the list satisfy p. Conversely, the operation
+xs exists p returns true if there is an element in xs which satisfies the
+predicate p.
+
+scala> def hasZeroRow(m: List[List[Int]]) =
+| m exists (row => row forall (_ == 0))
+hasZeroRow: (List[List[Int]])Boolean
+scala> hasZeroRow(diag3)
+res44: Boolean = false
+
+
+-- Folding lists: ‘/:’ and ‘:n’
+Another common kind of operations combine the elements of a list with
+some operator. For instance:
+sum(List(a, b, c)) = 0 + a + b + c
+product(List(a, b, c)) = 1 * a * b * c
+These are both special instances of a fold operation:
+scala> def sum(xs: List[Int]): Int = (0 /: xs) (_ + _)
+sum: (List[Int])Int
+scala> def product(xs: List[Int]): Int = (1 /: xs) (_ * _)
+product: (List[Int])Int
+A fold left operation (z /: xs) (op) takes three arguments: A unit element
+z, a list xs, and a binary operation op. The result of the fold is op applied
+between successive elements of the list prefixed by z. For instance:
+(z /: List(a, b, c)) (op) = op(op(op(z, a), b), c)
+
+
+-- Sorting lists: sort
+The operation xs sort before sorts the elements of list xs using the
+before function for element comparison. The expression x before y should
+return true if x should come before y in the intended ordering for the sort.
+For instance:
+scala> List(1, 3,
+4, 2, 6) sort (_ < _)
+res47: List[Int] = List(3,
+1, 2, 4, 6)
+scala> List(1, 3,
+4, 2, 6) sort (_ > _)
+res48: List[Int] = List(6, 4, 2, 1, 3)
+
+
+-- Creating lists from their elements: List.apply
+You have already seen on several occasions list literals such as
+List(1, 2, 3). There’s nothing special about their syntax. A literal like
+List(1, 2, 3) is simply the application of the function object List to the
+elements 1, 2, 3. That is, it is equivalent to List.apply(1, 2, 3).
+scala> List.apply(1, 2, 3)
+res49: List[Int] = List(1, 2, 3)
+
+scala> List.range(1, 5)
+res50: List[Int] = List(1, 2, 3, 4)
+scala> List.range(1, 9, 2)
+
+res51: List[Int] = List(1, 3, 5, 7)
+scala> List.range(9, 1, 3)
+res52: List[Int] = List(9, 6, 3)
+
+scala> List.make(5, 'a')
+res53: List[Char] = List(a, a, a, a, a)
+scala> List.make(3, "hello")
+res54: List[java.lang.String] = List(hello, hello, hello)'
+
+
+scala> val zipped = "abcde".toList zip List(1, 2, 3)
+zipped: List[(Char, Int)] = List((a,1), (b,2), (c,3))
+scala> List.unzip(zipped)
+res55: (List[Char], List[Int]) = (List(a, b, c),List(1, 2,
+3))
+
+
+-- Concatenating lists: List.flatten, List.concat
+The flatten method takes a list of lists and concatenates all element lists of
+the main list.
+scala> val xss = List(List('a', 'b'), List('c'), List('d', 'e'))
+xss: List[List[Char]] = List(List(a, b), List(c), List(d,
+e))
+scala> List.flatten(xss)
+res56: List[Char] = List(a, b, c, d, e)
+flatten is packaged in the global List object for the same reason as unzip:
+It does not operate on any list, but only on lists with lists as elements, so it
+can’t be a method of the generic List class.
+The concat method is similar to flatten in that it concatenates a number
+of element lists. The element lists are given directly as repeated parameters.
+The number of lists to be passed to concat is arbitrary:
+scala> List.concat(List('a', 'b'), List('c'))
+res57: List[Char] = List(a, b, c)
+scala> List.concat(List(), List('b'), List('c'))
+res58: List[Char] = List(b, c)
+scala> List.concat()
+res59: List[Nothing] = List()
+
+-- Mapping and testing pairs of lists: List.map2, List.forall2,
+List.exists2
+The map2 method is similar to map, but it takes two lists as arguments together
+with a function that maps two element values to a result. The function
+gets applied to corresponding elements of the two lists, and a list is formed
+from the results:
+List.map2(List(10, 20), List(3, 4, 5)) (_ * _)
+The exists2 and forall2 methods are similar to exists and forall, respectively,
+but they also take two lists and a boolean test function that takes
+two arguments. The test function is applied to corresponding arguments.
+
+scala> List.forall2(List("abc", "de"), List(3, 2)) (_.length == _)
+res60: Boolean = true
+scala> List.exists2(List("abc", "de"), List(3, 2)) (_.length != _)
+res61: Boolean = false
+
+
+=========================================================================================================================
+Collections
+=========================================================================================================================
+
+
+// Sequences 
+
+--Arrays
+
+Arrays are one of the most basic collections. They allow you to hold a sequence
+of objects in a row and efficiently access elements at an arbitraryposition in the sequence. You access the individual objects in an array via a
+0-based index.
+Arrays are normally created with the usual new keyword:
+scala> val numbers = new Array[Int](5)
+numbers: Array[Int] = Array(0, 0, 0, 0, 0)
+
+scala> numbers(3)
+res0: Int = 0
+
+scala> numbers(3)
+res2: Int = 42
+Behind the scenes, such an assignment is treated the same as a call to a
+method named update:
+scala> numbers.update(3, 420)
+scala> numbers(3)
+res4: Int = 420
+
+scala> for (x <numbers)
+| println(x)
+
+scala> for (i <0
+until numbers.length)
+| println(i + " " + numbers(i))
+0 0
+1 0
+2 0
+3 420
+4 0
+
+
+scala> val words = "The quick brown fox".split(" ")
+words: Array[java.lang.String] = Array(The, quick, brown,
+fox)
+scala> for (word <words)
+| println(word)
+The
+quick
+brown
+fox
+
+
+
+-- Array Buffers
+
+To use an ArrayBuffer, you must first import it from the mutable collections
+package:
+scala> import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.ArrayBuffer
+Create an array buffer just like an array, except that you do not need to specify
+a size. The implementation will adjust the allocated space automatically.
+scala> val buf = new ArrayBuffer[Int]()
+buf: scala.collection.mutable.ArrayBuffer[Int] =
+ArrayBuffer()
+Then, you can append to the array using the += method:
+scala> buf += 12
+scala> buf += 15
+scala> buf
+res10: scala.collection.mutable.ArrayBuffer[Int] =
+ArrayBuffer(12, 15)
+All the normal array methods are available. For example, you can ask it its
+size, or you can retrieve an element by its index:
+scala> buf.length
+res11: Int = 2
+scala> buf(0)
+res12: Int = 12
+
+Use toArray to convert to an array and toList to convert to a list.
+scala> buf.toArray
+res13: Array[Int] = Array(12, 15)
+scala> buf.toList
+res14: List[Int] = List(12, 15)
+
+// Tuples
+
+Here is an example of a tuple holding an integer, a string, and the
+output console.
+(1, "hello", Console)
+
+// Sets and maps
+
+scala> import scala.collection.mutable
+import scala.collection.mutable
+Now you can create a new set using the empty method:
+scala> val words = mutable.Set.empty[String]
+words: scala.collection.mutable.Set[String] = Set()
+Note that you have to supply the type of objects this set will hold, which in
+this example is String. You can then add elements to the set using the +=
+method.
+scala> words += "hello"
+scala> words += "there"
+scala> words += "there"
+scala> words
+res21: scala.collection.mutable.Set[String] = Set(there,
+hello)
+Note that if an element is already included in the set, then it is not added a
+second time. That is why "there" only appears one time in the words set
+even though it was added twice.
+
+operations of sets :
+
+------------------------------------------------------------
+import scala.collection.mutable 
+make the mutable collections easy to access
+
+val words =mutable.Set.empty[String]
+create an empty set
+
+words += "the"
+add an object
+
+words -= "the"
+remove if exists
+
+words ++= List("do", "re", "mi")
+add multiple
+
+words --=
+List("do", "re")
+remove multiple
+
+words.size
+size 
+
+words.contains("mi")
+boolean
+-----------------------------------------------------------
+when you create a map, you must specify two types. The first type
+is for the keys of the map, the second for the values. In this case, the keys are
+strings and the values are integers.
+Setting entries in a map looks just like setting entries in an array:
+scala> map("hello") = 1
+scala> map("there") = 2
+scala> map
+res27: scala.collection.mutable.Map[String,Int] = Map(hello
+>
+1, there >
+2)
+Likewise, reading a map is like reading an array:
+scala> map("hello")
+res28: Int = 1
+
+Operations of map:
+
+-------------------------------------------------------
+
+import scala.collection.mutable
+make the mutable collections easy to
+access
+
+val words =
+mutable.Map.empty[Int,String]
+create an empty map
+
+words += (1 >
+"one")
+
+words =
+1
+
+words ++= List(1 >
+"one",
+2 >
+"two", 3 >
+"three")
+
+words --=
+List(1, 2)
+
+words.size
+
+words.contains(3)
+
+words(3)
+returns the value for a key
+
+words.keys 
+list all keys (returns an Iterator
+over just the number 3.)
+scala> def wordcounts(text: String) = {
+| val counts = mutable.Map.empty[String, Int]
+
+--------------------------------------------------------
+
+
+// Initializing collections
+
+scala> List(1,2,3)
+res30: List[Int] = List(1, 2, 3)
+scala> mutable.Set(1,2,3)
+res31: scala.collection.mutable.Set[Int] = Set(3, 1, 2)
+scala> mutable.Map(1>"
+hi", 2>"
+there")
+res32: scala.collection.mutable.Map[Int,java.lang.String] =
+Map(2 >
+there, 1 >
+hi)
+scala> Array(1,2,3)
+res33: Array[Int] = Array(1, 2, 3)
+Note the >
+notation that is available for initializing maps. Each entry to be
+added to the map is given by a key>
+value pair.
+
+// Immutable collections
+
+Scala provides immutable versions of all of its collection types. These versions
+cannot be changed after they are initialized.
+
+--Immutable sets
+
+scala> val original = Set(1,2,3)
+original: scala.collection.immutable.Set[Int] = Set(1, 2, 3)
+
+operations on immutable sets :
+
+val nums = Set(1, 2, 3, 3)
+nums + 5 //adding
+nums 1
+nums ++ List(5, 6)
+nums --List(1, 2)
+nums.size
+nums.contains(3)
+
+--Immutable maps
+
+Operations:
+
+val words = Map(1 ->"one",2 ->"two")
+words + (6 ->"six")  //adding
+words 1
+
+words ++ List(1 >
+"one",
+2 >
+"two", 6 >
+"six")
+
+words --List(1, 2)
+words.size
+words.contains(2)
+words(2)
+words.keys
+
+
+========================================================================================================================
+Type Parameterization
+========================================================================================================================
+
+
+// Functional Queues
+
+A functional queue is a data structure with three operations.
+head returns the first element of the queue
+tail returns a queue without its first element
+append returns a new queue with a given element appended at the end.
+
+Unlike a standard queue, a functional queue does not change its contents
+when an element is appended. Instead, a new queue is returned which contains
+the element.
+
+Chapter 17 · Type Parameterization 363
+scala> val q = Queue(1, 2, 3)
+q: Queue[Int] = Queue(1, 2, 3)
+scala> val q1 = q append 4
+q1: Queue[Int] = Queue(1, 2, 3, 4)
+scala> q
+unnamed3: Queue[Int] = Queue(1, 2, 3)
+
+If Queue was a standard queue implementation, the append operation in the
+second input line above would affect the contents of value q; in fact both the
+result q1 and the original queue q would contain the sequence 1, 2, 3, 4
+after the operation. But for a functional queue, the appended value shows up
+only in the result q1, not in the queue q being operated on.
+
+// Information hiding
+
+--Private Constructors
+
+class Queue[T] private (leading: List[T], trailing: List[T]) {
+...
+}
+The private modifier between the class name and its parameters indicates
+that the constructor of Queue is private; it can be accessed only from within
+the class itself and its companion object. The class name Queue is still public,
+so you can use it as a type, but you cannot call its constructor:
+scala> new Queue(List(1, 2), List(3))
+<console>:4: error: constructor Queue cannot be accessed
+val unnamed0 = new Queue(List(1, 2), List(3) )
+
+--Factory methods
+
+Now that the primary constructor of class Queue can no longer be called
+from client code, there needs to be some other way to create new queues.
+One possibility is to add a secondary constructor that builds an empty queue,
+like this:
+def this() = this(Nil, Nil)
+As a refinement, the secondary constructor could take a list of initial queue
+elements as a variable length parameter:
+def this(elems: T*) = this(elems.toList, Nil)
+Another possibility is to add a factory method that builds a queue from such
+a sequence of initial elements. A neat way to do this is to define an object
+Queue which has the same name as the class being defined and which
+contains an apply method, like this:
+
+object Queue {
+// constructs a queue with initial elements as given by ‘xs'
+def apply[T](xs: T*) = new Queue[T](xs.toList, Nil)
+}
+
+
+// Variance annotations
+/*********Generic Left **********/
+
+
+
+========================================================================================================================
+Abstract Members and Properties
+========================================================================================================================
+
+An example is the following trait Abstract which defines an abstract
+type T, an abstract method transform, an abstract value initial, and an
+abstract variable current.
+trait Abstract {
+type T
+def transform(x: T): T
+val initial: T
+var current: T
+}
+
+A concrete implementation of Abs needs to fill in definitions for each of its
+abstract members. Here is an example implementation that provides these
+definitions.
+class Concrete extends Abstract {
+type T = String
+def transform(x: String) = x + x
+val initial = "hi"
+var current = initial
+}
+
+The implementation gives a concrete meaning to the type name T by defining
+it as an alias of type String. The transform operation concatenates a given
+string with itself, and the initial and current values are both set to "hi".
+
+
+// Abstract Vals :
+
+An abstract val definition has a form like
+val initial: String
+It gives a name and type for a val, but not its value. This value has to be
+provided by a concrete value definition in a subclass. For instance, class
+Concrete implemented the value using
+val initial = "hi"
+You use an abstract value definition in a class when you do not know the
+correct value in the class, but you do know that the variable will have an
+unchangeable value in each instance of the class.
+An abstract value definition resembles an abstract parameterless method
+definition such as
+def initial: String
+Client code refers to both the value and the method in exactly the same way,
+i.e. obj.initial.
+
+Abstract method definitions, on the other hand, may be implemented
+by both concrete method definitions and concrete value definitions.
+So given a class,
+abstract class A {
+val v: String // ‘v' for value
+def m: String // ‘m' for method
+}
+the following class would be a legal implementation
+class C1 extends A {
+val v: String
+val m: String // OK to override a ‘def' with a ‘val'
+}
+But the following class would be in error:
+class C2 extends A {
+def v: String // ERROR: cannot override a ‘val' with a ‘def'
+def m: String
+}
+
+
+// Abstract vars
+
+Like an abstract val, an abstract var defines just a name and a type, but not
+an initial value. For instance, here is a class AbstractTime which defines
+two abstract variables named hour and minute.
+trait AbstractTime {
+var hour: Int
+var minute: Int
+}
+
+For instance, the definition of AbstractTime
+above is exactly equivalent to the following definition.
+trait AbstractTime {
+def hour: Int // getter for ‘hour'
+def hour_=(x: Int) // setter for ‘hour'
+def minute: Int // getter for ‘minute'
+def minute_=(x: Int) // setter for ‘minute'
+}
+
+
+//Abstract types
+
+Suppose you are given the task to model eating habits of animals.
+
+You might
+start with a class Food and a class Animal with an eat method:
+class Food {}
+abstract class Animal {
+def eat(food: Food)
+}
+You would then specialize these two classes to a class of Cows which eat
+Grass:
+
+class Grass extends Food {}
+class Cow extends Animal {
+override def eat(food: Grass) {}
+}
+However, if you tried to compile the new classes you’d get compilation errors:
+error: class Cow needs to be abstract, since method eat is not
+defined
+class Cow {
+ˆ
+error: method eat overrides nothing
+override def eat(food: Grass)
+ˆ
+What happened is that the eat method in class Cow does not override the eat
+method in class Animal because its parameter type is different—it’s Grass
+in class Cow vs. Food in class Animal.
+
+
+----Solution :
+
+
+What you need to do instead is apply some more precise modelling.
+Animals do eat Food but what kind of Food depends on the Animal. This
+can be neatly expressed with an abstract type:
+abstract class Animal {
+type SuitableFood <: Food
+def eat(food: SuitableFood)
+}
+
+With the new class definition, an Animal can eat only food that’s suitable.
+What food is suitable cannot be determined on the level of the Animal class.
+That’s why SuitableFood is modelled as an abstract type. The type has
+an upper bound Food, which is expressed by the <: Food clause. This
+means that any concrete instantiation of SuitableFood in a subclass must
+be a subclass of Food. For example, you would not be able to instantiate
+SuitableFood with class IOException.
+With Animal defined, you can now progress to cows:
+class Cow extends Animal {
+type SuitableFood = Grass
+def eat(food: Grass) {}
+}
+Class Cow fixes its SuitableFood to be Grass and also defines a concrete
+eat method for this kind of food. These new class definitions compile without
+errors. If you tried to run the “cows-that-eat-fish” counterexample with
+the new class definitions you’d get the following:
+
+scala> class Fish extends Food
+defined class Fish
+scala> val cow: Animal = new Cow
+cow: Animal = Cow@1fb069
+
+
+scala> cow eat (new Fish)
+<console>:7: error: type mismatch;
+found : Fish
+required: cow.SuitableFood
+cow eat (new Fish)
+
+----Path dependent types
+
+Have a look at the last error message: What’s interesting about it is the type
+required by the eat method: cow.SuitableFood. This type consists of an
+object reference (cow) which is followed by a type field SuitableFood of the object.
+
+
+So this shows that objects in Scala can have types as members.
+cow.SuitableFood means “the type SuitableFood which is a member of
+the cow object,” or otherwise said, the type of food that’s suitable for cow.
+A type like cow.SuitableFood is called a path dependent type. The word
+“path” here means a reference to an object. It could be a single name or a
+longer access path such as in swiss.cow.SuitableFood.
+As the term “path-dependent type” says, the type depends on the path:
+in general, different paths give rise to different types. For instance, if you
+had two animals cat and dog, their SuitableFoods would not be the same:
+cat.SuitableFood is incompatible with dog.SuitableFood. The case is
+different for Cows however. Because their SuitableFood type is defined to
+be an alias for class Grass, the SuitableFood types of two cows are in fact
+the same.
+A path-dependent type resembles a reference to an inner class in Java, but
+there is a crucial difference: A path-dependent type names an outer object,
+whereas a reference to an inner class names an outer class. References to
+inner classes as in Java can also be expressed in Scala, but they are written
+differently. Assume two nested classes Outer and Inner:
+
+
+class Outer {
+class Inner
+}
+In Scala, the inner class is addressed using the expression Outer # Inner
+instead of Outer.Inner in Java. The . syntax is reserved for objects. For
+instance, assume two objects:
+val o1, o2 = new Outer
+Then o1.Inner and o2.Inner would be two path-dependent types (and they
+would be different types). Both of these types would conform to the more
+general type Outer # Inner which represents the Inner class with an arbitrary
+outer object of type Outer.
+
+========================================================================================================================
+Implicit conversions and parameters
+========================================================================================================================
+
+To make a String into a
+RandomAccessSeq, you can define an implicit conversion between those two
+types:
+implicit def stringWrapper(s: String) =
+new RandomAccessSeq[Char] {
+def length = s.length
+def apply(i: Int) = s.charAt(i)
+}
+
+
+The implicit conversion is just a normal method, the only thing
+that’s special is the implicit modifier at the start. You can apply the conversion
+explicitly to transform Strings to RandomAccessSeqs:
+scala> stringWrapper("abc") exists ('c' == _)
+res1: Boolean = true
+But you can also leave out the conversion and still get the same behavior:
+scala> "abc" exists ('c' == _)
+res2: Boolean = true
+
+
+
+
+Another advantage of implicit conversions is that they support conversions
+into the target type. For instance, suppose you write a method
+printWithSpaces which prints all characters in a given random access sequence
+with spaces in between them:
+scala> def printWithSpaces(seq: RandomAccessSeq[Char]) =
+seq mkString " "
+Because Strings are implicitly convertible to RandomAccessSeqs, you can
+pass a string to printWithSpaces:
+scala> printWithSpaces("xyz")
+res3: String = x y z
+The last expression is equivalent to the following one, where the conversion
+shows up explicitly:
+scala> printWithSpaces(stringWrapper("xyz"))
+res4: String = x y z
+
+
+
+// Rules :
+
+--- Marking Rule: Only definitions marked implicit are available. 
+
+The implicit keyword is used to mark which declarations the compiler may
+use as implicits. You can use it to mark any variable, function, or object
+definition, just like this:
+implicit def int2string(x: Int) = x.toString
+The compiler will only change x + y to convert(x) + y if convert is marked
+as implicit. This way, you avoid the confusion that would result if the
+compiler picked random functions that happen to be in scope and inserted
+them as “conversions.”
+
+---- Scope Rule: An inserted implicit conversion must be a single identifier
+or be associated with the source or target type of the conversion. 
+
+The compiler will usually not insert a conversion of the form foo.convert. It
+will not expand x + y to foo.convert(x) + y. Any conversion must be
+available in the current scope via a single identifier. If you want to make
+foo.convert available as an implicit, then you need to import it.
+
+
+---- Non-Ambiguity Rule: An implicit conversion is never inserted unless
+there is no other possible conversion to insert.
+
+--- One-at-a-time Rule: Only one implicit is tried. The compiler will never
+convert x + y to convert1(convert2(x)) + y. Doing so would cause compile
+times to increase dramatically on erroneous code, and it would increase
+the difference between what the programmer writes and what the program
+actually does.
+
+
+--- Explicits-First Rule: Whenever code type checks as it is written, no
+implicits are attempted. The compiler will not change code that already
+works. A corollary of this rule is that you can always replace implicit identifiers
+by explicit ones, thus making the code longer but with less apparent
+ambiguity.
+
+
+--- Naming an implicit conversion. Implicit conversions can have arbitrary
+names. The name of an implicit conversion matters only in two situations: if
+you want to write it explicitly in a method application, and for determining
+which implicit conversions are available at any place in the program.
+
+
+// Implicit conversions to an expected type
+
+Implicit conversions to an expected type are the first place that the compiler
+will use implicits. The rule is simple. Whenever the compiler sees an X,
+but needs a Y, it will look for an implicit function that converts X’s to Y’s.
+For example, normally a double cannot used as an integer, because it loses
+precision:
+scala> val i: Int = 3.5
+<console>:8: error: type mismatch;
+found : Double(3.5)
+required: Int
+val i: Int = 3.5
+ˆ
+However, you can define an implicit conversion to smooth this over:
+scala> implicit def double2int(x: Double) = x.toInt
+double2int: (Double)Int
+scala> val i: Int = 3.5
+i: Int = 3
+What happens here is that the compiler sees a double, specifically 3.5, in
+a context where it requires an integer. Before giving up, it searches for
+an implicit conversion from doubles to integers. In this case, it finds one:
+double2int. It then inserts a call to double2int automatically. Behind the
+scenes, the code becomes:
+val i: Int = double2int(3.5)
+This is literally an implicit conversion
+
+
+// Implicit parameters
+
+The other place the compiler inserts implicits is within parameter lists. The
+compiler will sometimes replace foo(x) with foo(x)(y), or new Foo(x)
+with new Foo(x)(y), thus adding a missing parameter list to complete
+a function call. For this usage, not only must the inserted identifier
+(y) be marked implicit, but also the formal parameter list in foo’s or
+Foo's definition be marked as nimplicit@.
+Here is a simple example. The following printSomething function
+prints whatever its argument is.
+scala> def printSomething(implicit x: Int) = println(x)
+printSomething: (implicit Int)Unit
+This function can be called just like any other function:
+scala> printSomething(10)
+10
+However, you can also set a parameter implicitly:
+scala> implicit val favoriteNumber = 4
+favoriteNumber: Int = 4
+scala> printSomething
+4
+
+
+// View bounds
+
+def maxList2[T](nums: List[T])
+nums match {
+case Nil => throw new Error("empty list!")
+case x :: Nil => x
+case x :: rest =>
+val maxRest = maxList2(rest) // (orderer) is redundant
+if (x > maxRest) x // orderer(x) is redundant
+else maxRest
+}
+When the compiler examines the above code, it will see that the types do
+not match up. For example, x of type T does not have a > method, and
+so x > maxRest does not work. The compiler will not immediately, stop,
+however! It will first look for implicit conversions to repair the code. In
+this case, it will notice that orderer is available, so it can convert the code
+to ordered(x) > maxRest. Likewise for the expression maxList2(rest),
+which can be converted to maxList2(rest)(ordered). After this the
+method fully type checks.
+Look closely at maxList2, now. There is not a single mention of the
+ordered parameter in the text of the method! This coding pattern is actually
+fairly common. The implicit parameter is used only for conversions, and so it
+can itself be used implicitly. Now, because the parameter name is never used
+explicitly, the name could have been anything else. For example, maxList
+would behave identically if you left its body alone but changed the parameter
+name:
+def maxList2[T](nums: List[T])
+(implicit converter: T=>Ordered[T]): T =
+// same body...
+For that matter, it could just as well be:
+def maxList2[T](nums: List[T])
+(implicit icecream: T=>Ordered[T]): T =
+// same body...
+If you want, you can leave out the name of this parameter and shorten the
+method header by using a view bound. Using a view bound, you would write
+the signature of maxList like this:
+
+def maxList3[T <% Ordered[T]](nums: List[T]): T =
+// same body...
+Mentally, you can think of this code as saying, “I can use any T, so long as
+it can be treated as an Ordered[T].” This is different from saying that the
+argument is an Ordered[T]. It says that the user will supply a conversion so
+that it can be treated as an Ordered[T].
+The “treated as” approach is strictly more permissive than “is a”, due
+to some help from the standard library. The standard library includes the
+identity function as an available implicit. Thus, if the argument happens to
+already be an Ordered[T], then the compiler can supply the identity function
+as the “conversion.” In this case, the conversion is a no-op, which simply
+returns whatever object it is given.
+
+=========================================================================================================================
+ListBuffer Class
+=========================================================================================================================
+
+ListBuffer is a class in package scala.collection.mutable. To use
+the simple name only, you can import that package:
+import scala.collection.mutable.ListBuffer
+Using a list buffer, the body of incAll can now be written as follows:
+val buf = new ListBuffer[Int]
+for (x <xs)
+buf += x + 1
+buf.toList
+This is a very efficient way to build lists. In fact, the list buffer implementation
+is organized so that both the append operation ‘+=’ and the toList
+operation take (very short) constant time.
+
+=========================================================================================================================
+Object Equality
+=========================================================================================================================
+
+
+//Writing an equality method: things to be considering whne comparing two objects to know whether they are equal
+
+Here are four common pitfalls that can cause inconsistent behavior of
+equals.
+1. Defining equals with the wrong signature.
+2. Changing equals without also changing hashCode.
+3. Defining equals in terms of mutable fields
+4. Failing to define equals as an equivalence relation.
+
+The equals method implements an equivalence relation on non-null object
+references.
+• It is reflexive: for any non-null reference value x, x.equals(x)
+should return true.
+• It is symmetric: for any non-null reference values x and y,
+x.equals(y) should return true if and only if y.equals(x) returns
+true.
+• It is transitive: for any non-null reference values x, y, and z, if
+x.equals(y) returns true and y.equals(z) returns true, then
+x.equals(z) should return true.
+• It is consistent: for any non-null reference values x and y, multiple
+invocations of x.equals(y) consistently return true or consistently
+return false, provided no information used in equals comparisons on
+the objects is modified.
+• For any non-null reference value x, x.equals(null) should return
+false
+
+Here’s a summary of all the things to consider when redefining the
+equals method:
+1. Every class redefining equals also needs to define isComparable.
+If the inherited definition of equals is from Object (that is, equals
+was not redefined higher up in the class hierarchy), the definition of
+isComparable is new, otherwise it overrides a previous definition of
+a method with the same name.
+2. isComparable always yields true if the argument object is an instance
+of the current class (i.e. the class in which isComparable is
+defined), false otherwise.
+3. The equals method of the class that first introduced isComparable
+also contains a test of the form (that isComparable this) where
+that is the argument of the equality method.
+4. Overridding redefinitions of equals also add this test, unless they contain
+a call to super.equals. In the latter case, the isComparable test
+is already done by the superclass call.
+
+
+
+========================================================================================================================
+Working with XML
+========================================================================================================================
+
+// Creating XML
+
+You can type an XML node anywhere that an expression is valid. Simply
+type an open tag and then continue writing XML content. When the compiler
+sees the last close tag, it will go back to reading arbitrary Scala code.
+scala> <a>
+| This is some XML.
+| Here is a tag: <atag/>
+| </a>
+res0: scala.xml.Elem =
+<a>
+This is some XML.
+Here is a tag: <atag></atag>
+</a>
+The result of this expression is of type Elem, meaning it is an XML node
+that has a label (“a”) and children (“This is some XML,” etc.). Some other
+important XML classes are:
+• Class Node is the abstract superclass of all XML node classes.
+• Class Text is a node holding just text. The “stuff” part of
+<a>stuff</a> is of class Text.
+• Class NodeSeq holds a sequence of nodes. Many methods in the XML
+library process NodeSeq’s in places you might expect them to process
+individual Node’s
+
+You can also use {} if you want to insert XML that is computed at runtime.
+Inside the {} you can put arbitrary Scala code:
+scala> <a> {2+2} </a>
+res1: scala.xml.Elem = <a> 4 </a>
+You can even nest XML literals further inside a {} escape, thus allowing your
+code to switch back and forth between XML as the nesting level increases.
+scala> val yearMade = 1955
+yearMade: Int = 1955
+scala> <a> { if (year < 2000) <old>{year}</old>
+| else xml.NodeSeq.Empty }
+| </a>
+res2: scala.xml.Elem =
+<a> <old>1955</old>
+</a>
+If the code inside the {} evaluates to either an XML node or a sequence of
+XML nodes, then those nodes are inserted directly as is. In the above example,
+if year is less than 2000, then it is wrapped in <old> tags and added
+to the <a> element. If year is newer than 2000, then nothing is added. To
+denote “nothing” as an XML node, use xml.NodeSeq.Empty. The empty
+XML sequence makes no sense as a top-level XML document, but it is frequently
+useful when optionally inserting something to the middle of a tree of
+XML.
+A {} escape is not required to evaluate to an XML node. It can evaluate
+to any Scala value. In such a case, result is converted to a string and inserted
+as a text node.
+scala> <a> {3+4} </a>
+res3: scala.xml.Elem = <a> 7 </a>
+Any <, >, and & characters in the text will be escaped if you print the node
+back out.
+
+scala> <a> {"</a>potential security hole<a>"} </a>
+res4: scala.xml.Elem = <a> &lt;/a&gt;potential security
+hole&lt;a&gt; </a>
+XML literals plus {} escapes make it easy to write conversions from internal
+data structures to XML
+
+For example, suppose you are implementing
+a database to keep track of your extensive collection of vintage Coca-Cola
+thermometers. You might make the following class to hold one entry in the
+catalog:
+abstract class CCTherm {
+val description: String
+val yearMade: Int
+val dateObtained: String
+val bookPrice: Int // in pennies
+val purchasePrice: Int // in pennies
+val condition: Int // 110
+override def toString = description
+}
+Converting this class to XML is easy. Simply write down an XML literal and
+use code escapes to insert the data that is particular to each instance. Here is
+a toXML method that does the trick:
+abstract class CCTherm {
+...
+def toXML =
+<cctherm>
+<description>{description}</description>
+<yearMade>{yearMade}</yearMade>
+<dateObtained>{dateObtained}</dateObtained>
+<bookPrice>{bookPrice}</bookPrice>
+<purchasePrice>{purchasePrice}</purchasePrice>
+<condition>{condition}</condition>
+</cctherm>
+}
+Here is the method in action:
+
+scala> val therm = new CCTherm {
+| val description = "hot dog thermometer"
+| val yearMade = 1952
+| val dateObtained = "March 14, 2006"
+| val bookPrice = 2199
+| val purchasePrice = 500 // sucker!
+| val condition = 9
+| }
+therm: CCTherm = hot dog thermometer
+scala> therm.toXML
+res5: scala.xml.Elem =
+<cctherm>
+<description>hot dog thermometer</description>
+<yearMade>1952</yearMade>
+<dateObtained>March 14, 2006</dateObtained>
+<bookPrice>2199</bookPrice>
+<purchasePrice>500</purchasePrice>
+<condition>9</condition>
+</cctherm>
+By the way, if you want to include a “{” or “}” as XML text, as opposed to
+using them to escape to Scala code, simply write two of them in a row:
+scala> <a> }}}}brace yourself!{{{{ </a>
+res6: scala.xml.Elem = <a> }}brace yourself!{{ </a>
+
+
+// Extraction 
+
+
+--Extracting text
+Send text to any XML node to retrieve all of the text
+within that node, minus any element tags.
+
+scala> <a>blah blah <tag/> blah</a>.text
+res7: String = blah blah blah
+Any encoded characters are decoded automatically.
+scala> <a> input &
+gt; output </a>.text
+res8: String = input >
+output
+
+-- Extracting sub-elements.
+
+ If you want to find a sub-element by tag name,
+simply call ‘n’ with the name of the tag.
+scala> <a><b><c>hello</c></b></a> n "b"
+res9: scala.xml.NodeSeq = <b><c>hello</c></b>
+You can do a “deep search”, and look through sub-sub-elements, etc., by
+using nn instead of n:
+scala> <a><b><c>hello</c></b></a> n "c"
+res10: scala.xml.NodeSeq =
+scala> <a><b><c>hello</c></b></a> nn "c"
+res11: scala.xml.NodeSeq = <c>hello</c>
+
+-- Extracting attributes. 
+
+You can extract tag attributes using the same n and
+nn methods. Simply put an “at” sign before the attribute name.
+scala> val joe = <employee
+| name="Joe"
+| rank="code monkey"
+| serial="123"/>
+joe: scala.xml.Elem = <employee rank="code monkey"
+name="Joe" serial="123"></employee>
+scala> joe n "@name"
+res12: scala.xml.NodeSeq = Joe
+scala> joe n "@serial"
+res13: scala.xml.NodeSeq = 123
+
+
+
+// Loading and saving 
+
+To convert from XML to a file of bytes, you can use the XML.saveFull
+command. The last item describes the “document type” of this XML node.
+You can specify null to leave the document type unspecified.
+xml.XML.saveFull("therm1.xml", node, "UTF8",
+true, null)
+After running the above command, the resulting file therm1.xml looks like
+the following:
+<?xml version='1.0' encoding='UTF8'?>
+<cctherm>
+<description>hot dog thermometer</description>
+<yearMade>1952</yearMade>
+<dateObtained>March 14, 2006</dateObtained>
+<bookPrice>2199</bookPrice>
+<purchasePrice>500</purchasePrice>
+<condition>9</condition>
+</cctherm>
+Loading is simpler, and can be accomplished with the command XML.load.
+scala> val loadnode = xml.XML.loadFile("therm1.xml")
+loadnode: scala.xml.Elem =
+<cctherm>
+<description>hot dog thermometer</description>
+<yearMade>1952</yearMade>
+<dateObtained>March 14, 2006</dateObtained>
+<bookPrice>2199</bookPrice>
+<purchasePrice>500</purchasePrice>
+<condition>9</condition>
+</cctherm>
+
+scala> fromXML(loadnode)
+res14: CCTherm = hot dog thermometer
+
+
+// Pattern matching
+
+An XML pattern looks just like an XML literal. The main difference is
+that if you insert a {} escape, then the code inside the {} is not an expression
+but a pattern! A pattern embedded in {} can use the full Scala pattern language,
+including binding new variables, performing type tests, and ignoring
+content using the _ and _* patterns.
+Here is a simple example to give the idea.
+scala> <a>blahblah</a> match {
+| case <a>{contents}</a> => "yes! " + contents
+| case _ => "no! "
+| }
+res15: java.lang.String = yes! blahblah
+
+
+
+You probably want to match on a sequence of items, not a single item, but if
+you write a variable as above it will only match on a single item. To fix this,
+there’s the “any sequence” pattern, which matches any number of arguments.
+You can use this pattern to match a sequence of nodes and then bind the result
+to the pattern variable cont:
+scala> <a></a> match {
+| case <a>{contents @ _*}</a> => "yes! " + contents
+| case _ => "no! "
+| }
+res17: java.lang.String = yes! Array()
+As a tip, be aware that XML patterns work very nicely with for expressions
+as a way to iterate through some parts of an XML tree while ignoring other
+parts. For example, suppose you wish to skip over the white space between
+records in the following XML structure:
+val catalog =
+<catalog>
+<cctherm>
+<description>hot dog thermometer</description>
+<yearMade>1952</yearMade>
+<dateObtained>March 14, 2006</dateObtained>
+<bookPrice>2199</bookPrice>
+<purchasePrice>500</purchasePrice>
+<condition>9</condition>
+</cctherm>
+<cctherm>
+<description>Sprite Boy thermometer</description>
+<yearMade>1964</yearMade>
+<dateObtained>April 28, 2003</dateObtained>
+<bookPrice>1695</bookPrice>
+<purchasePrice>595</purchasePrice>
+<condition>5</condition>
+</cctherm>
+</catalog>
+Visually, it looks like there are two sub-elements of the <catalog> element.
+Actually, though, there are five. There is white space before, after, and between
+the two elements! If you do not consider this white space, you might
+incorrectly process the thermometer records as follows:
+scala> catalog match {
+| case <catalog>{therms @ _*}</catalog> =>
+| for (therm <therms)
+| println("processing: " +
+| (therm n "description").text)
+| }
+processing:
+processing: hot dog thermometer
+processing:
+processing: Sprite Boy thermometer
+processing:
+
+
+Notice all of the lines that try to process white space as if it where a true
+thermometer record. What you would really like to do is ignore the white
+space, and process only those sub-elements that are inside a <cctherm> tag.
+You can describe this subset using the pattern <cctherm>{_*}</cctherm>,
+and you can restrict the for expression to iterating over items that match that
+pattern:
+scala> catalog match {
+| case <catalog>{therms @ _*}</catalog> =>
+| for (therm @ <cctherm>{_*}</cctherm> <therms)
+| println("processing: " +
+| (therm n "description").text)
+| }
+processing: hot dog thermometer
+processing: Sprite Boy thermometer
+
+
+=======================================================================================================================
+Scala's Thread Equivalents
+=======================================================================================================================
+
+
+//Actors
+
+An actor is a kind of thread that has a mailbox for receiving messages. To implement
+an actor, subclass scala.actors.Actor and implement an act()
+method.
+import scala.actors._
+object sillyActor extends Actor {
+def act() {
+for (i <1
+to 5) {
+println("I'm acting!")
+Thread.sleep(1000)
+}
+}
+}
+An actor can then be started with the start() method, just as if it were a
+normal Java thread:
+scala> sillyActor.start()
+
+I'm acting!
+res4: scala.actors.Actor = sillyActor$@1945696
+scala> I'm acting!
+I'm acting!
+I'm acting!
+I'm acting!
+Notice that the “I’m acting!” output is interleaved with the Scala shell’s output
+(“res4:”, etc.). This interleaving is due to the sillyActor actor running
+independently from the thread running the shell. Actors run independently
+from each other, too. For example, here are two actors running at the same
+time.
+object seriousActor extends Actor {
+def act() {
+for (i <1
+to 5) {
+println("To be or not to be.")
+Thread.sleep(1000)
+}
+}
+}
+scala> { sillyActor.start(); seriousActor.start() }
+res3: scala.actors.Actor = seriousActor$@1689405
+scala> To be or not to be.
+I'm acting!
+To be or not to be.
+I'm acting!
+To be or not to be.
+I'm acting!
+To be or not to be.
+I'm acting!
+To be or not to be.
+I'm acting!
+It’s also possible to create an actor directly, using a method called actor in
+object scala.actors.Actor:
+
+scala> import scala.actors.Actor._
+scala> val seriousActor2 = actor {
+| for (i <1
+to 5)
+| println("That is the question.")
+| Thread.sleep(1000)
+| }
+scala> That is the question.
+That is the question.
+That is the question.
+That is the question.
+That is the question.
+The value definition above creates an actor which executes the actions defined
+in the block following the actor method. The actor starts immediately
+when it is defined. There is no need to call a separate start method.
+All well and good. More interesting, though, is when actors send each
+other messages. A message is sent by using the ! method, like this:
+scala> sillyActor ! "hi there"
+Nothing happens in this case, because sillyActor is too busy acting to read
+from its mailbox. Here is a new actor that waits for a message in its mailbox
+and prints out whatever it receives. It receives a message by calling receive
+and giving it a pattern-match expression.1
+val echoActor = actor {
+while (true) {
+receive {
+case msg =>
+println("received message: " + msg)
+}
+}
+}
+
+scala> echoActor ! "hi there"
+received message: hi there
+scala> echoActor ! 15
+scala> received message: 15
+
+
+
+
+
+
+
