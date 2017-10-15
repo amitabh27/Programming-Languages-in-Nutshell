@@ -1,0 +1,2605 @@
+http://tryruby.org
+tutorials point
+
+books:
+programming ruby -Dave thomas
+
+
+
+=================================================================================
+COMMENTS
+==================================================================================
+# some statements.
+
+=================================================================================
+RANGES
+=================================================================================
+(1..5)        #==> 1, 2, 3, 4, 5
+(1...5)       #==> 1, 2, 3, 4
+('a'..'d')    #==> 'a', 'b', 'c', 'd'
+
+Eg:
+range1 = (1..10).to_a
+range2 = ('bar'..'bat').to_a
+puts "#{range1}"
+puts "#{range2}"
+O/p:
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+bar, bas, bat
+
+//printing each value of range
+digits.each do |digit|
+   puts "In Loop #{digit}"
+end
+
+//methods
+digits.max;digits.min;digits.include?(5)
+
+//ranges as conditions
+score = 70
+
+result = case score
+   when 0..40 then "Fail"
+   when 41..60 then "Pass"
+   when 61..70 then "Pass with Merit"
+   when 71..100 then "Pass with Distinction"
+   else "Invalid Score"
+end
+
+//ranges in IF
+if ((1..10) === 5)
+  puts "5 lies in (1..10)"
+end
+
+==================================================================================
+ITERATORS
+===================================================================================
+1. EACH:
+ ary.each do |i|
+   puts i
+end
+
+2. COLLECT
+//The collect method returns the entire collection, regardless of whether it is an array or a hash.
+
+a = [1,2,3,4,5]
+b = Array.new
+b = a.collect
+puts b
+
+O/p:1
+2
+3
+4
+5
+
+Eg:
+a = [1,2,3,4,5]
+b = a.collect{|x| 10*x}
+puts b
+
+
+===================================================================================
+STRINGS
+===================================================================================
+Declaration: 
+string_name="string"
+
+Eg.
+
+puts "now is #{ def the(a)
+'the ' + a
+end
+the('time')
+} for all bad coders..."
+produces:
+now is the time for all bad coders...
+
+plain_string = "dog"
+puts "Encoding of #{plain_string.inspect} is #{plain_string.encoding}"
+puts "Encoding of #{plain_string} is #{plain_string.encoding}"
+produces:
+Encoding of "dog" is UTF-8
+Encoding of dog is UTF-8
+
+Functions:
+
+str1="abc"
+str2=str1 //means str2 is pointing to str1 if 1 changes after this line 2 will also change.
+str2=str1.dup//means str2  no longer points to str1,it has a content duplicated from str1.
+
+str.length,
+str.reverse,
+"str"*5="strstrstrstrstr",
+"str"+"str2"-->"strstr2"
+str1<=>str2 -->-1 if str1<str2 or 0 if both are equal else 1.
+
+str==string_object -->returns 0 if both are equal.
+
+str.capitalize
+Capitalizes a string.
+
+str.chop
+Removes the last character in str.
+
+str.concat(other_str)
+Concatenates other_str to str.
+
+str.count(str, ...)
+Counts one or more sets of characters. If there is more than one set of characters, counts the intersection of those sets
+
+str.delete(other_str, ...)
+Returns a copy of str with all characters in the intersection of its arguments deleted.
+
+str.index("ch")
+returns the index of character in string.index starts at 0.else returns -1.
+
+str.empty?
+Returns true if str is empty (has a zero length).
+
+str.eql?(other)
+Two strings are equal if the have the same length and content.
+
+str.gsub(pattern, replacement) [or]
+str.gsub(pattern) { |match| block }
+Returns a copy of str with all occurrences of pattern replaced with either replacement or the value of the block. The pattern will typically be a Regexp; 
+if it is a String then no regular expression metacharacters will be interpreted (that is, /\d/ will match a digit, but '\d' will match a backslash followed by a 'd')
+
+str.include? other_str [or] str.include? fixnum
+Returns true if str contains the given string or character.
+
+str.insert(index, other_str)
+str.reverse
+
+str.swapcase
+Returns a copy of str with uppercase alphabetic characters converted to lowercase and lowercase characters converted to uppercase.
+
+
+print str-->prints str, //multiple things that are to be printed can be separated by commas.
+str.include? "search_text"--->if present search_text returns true else false.
+str.downcase--->Lower case str
+str.upcase--->Upper case str.
+str.delete--->deletes the string.
+
+
+
+
+str.lines/bytes/chars.to_a.reverse--->here str is a multi-line string and lines/bytes/chars specifies the manner in which the string
+is to broken to form array elements and then the array is reversed.
+
+str.lines/bytes/chars.to_a.reverse.join--->now the array was reversed  and join combines those reversed array elements as 
+a string Else  str.lines/bytes/chars.to_a.reverse.to_s could have been used.
+
+
+
+
+==================================================================================
+NUMBERS
+==================================================================================
+Rational(3, 4) * Rational(2, 3) # => (1/2)
+Rational("3/4") * Rational("2/3") # => (1/2)
+Complex(1, 2) * Complex(3, 4) # => (-5+10i)
+Complex("1+2i") * Complex("3+4i") # => (-5+10i)
+
+1 + 2 # => 3
+1 + 2.0 # => 3.0
+1.0 + 2 # => 3.0
+1.0 + Complex(1,2) # => (2.0+2i)
+1 + Rational(2,3) # => (5/3)
+1.0 + Rational(2,3) # => 1.6666666666666665
+
+3.times { print "X " }
+1.upto(5) {|i| print i, " " }
+99.downto(95) {|i| print i, " " }
+50.step(80, 5) {|i| print i, " " }
+
+Math operators: *,%,/,+,-
+number_variable=7,
+to_s converts values to strings.
+to_i converts values to integers (numbers.)
+to_a converts values to arrays.
+
+str['text_piece']='changed_value'----->will change all occurences of text_piece in str to changed_value.
+
+Methods:
+
+Integer(100.75)-->100
+Float(78)-->78.0
+
+number.even?
+eg:
+45.even? --> false
+45.odd?-->true
+
+num2=number1.abs #stores absolute value of a number i.e number1. 
+Eg. absolute of -789 is 789.
+
+===================================================================================
+SYMBOLS
+===================================================================================
+suppose we want to create symbols for 4 directions:i.e constants
+NORTH=1
+SOUTH=2
+EAST=3
+WEST=4
+//now we can use them to code our further logic.
+But ruby provides symbols precede by colon that have unique value throughout ur program.
+like :north,:south........we don't know what that value is but it remains same and unique for each one of them throughout the program.
+So these can also be used as keys(uniques) in hashes.
+
+===================================================================================
+ARRAYS
+===================================================================================
+array_name=[12,13,14] OR array_name=Array.new(size) OR array_name=Array(12..14)
+array_name[-1]=14
+array_name[-2]=13
+
+a = [ 1, 3, 5, 7, 9 ] #=> [1, 3, 5, 7, 9]
+a[2, 2] = 'cat' #=> [1, 3, "cat", 9] //when there are two indexes on left, it means put cat at2 and remove 2 elements 
+from where cat is being inserted.
+a[2, 0] = 'dog' #=> [1, 3, "dog", "cat", 9]
+a[1, 1] = [ 9, 8, 7 ] #=> [1, 9, 8, 7, "dog", "cat", 9]
+a[0..3] = [] #=> ["dog", "cat", 9]
+a[5..6] = 99, 98 #=> ["dog", "cat", 9, nil, nil, 99, 98]
+
+
+//printing an array
+puts "#{arr.inspect}"
+
+//also an array element can be assigned to nil. nil means false when used in conditional expressions.
+a[2]=nil
+puts "#{a[2]}" -->nil
+
+[12,34].length---->2
+[67,78].max--->78
+[89,98].min---->89
+array_name.sort----->sorts the array.
+
+Eg.
+ary = [  "fred", 10, 3.14, "This is a string", "last element", ]
+ary.each do |i|
+   puts i
+end
+
+OR
+
+(10..15).each do |n| 
+   print n, ' ' 
+end
+
+//finding the value at position i
+arr_name.at(i)
+
+//fetching an array rowwise .in each single iteration entire row is fetched
+Eg.
+//this is a two dimensional array nX2.hence two variables to store entire row in each iteration.
+top_five.each do |word, count|
+puts "#{word}: #{count}"
+end
+
+array & other_array-->creates an array which has common elements.
+array | other_array-->union of two arrays without duplicates.
+array + other_array-->merging two arrays
+array - other_array--->A-B-->unique to A
+array <=> other_array-->same as strings
+array==other_array-->same length and same element at corresponding elements.
+
+array[index] [or] array[start, length] [or]
+array[range] [or] array.slice(index) [or]
+array.slice(start, length) [or] array.slice(range)
+Returns the element at index, or returns a subarray starting at start and continuing for length elements, or returns a subarray specified by range.
+ Negative indices count backward from the end of the array (-1 is the last element). Returns nil if the index (or starting index) is out of range.
+
+array.concat(other_array)-->same as that of string.
+
+array.delete_at(index)
+
+array.delete_if { |item| block }
+Deletes every element of self for which block evaluates to true.
+
+array.each { |item| block }
+Calls block once for each element in self, passing that element as a parameter.
+
+array.each_index { |index| block }
+Same as Array#each, but passes the index of the element instead of the element itself.
+
+array.empty?
+Returns true if the self array contains no elements.
+
+array.first [or]
+array.first(n)
+Returns the first element, or the first n elements, of the array. If the array is empty, the first form returns nil, and the second form returns an empty array.
+
+array.insert(index, obj...)
+Inserts the given values before the element with the given index (which may be negative).
+
+array.map { |item| block } [or]
+array.collect { |item| block }
+Invokes block once for each element of self. Creates a new array containing the values returned by the block.
+
+//treating array as a stack using LIFO
+array.push(arg)
+pushes into array
+array.pop
+Removes the last element from array and returns it, or nil if array is empty.
+
+//treating array like queue using FIFO
+push and shift methods same as push and pop
+
+//The first and last methods return (but don’t remove) the n entries at the head or end of an
+array.
+array = [ 1, 2, 3, 4, 5, 6, 7 ]
+array.first(4) # => [1, 2, 3, 4]
+array.last(4) # => [4, 5, 6, 7]
+
+array.replace(other_array)
+Replaces the contents of array with the contents of other_array, truncating or expanding if necessary.
+
+array.reverse
+
+array.shift
+Returns the first element of self and removes it (shifting all other elements down by one). Returns nil if the array is empty.
+
+
+
+
+
+=================================================================================
+HASH or DICTIONARY
+=================================================================================
+hash_name={} OR hash_name=Hash.new(0)--> creates an empty hash
+
+//creating hash with default value for all keys
+hash_name=Hasf.new("default_value")
+//Now when you access a key which is not defined the default_value will be returned
+puts "#{hash_name[0]}"
+puts "#{hash_name[1000]}"
+//both will return default_value.
+
+//creting a hash and then fetching values
+hash_name={"a"=>val1,"b"=>val2}
+puts "#{hash_name['a']}" -->val1
+
+//also the key or value can be an array
+hash_name={["a",1]=>val1,["b",2]=>val2}
+
+//how to print keys of a hash
+temp_var=hash_name.keys
+puts "#{keys}"
+
+hash[key]
+Using a key, references a value from hash. If the key is not found, returns a default value.
+
+hash[key]=value
+Associates the value given by value with the key given by key.
+
+hash.clear
+Removes all key-value pairs from hash.
+
+hash.delete(key)
+deletes a key value pair.
+
+hash.delete_if { |key,value| block }
+Deletes a key-value pair from hash for every pair the block evaluates to true.
+
+hash.each { |key,value| block }
+Iterates over hash, calling the block once for each key, passing the key-value as a two-element array.
+
+hash.each_key { |key| block }
+Iterates over hash, calling the block once for each key, passing key as a parameter.
+
+hash.each_key { |value| block }
+Iterates over hash, calling the block once for each key, passing value as a parameter.
+
+hash.empty?
+Tests whether hash is empty (contains no key-value pairs), returning true or false.
+
+hash.has_value?(value)
+Tests whether hash contains the given value.
+
+hash.invert
+creates a new hash inverting the keys and values.i.e previously which were the keys are now values and vice versa
+
+hash.length
+Returns the size or length of hash as an integer.
+
+hash.merge(other_hash) [or]
+hash.merge(other_hash) { |key, oldval, newval| block }
+Returns a new hash containing the contents of hash and other_hash, overwriting pairs in hash with duplicate keys with those from other_hash.
+
+hash.sort
+Converts hash to a two-dimensional array containing arrays of key-value pairs, then sorts it as an array.
+
+hash.value?(value)
+Tests whether hash contains the given value.
+
+hash.values
+Returns a new array containing all the values of hash.
+
+
+
+
+Eg: To find the count of different values.
+
+//hash to store responses.
+hash_name["key 1"]=:value1
+hash_name["key 2"]=:value2
+hash_name["key 3"]=:value3
+hash_name["key 4"]=:value1
+
+//new hash to store counts
+hash2=Hash.new(0)  
+hash_name.values.each { |rate| hash2[rate] += 1 }
+//above line will found the counts of each of the values:value1,value2,value3.
+hash2
+//above line displays the values of count.
+
+
+hash_name.length---->length of the hash
+
+==========================================================================
+ITERATORS
+==========================================================================
+//each
+[ 1, 3, 5, 7, 9 ].each {|i| puts i }
+
+
+//collect
+Another common iterator is collect (also known as map), which takes each element from the
+collection and passes it to the block. The results returned by the block are used to construct
+a new array. The following example uses the succ method, which increments a string value:
+["H", "A", "L"].collect {|x| x.succ } # => ["I", "B", "M"]
+
+//inject
+inject works like this: the first time the associated block is called, sum is set to inje’cst parameter,
+and element is set to the first element in the collection. The second and subsequent times the
+block is called, sum is set to the value returned by the block on the previous call. The final
+value of inject is the value returned by the block the last time it was called. One more thing:
+if inject is called with no parameter, it uses the first element of the collection as the initial
+value and starts the iteration with the second value
+Eg.
+
+[1,3,5,7].inject(0) {|sum, element| sum+element} # => 16
+[1,3,5,7].inject(1) {|product, element| product*element} # => 105
+
+Another way:
+[1,3,5,7].inject(:+) # => 16
+[1,3,5,7].inject(:*) # => 105
+
+//Enumerators
+a = [ 1, 3, "cat" ]
+h = { dog: "canine", fox: "vulpine" }
+# Create Enumerators
+enum_a = a.to_enum
+enum_h = h.to_enum
+enum_a.next # => 1
+enum_h.next # => [:dog, "canine"]
+enum_a.next # => 3
+enum_h.next # => [:fox, "vulpine"]
+Most of the internal iterator methods—the ones that normally yield successive values to a
+block—will also return an Enumerator object if called without a block:
+a = [ 1, 3, "cat" ]
+enum_a = a.each # create an Enumerator using an internal iterator
+enum_a.next # => 1
+enum_a.next # => 3
+
+Eg.
+result = []
+[ 'a', 'b', 'c' ].each_with_index {|item, index| result << [item, index] } #each iteration results an object result.so result at end is an arr 
+of objects.
+
+Eg.
+result = []
+"cat".each_char.with_index {|item, index| result << [item, index] }
+result # => [["c", 0], ["a", 1], ["t", 2]]
+
+Eg.
+enum = "cat".enum_for(:each_char)
+enum.to_a # => ["c", "a", "t"]
+
+Eg.
+enum_in_threes = (1..10).enum_for(:each_slice, 3)
+enum_in_threes.to_a # => [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+
+
+
+//loop
+short_enum = [1, 2, 3].to_enum
+long_enum = ('a'..'z').to_enum
+loop do
+puts "#{short_enum.next} - #{long_enum.next}"
+end
+produces:
+1 - a
+2 - b
+3 - c
+
+//loop automatically terminates when one arrat ends."SMART" .in java it would have caused AIOOB exception.
+
+===========================================================================
+BLOCK
+===========================================================================
+5.times
+{
+print "hello"
+}
+O/p:hellohellohellohellohello.
+
+//this block is executed first and then the rest of the code irrespective of where it is placed.
+BEGIN
+{
+}
+//this block is executed last irrespective of where it is placed.
+END
+{
+}
+
+yield  args //separated by commas
+keyword is used to execute a block.In this case both method and block have same name and hence block is said to be associated with 
+method.
+So in the definition method whenever yield is found,block is executed and control returns back to method.
+Eg.
+def func123
+yield (arg1,arg2....)
+end
+func123
+{
+|arg1,arg2....|
+...........................................
+}
+
+//making blocks more fansy
+puts((1..10).collect {|n| n+number }.join(", "))
+2, 4, 6, 8, 10, 12, 14, 16, 18, 20
+
+
+
+//passing block as an argument to function.If both * and & are present in args,* should come first and & should always come last.
+EX:
+def test(&block)
+   block.call
+end
+test { puts "Hello World!"}
+
+//blocks as objects
+If the last parameter
+in a method definition is prefixed with an ampersand (such as &action), Ruby looks for a code
+block whenever that method is called. That code block is converted to an object of class Proc
+and assigned to the parameter. You can then treat the parameter as any other variable.
+Here’s an example where we create a Proc object in one instance method and store it in an
+instance variable. We then invoke the proc from a second instance method.
+
+class ProcExample
+def pass_in_block(&action)
+@stored_proc = action
+end
+def use_proc(parameter)
+@stored_proc.call(parameter)
+end
+end
+
+eg = ProcExample.new
+eg.pass_in_block { |param| puts "The parameter is #{param}" }
+eg.use_proc(99)
+produces:
+The parameter is 99
+
+//blocks as closures
+def n_times(thing)
+lambda {|n| thing * n }
+end
+p1 = n_times(23)
+p1.call(3) # => 69
+p1.call(4) # => 92
+p2 = n_times("Hello ")
+p2.call(3) # => "Hello Hello Hello "
+
+//procedure objects
+proc1 = -> arg { puts "In proc1 with #{arg}" }
+proc2 = -> arg1, arg2 { puts "In proc2 with #{arg1} and #{arg2}" }
+proc3 = ->(arg1, arg2) { puts "In proc3 with #{arg1} and #{arg2}" }
+proc1.call "ant"
+proc2.call "bee", "cat"
+proc3.call "dog", "elk"
+
+Eg.
+proc2 = -> a, *b, &block do
+puts "a = #{a.inspect}"
+puts "b = #{b.inspect}"
+block.call
+end
+proc2.call(1, 2, 3, 4) { puts "in block2" }
+produces:
+a = 1
+b = [2, 3, 4]
+in block2
+
+
+=============================================================================
+COMMAND LINE ARGUMENTS
+=============================================================================
+ARGV.size() --> gives the number of args passed from cmd . Eg. ruby file.rb arg1 arg2 arg3
+
+//accessing an arg
+ARGV[0]
+
+Another command line argument : ARGF .It is used to pass file names from CMD and then parse those files.
+Eg.
+while line = gets
+printf "%d: %10s[%d] %s", ARGF.lineno, ARGF.filename, ARGF.file.lineno, line
+end
+
+If we run it, passing a couple of file names, it will copy the contents of those files.
+$ ruby copy.rb testfile otherfile
+1: testfile[1] This is line one
+2: testfile[2] This is line two
+3: testfile[3] This is line three
+4: testfile[4] And so on...
+5: otherfile[1] ANOTHER LINE ONE
+6: otherfile[2] AND ANOTHER LINE TWO
+7: otherfile[3] AND FINALLY THE LAST LINE
+
+=============================================================================
+MODULES
+=============================================================================
+these are basically packages like in java.
+
+module module_name
+//classes
+//methods
+//CONSTANTS
+end
+
+to import these modules;  //module_name is basically a .rb file, while using require dont use extension .rb
+require module_name
+
+In modules while defining methods syntax is:
+def module_name.func_name
+....
+end
+
+While calling it in another file:
+require 'module_name's_file_name'
+y=func_name
+......
+
+//the first statement in a file which is importing a module from another file:specifying that the module's file is present in current directory 
+$LOAD_PATH << '.'
+
+OR
+
+require_relative can be used to specify the directory in which file is present.
+
+
+//how to include a module in a class
+Suppose you have the file support.rb in which the module is written and below is the code of another .rb file trying to have that module in a class.
+
+$LOAD_PATH << '.'
+require 'support'
+class abc
+	def func
+	...
+	end
+		include name_of_module_in_support
+end
+
+
+=============
+MIXINS
+=============
+ruby's way of supporting multiple inheritance.Like a class can include two modules from two different classes.
+
+
+==========================================================================
+DIRECTORIES
+==========================================================================
+Dir.entries "/" //lists everything in the current directory.
+Dir["/*.txt"] //display the file names which are  .txt file in the current directory.
+
+===========================================================================
+I/O
+===========================================================================
+PUTS and GETS:
+
+getting values from console
+puts "Enter a value :"
+val = gets
+puts val
+
+PUTC:
+Unlike the puts statement, 
+which outputs the entire string onto the screen, the putc statement can be used to output one character at a time.
+str="Hello Ruby!"
+putc str
+O/p:H
+
+PRINT:
+The print statement is similar to the puts statement. 
+The only difference is that the puts statement goes to the next line after printing the contents, 
+whereas with the print statement the cursor is positioned on the same line.
+
+
+====================================================================================
+FILES
+====================================================================================
+//creating a file object
+aFile = File.new("filename", "mode")
+   # ... process the file
+aFile.close
+
+Modes:
+r=read only mode.file pointer(FP) at the beginning of file.
+r+=read-write mode.FP at beginning
+w=write mode.overwrites the file if it exists or creates a new one.
+w+=read-write mode.overwrites the file if it exista or creates a new one.
+a=write mode.FP at end of file to append the contents at end or else creates a new file.
+a+=read-write mode.FP at end of file to append the contents at end or else creates a new file.
+
+//Reading file
+aFile = File.new("input.txt", "r")
+if aFile
+   content = aFile.sysread(20)
+
+Now content will have first 20 characters of file and FP will be placed at the 21st charater.
+
+//Writing file
+aFile = File.new("input.txt", "r+")
+if aFile
+   aFile.syswrite("ABCDEF")
+
+
+******The class File is a subclass of the class IO. The class IO also has some methods, which can be used to manipulate files.
+
+//IO.readlines
+This method returns the contents of the file line by line. 
+Eg.
+arr = IO.readlines("input.txt")
+puts arr[0]
+puts arr[1]
+
+//IO.foreach
+This method also returns output line by line. The difference between the 
+method foreach and the method readlines is that the method foreach is associated with a block.
+Eg.
+IO.foreach("input.txt"){|block| puts block}
+This code will pass the contents of the file test line by line to the variable block, and then the output will be displayed on the screen.
+
+
+//Renaming and Deleting Files:
+# Rename a file from test1.txt to test2.txt
+File.rename( "test1.txt", "test2.txt" )
+
+# Delete file test2.txt
+File.delete("text2.txt")
+
+//File inquiries:
+The following command tests whether a file exists before opening it:
+File.open("file.rb") if File::exists?( "file.rb" )
+The following command inquire whether the file is really a file:
+File.file?( "text.txt" ) 
+The following command finds out if it given file name is a directory:
+File::directory?( "/usr/local/bin" ) # => true
+The following command finds whether the file is readable, writable or executable:
+File.readable?( "test.txt" )   # => true
+File.writable?( "test.txt" )   # => true
+File.executable?( "test.txt" ) # => false
+The following command finds whether the file has zero size or not:
+File.zero?( "test.txt" )      # => true
+The following command returns size of the file :
+File.size?( "text.txt" )     # => 1002
+The following command can be used to find when a file was created, modified, or last accessed :
+File::ctime( "test.txt" ) # => Fri May 09 10:06:37 -0700 2008
+File::mtime( "text.txt" ) # => Fri May 09 10:44:44 -0700 2008
+File::atime( "text.txt" ) # => Fri May 09 10:45:01 -0700 2008
+
+//changing the directory
+Dir.chdir("/usr/bin")
+//finding the cureent directory
+puts Dir.pwd # This will return something like /usr/bin
+//finding files and subdirectories in a directory
+puts Dir.entries("/usr/bin").join(' ')
+//creating directory
+Dir.mkdir("mynewdir")
+//deleting a directory
+Dir.delete("testdir")
+
+
+
+
+
+
+
+File.read("/file_name.txt")
+
+//copying a file from root directory to another directory using cp
+FileUtils.cp('/comics.txt','/Home/comics.txt')
+//appending contents to a file using a
+File.open("/Home/comics.txt", "a") do |f|
+f << "this is the text to be appended"
+end
+//thats it the text will be appended.
+
+//time when file was changed
+File.mtime("/Home/comics.txt")-->date with time
+OR
+File.mtime("/Home/comics.txt").hour-->gives hour
+File.mtime("/Home/comics.txt").min-->gives min
+File.mtime("/Home/comics.txt").sec-->gives second
+
+===========================================================================
+FUNCTIONS
+===========================================================================
+GOLDEN RULE=The value returned by a Ruby method
+is the value of the last expression evaluated.
+
+def funcname(arg1,arg2....)
+....
+end
+
+//here name is a set of arguments.
+def func(*name)
+	for i in 0...name.length
+	puts "value:#{name[i]}
+end
+
+
+//return
+functions can return more than one value.
+eg.
+
+def func
+return 10,20,30
+
+var=func
+puts var
+O/p:10
+20 
+30
+
+//Singleton functions
+animal = "cat"
+def animal.speak
+puts "The #{self} says miaow"
+end
+animal.speak
+puts animal.upcase
+produces:
+The cat says miaow
+CAT
+
+//singleton class
+animal = "dog"
+class << animal
+def speak
+puts "The #{self} says WOOF!"
+end
+end
+animal.speak
+produces:
+The dog says WOOF!
+
+============================================================================
+Object Oriented Programming
+============================================================================
+class classname
+.....
+end
+
+//creates an object
+object_name=class_name.new
+
+//constructors in class
+def initialize(arguments)
+......
+end
+
+//functions in class
+def function_name
+......
+end
+
+//undefining a defined function
+undef func_name
+
+//u can aslo have default aruments like in C
+
+//method overloading
+def varargs(arg1, *rest)
+"arg1=#{arg1}. rest=#{rest.inspect}"
+end
+varargs("one") # => arg1=one. rest=[]
+varargs("one", "two") # => arg1=one. rest=["two"]
+varargs "one", "two", "three" # => arg1=one. rest=["two", "three"]
+
+//super keyword also exists like in java for overriding.
+
+//if there r 3 args in a func and u r not worried about the 2nd one then u can declare it like:
+def func (first,*,last)
+
+end
+
+//Method overloading : this concept is called using splat argument.
+def func(arg1,splat,arg2)
+
+end
+func(1,2,3)
+func(1,2,3,4) --> its sctually like 1,[2,3],4 //2nd arg serves as an array
+
+//reverse of above technique
+def five(a, b, c, d, e)
+"I was passed #{a} #{b} #{c} #{d} #{e}"
+end
+five(1, 2, 3, 4, 5 ) # => "I was passed 1 2 3 4 5"
+five(1, 2, 3, *['a', 'b']) # => "I was passed 1 2 3 a b"
+five(*['a', 'b'], 1, 2, 3) # => "I was passed a b 1 2 3"
+five(*(10..14)) # => "I was passed 10 11 12 13 14"
+five(*[1,2], 3, *(4..5)) # => "I was passed 1 2 3 4 5"
+
+//passing hash as an arg
+You can collect these extra hash arguments as a hash parameter—just prefix one element of
+your argument list with two asterisks (a double splat).
+def func(a,b,c,**expected_hash)
+..
+end
+
+//return statement
+Ruby has a return statement, which exits from the currently executing method. The value of
+a return is the value of its argument(s). It is idiomatic Ruby to omit the return if it isn’t needed,
+as shown by the previous two examples.
+This next example uses return to exit from a loop inside the method:
+def meth_three
+100.times do |num|
+square = num*num
+return num, square if square > 1000
+end
+end
+meth_three # => [32, 1024]
+
+
+==============================================================================
+VARIABLES
+==============================================================================
+$variable_name--->it is a global variable declared outside the class.
+@variable_name--->it is an instance variable
+@@variable_name---> it is a class variable.
+variable_name--->local variable 
+VAR_NAME--->constant bcoz its in CAPS. for printing it : print "value:#{VAR_NAME}".
+
+//while printing an variable:
+print "the value is #@variable_name/#$variable_name"
+
+
+//ALIAS variables
+alias foo bar
+//foo is an alias for bar.
+==============================================================================
+MISCELLANEOUS
+==============================================================================
+a..b creates a range from a to b both inclusive.
+a...b creates a range inclusive of a and exclusve of b.
+a**b is a raised to b.
+
+Keyword : defined?
+defined name?
+it return true if name is a variable that has been initialised else false.
+it returns true if name is a fucntion that is defined else false.
+it returns true if name is a block that has been passed else false.
+
+Operator :  ::
+this operator is used to access the variables by violating the rules.
+Eg.
+if there are two variables with same name ,one as class and other as local variable.
+then when u r inside the function,it should use local variable but the syntax ::name fetches the class variable.
+similarly,
+if u r in class and access the var;the class var should be accessed but ::name would access the fucntion variable.
+
+//left shift operator
+the left shift operator, <<, is often used to mean append
+to receiver.
+a = [ 1, 2, 3 ]
+a << 4 # => [1, 2, 3, 4]
+
+//alias keyword
+alias old_plus + # We can reference the original '+' as 'old_plus'
+
+============================================================================
+CONSTRUCTS
+============================================================================
+if condition then
+...
+end
+
+if conditon then
+....
+else
+....
+end
+
+//if condition is false then execute the code;if it is true then execute else part.
+unless condition 
+....
+else
+....
+end
+
+//case
+case condition
+when condition1
+.....
+when condition2
+.....
+when condition3
+....
+else
+.....
+end
+
+//while
+while condition do
+
+end
+
+//do while
+begin
+....
+variable++   //do increment or decreement manually.
+end while condition
+
+OR
+//if condition is false then execute.
+until condition do
+.....
+end
+
+//for loop
+for i in 0...n 
+...
+end
+
+
+
+//statements
+break--->breaks the execution.
+next-->jumps to the start of next iteration of innermost loop skipping the instructions below it.
+redo-->restarts the execution of innermost loop without checking the loop condition.
+
+
+====================================================================================================================
+DATE AND TIME
+====================================================================================================================
+time1 = Time.new
+puts "Current Time : " + time1.inspect
+
+# Components of a Time
+puts "Current Time : " + time.inspect
+puts time.year    # => Year of the date 
+puts time.month   # => Month of the date (1 to 12)
+puts time.day     # => Day of the date (1 to 31 )
+puts time.wday    # => 0: Day of week: 0 is Sunday
+puts time.yday    # => 365: Day of year
+puts time.hour    # => 23: 24-hour clock
+puts time.min     # => 59
+puts time.sec     # => 59
+puts time.usec    # => 999999: microseconds
+puts time.zone    # => "UTC": timezone name
+
+//getting aal the above values in an array
+time = Time.new
+values = time.to_a
+
+=================================================================================================================
+EXCEPTIONS
+==================================================================================================================
+Ruby provide a nice mechanism to handle exceptions. We enclose the code that could raise an exception in a begin/end block 
+and use rescue clauses to tell Ruby the types of exceptions we want to handle.
+
+Major class that can be used is : rescue Exception
+#{$!} gives the error message.
+
+begin  
+# -  
+rescue OneTypeOfException  
+# -  
+rescue AnotherTypeOfException  
+# -  
+else  
+# Other exceptions
+ensure
+# Always will be executed
+end
+
+Everything from begin to rescue is protected. If an exception occurs during the execution of this block of code,
+ control is passed to the block between rescue and end.
+For each rescue clause in the begin block, Ruby compares the raised Exception against each of the parameters in turn. 
+The match will succeed if the exception named in the rescue clause is the same as the type of the currently thrown exception, 
+or is a superclass of that exception.
+In an event that an exception does not match any of the error types specified, we are allowed to use an 
+else clause after all the rescue clauses.
+
+//retry
+You can capture an exception using rescue block and then use retry statement to execute begin block from the beginning.
+
+begin
+    # Exceptions raised by this code will 
+	# be caught by the following rescue clause
+rescue
+    # This block will capture all types of exceptions
+    retry  # This will move control to the beginning of begin
+end
+
+Eg. --> RESCUE and RETRY
+begin
+   file = open("/unexistant_file")
+   if file
+      puts "File opened successfully"
+   end
+rescue
+   fname = "existant_file"
+   retry
+end
+The following is the flow of the process:
+an exception occurred at open
+went to rescue. fname was re-assigned
+by retry went to the beginning of the begin
+this time file opens successfully
+continued the essential process.
+
+//raise
+You can use raise statement to raise an exception
+
+raise 
+OR
+raise "Error Message" 
+OR
+raise ExceptionType, "Error Message"
+OR
+raise ExceptionType, "Error Message" condition
+
+Eg.
+begin  
+    puts 'I am before the raise.'  
+    raise 'An error has occurred.'  
+    puts 'I am after the raise.'  
+rescue  
+    puts 'I am rescued.'  
+end  
+puts 'I am after the begin block.'
+
+O/p:
+I am before the raise.  
+I am rescued.  
+I am after the begin block.  
+
+Eg.
+begin  
+  raise 'A test exception.'  
+rescue Exception => e  
+  puts e.message  
+  puts e.backtrace.inspect  
+end 
+
+O/p:
+A test exception.
+["main.rb:4"]
+
+//else
+The body of an else clause is executed only if no exceptions are raised by the main body of code.
+begin 
+   #.. process 
+   #..raise exception
+rescue 
+   # .. handle error
+else
+   #.. executes if there is no exception
+ensure 
+   #.. finally ensure execution
+   #.. This will always execute.
+end
+
+//Throw and catch
+throw :lablename
+#.. this will not be executed
+catch :lablename do
+#.. matching catch will be executed after a throw is encountered.
+end
+
+OR
+
+throw :lablename condition
+#.. this will not be executed
+catch :lablename do
+#.. matching catch will be executed after a throw is encountered.
+end
+
+//creating your own exception classes
+The important thing is that if we create our own exception classes, they need to be subclasses of either class Exception 
+or one of its descendants.
+
+Eg.
+
+class FileSaveError < StandardError
+   attr_reader :reason
+   def initialize(reason)
+      @reason = reason
+   end
+end
+Now, look at the following example, which will use this exception:
+
+File.open(path, "w") do |file|
+begin
+    # Write out the data ...
+rescue
+    # Something went wrong!
+    raise FileSaveError.new($!)
+end
+end
+
+
+************************************************************************************************************************************
+ADVANCED CONCEPTS
+************************************************************************************************************************************
+
+If you enclose a string in backquotes then The value of the expression is the standard output of that command.
+`date` # => "Mon May 27 12:30:56 CDT 2013\n"
+
+//parallel assignment
+a,b,c=1,2,3
+//swapping contents
+a,b=b,a
+//a=1,2,3 is equivalent to a=[1,2,3]
+//splats assignment
+a, b, c, d, e = *(1..2), 3, *[4, 5] # a=1, b=2, c=3, d=4, e=5
+
+//nested assignments
+a, (b, c), d = 1,2,3,4 # a=1, b=2, c=nil, d=3
+a, (b, c), d = [1,2,3,4] # a=1, b=2, c=nil, d=3
+a, (b, c), d = 1,[2,3],4 # a=1, b=2, c=3, d=4
+a, (b, c), d = 1,[2,3,4],5 # a=1, b=2, c=3, d=5
+a, (b,*c), d = 1,[2,3,4],5 # a=1, b=2, c=[3, 4], d=5
+
+
+=========================================================================================================
+OBJECT ORIENTED
+=========================================================================================================
+//to print an object
+p obj
+
+
+//class
+class Box
+   code
+end
+
+//objects
+box1 = Box.new
+box2 = Box.new
+
+//initialize method same as constructor 
+class Box
+   def initialize(w,h)
+      @width, @height = w, h  # @width and @height are instance variables.
+   end
+end
+
+//ACCESSOR and SETTER methods
+To make the variables available from outside the class, they must be defined within accessor methods,
+ these accessor methods are also known as a getter methods. 
+Following example shows the usage of accessor methods:
+
+Eg.
+class Box
+   # constructor method
+   def initialize(w,h)
+      @width, @height = w, h
+   end
+
+   # accessor methods
+   def printWidth
+      @width
+   end
+
+   def printHeight
+      @height
+   end
+end
+
+# create an object
+box = Box.new(10, 20)
+
+# use accessor methods
+x = box.printWidth()
+y = box.printHeight()
+
+puts "Width of the box is : #{x}"
+puts "Height of the box is : #{y}"
+When the above code is executed, it produces the following result:
+O/p:
+Width of the box is : 10
+Height of the box is : 20
+
+
+Eg.
+
+class Box
+   # constructor method
+   def initialize(w,h)
+      @width, @height = w, h
+   end
+
+   # accessor methods
+   def getWidth
+      @width
+   end
+   def getHeight
+      @height
+   end
+
+   # setter methods
+   def setWidth=(value)
+      @width = value
+   end
+   def setHeight=(value)
+      @height = value
+   end
+end
+
+# create an object
+box = Box.new(10, 20)
+
+# use setter methods
+box.setWidth = 30
+box.setHeight = 50
+
+# use accessor methods
+x = box.getWidth()
+y = box.getHeight()
+
+puts "Width of the box is : #{x}"
+puts "Height of the box is : #{y}"
+
+When the above code is executed, it produces the following result:
+O/p:
+Width of the box is : 30
+Height of the box is : 50
+
+//Instead of creating accessor methods,we can also use the SYMBOLS.
+class abc
+attr_reader :isbn, :price
+
+def initialize(...,...)
+@isbn=
+@price=
+end
+
+#...
+end
+
+obj=abc.new(...,...)
+puts "#{abc.isbn}" -->gives isbn fro this book.
+
+
+//INSTANCE methods:
+Eg:
+class Box
+   # constructor method
+   def initialize(w,h)
+      @width, @height = w, h
+   end
+   # instance method
+   def getArea
+      @width * @height
+   end
+end
+
+# create an object
+box = Box.new(10, 20)
+
+# call instance methods
+a = box.getArea()
+puts "Area of the box is : #{a}"
+
+
+//CLASS methods:
+class Box
+   # Initialize our class variables
+   @@count = 0
+   def initialize(w,h)
+      # assign instance avriables
+      @width, @height = w, h
+
+      @@count += 1
+   end
+
+   def self.printCount()
+      puts "Box count is : #@@count"
+   end
+end
+
+# create two object
+box1 = Box.new(10, 20)
+box2 = Box.new(30, 100)
+
+# call class method to print box count
+Box.printCount()  # O/p:2
+
+//String representation of object like toString()
+class Box
+   # constructor method
+   def initialize(w,h)
+      @width, @height = w, h
+   end
+   # define to_s method
+   def to_s
+      "(w:#@width,h:#@height)"  # string formatting of the object.
+   end
+end
+
+# create an object
+box = Box.new(10, 20)
+
+# to_s method will be called in reference of string automatically.
+puts "String representation of box is : #{box}"
+When the above code is executed, it produces the following result:
+
+String representation of box is : (w:10,h:20)
+
+//different method definition
+Eg1:
+When you write this:
+some_obj[1,2,3]
+you’re actually calling a method named [] on some_obj, passing it three parameters. You’d
+define this method using this:
+class SomeClass
+def [](p1, p2, p3)
+# ...
+end
+end
+
+Eg2.
+class SomeClass
+def []=(*params)
+value = params.pop
+puts "Indexed with #{params.join(', ')}"
+puts "value = #{value.inspect}"
+end
+end
+s = SomeClass.new
+s[1] = 2
+s['cat', 'dog'] = 'enemies'
+
+//Access control
+public,private and protected same as in java
+bydefault access is public for methods and initialize is always private.
+Eg. one way of doing it.other wise above def which means all the below func will be having that access specifier.
+class MyClass
+def method1
+end
+def method2
+end
+# ... and so on
+public :method1, :method4
+protected :method2
+private :method3
+end
+
+
+
+//Inheritance
+# define a class
+class Box
+   # constructor method
+   def initialize(w,h)
+      @width, @height = w, h
+   end
+   # instance method
+   def getArea
+      @width * @height
+   end
+end
+
+# define a subclass
+class BigBox < Box
+
+   # add a new instance method
+   def printArea
+      @area = @width * @height
+      puts "Big box area is : #@area"
+   end
+end
+
+# create an object
+box = BigBox.new(10, 20)
+
+# print the area
+box.printArea() #200
+
+//Method overriding
+same as in java.
+
+//operator overloading
+class Box
+  def initialize(w,h) # Initialize the width and height
+    @width,@height = w, h
+  end
+
+  def +(other)         # Define + to do vector addition
+    Box.new(@width + other.width, @height + other.height)
+  end
+
+  def -@               # Define unary minus to negate width and height
+    Box.new(-@width, -@height)
+  end
+
+  def *(scalar)        # To perform scalar multiplication
+    Box.new(@width*scalar, @height*scalar)
+  end
+end
+
+
+//freeze method
+sometimes we need to avoid the change in the state of an object i.e it should not be used to call instance methods then,
+obj.freeze
+//checking whether an object is freezed 
+if(obj.frozen) # if (true)
+code
+end
+
+//creating object without new
+box2 = Box.allocate
+#There may be a situation when you want to create an object without calling its constructor initialize ie. using new method,
+ in such case you can call allocate which will create an uninitialized object for you.
+
+//getting class information
+#write below code inside class
+puts self.type #class
+puts self.name # it prints class name
+
+//represntating the state of variable
+Eg. person is an instance variable
+puts "The object in 'person' is a #{person.class}"
+puts "The object has an id of #{person.object_id}"
+puts "and a value of '#{person}'"
+produces:
+The object in 'person' is a String
+The object has an id of 70230663692980
+and a value of 'Tim'
+
+
+====================================================================================================================
+REGULAR EXPRESSIONS
+====================================================================================================================
+The patterns ^ and $ match the beginning and end of a line, respectively
+Similarly, the sequence \A matches the beginning of a string,
+and \z and \Z match the end of a string.
+
+Similarly, the patterns \b and \B match word boundaries and nonword boundaries, respectively.
+Word characters are ASCII letters, numbers, and underscores:
+show_regexp("this is\nthe time", /\bis/) # => this ->is<-\nthe time
+show_regexp("this is\nthe time", /\Bis/) # => th->is<- is\nthe time
+
+A character class is a set of characters between brackets: [characters] matches any single character
+between the brackets, so [aeiou] matches a vowel, [,.:;!?] matches some punctuation, and
+so on.
+
+The options are set using the sequence (?option), where
+the option is one of d (for Ruby 1.9 behavior), a for ASCII-only support, and u for full Unicode
+support. If you don’t specify an option, it defaults to (?d).
+show_regexp('über.', /(?a)\w+/) # => ü->ber<-.
+show_regexp('über.', /(?d)\w+/) # => ü->ber<-.
+show_regexp('über.', /(?u)\w+/) # => ->über<-.
+show_regexp('über.', /(?d)\W+/) # => ->ü<-ber.
+show_regexp('über.', /(?u)\W+/) # => über->.<-
+
+
+
+line =~ /pattern/
+if pattern is found in string line then it returns the starting position of match else nil.
+opposite to this is:
+line !~ /pattern/ -->means if the pattern is not present in the string line.-->returns true if
+not present else false. 
+
+If you want to match one of the special characters literally in a pattern, precede it with a
+backslash, so /\*/ is a pattern that matches a single asterisk, and /\// is a pattern that matches
+a forward slash.
+
+^	Matches beginning of line.
+$	Matches end of line.
+.	Matches any single character except newline. Using m option allows it to match newline as well.
+[...]	Matches any single character in brackets.
+[^...]	Matches any single character not in brackets
+re*	Matches 0 or more occurrences of preceding expression.
+re+	Matches 1 or more occurrence of preceding expression.
+re?	Matches 0 or 1 occurrence of preceding expression.
+re{ n}	Matches exactly n number of occurrences of preceding expression.
+re{ n,}	Matches n or more occurrences of preceding expression.
+re{ n, m}	Matches at least n and at most m occurrences of preceding expression.
+a| b	Matches either a or b.
+(re)	Groups regular expressions and remembers matched text.
+(?imx)	Temporarily toggles on i, m, or x options within a regular expression. If in parentheses, only that area is affected.
+(?-imx)	Temporarily toggles off i, m, or x options within a regular expression. If in parentheses, only that area is affected.
+(?: re)	Groups regular expressions without remembering matched text.
+date = "12/25/01"
+date =~ %r{(\d+)(/|:)(\d+)(/|:)(\d+)}
+[$1,$2,$3,$4,$5]	»	["12", "/", "25", "/", "01"]
+date =~ %r{(\d+)(?:/|:)(\d+)(?:/|:)(\d+)}
+[$1,$2,$3]	»	["12", "25", "01"]
+i.e now u cannot use backreferences like \2 for date separators
+
+(?imx: re)	Temporarily toggles on i, m, or x options within parentheses.
+(?-imx: re)	Temporarily toggles off i, m, or x options within parentheses.
+(?#...)	Inserts a comment into the pattern. The content is ignored during pattern matching.
+(?= re)	Specifies position using a pattern. Doesn't have a range.
+(?! re)	Specifies position using pattern negation. Doesn't have a range.
+(?> re)	Matches independent pattern without backtracking.
+\w	Matches word characters.
+\W	Matches nonword characters.
+\s	Matches whitespace. Equivalent to [\t\n\r\f].
+\S	Matches nonwhitespace.
+\d	Matches digits. Equivalent to [0-9].
+\D	Matches nondigits.
+\h 	matches hexadecimal [A-Za-z0-9]
+\H	matches any ch other than hexadecimal
+\A	Matches beginning of string.
+\Z	Matches end of string. If a newline exists, it matches just before newline.
+\z	Matches end of string.
+\G	Matches point where last match finished.
+\b	Matches word boundaries when outside brackets. Matches backspace (0x08) when inside brackets.
+\B	Matches nonword boundaries.
+\n, \t, etc.	Matches newlines, carriage returns, tabs, etc.
+\1...\9	Matches nth grouped subexpression.
+\10	Matches nth grouped subexpression if it matched already. Otherwise refers to the octal representation of a character code.
+
+/pat/i - Ignore case
+/pat/m - Treat a newline as a character matched by .
+/pat/x - Ignore whitespace and comments in the pattern
+/pat/o - Perform #{} interpolation only once
+
+
+Lookahead:
+str = "red, white, and blue"
+str.scan(/[a-z]+(?=,)/) # => ["red", "white"] -->match words if they have comma after them
+Lookbehind:
+The following
+example matches the letters dog but only if they are preceded by the letters hot:
+show_regexp("seadog hotdog", /(?<=hot)dog/) # => seadog hot->dog<-
+
+controlling backtracking:
+re = /(X+)(?!O)/# This one works
+re =~ "test XXXY" # => 5
+$1 # => "XXX" #$1 basically correspons to first circular bracket.
+# But, unfortunately, so does this one
+re =~ "test XXXO" # => 5
+$1 # => "XX"
+
+Backreferences and named matches:
+same = "12:15-12:45"
+differ = "12:45-13:15"
+# use numbered backreference
+same =~ /(\d\d):\d\d-\1:\d\d/ # => 0
+differ =~ /(\d\d):\d\d-\1:\d\d/ # => nil
+# use named backreference
+same =~ /(?<hour>\d\d):\d\d-\k<hour>:\d\d/ # => 0
+differ =~ /(?<hour>\d\d):\d\d-\k<hour>:\d\d/ # => nil
+
+
+/ruby/	Match "ruby".
+¥	Matches Yen sign. Multibyte characters are supported in Ruby 1.9 and Ruby 1.8.
+
+
+/[Rr]uby/	Match "Ruby" or "ruby"
+/rub[ye]/	Match "ruby" or "rube"
+/[aeiou]/	Match any one lowercase vowel
+/[0-9]/	Match any digit; same as /[0123456789]/
+/[a-z]/	Match any lowercase ASCII letter
+/[A-Z]/	Match any uppercase ASCII letter
+/[a-zA-Z0-9]/	Match any of the above
+/[^aeiou]/	Match anything other than a lowercase vowel
+/[^0-9]/	Match anything other than a digit
+
+
+/./	Match any character except newline
+/./m	In multiline mode . matches newline, too
+/\d/	Match a digit: /[0-9]/
+/\D/	Match a nondigit: /[^0-9]/
+/\s/	Match a whitespace character: /[ \t\r\n\f]/
+/\S/	Match nonwhitespace: /[^ \t\r\n\f]/
+/\w/	Match a single word character: /[A-Za-z0-9_]/
+/\W/	Match a nonword character: /[^A-Za-z0-9_]/
+
+
+/ruby?/	Match "rub" or "ruby": the y is optional
+/ruby*/	Match "rub" plus 0 or more ys
+/ruby+/	Match "rub" plus 1 or more ys
+/\d{3}/	Match exactly 3 digits
+/\d{3,}/	Match 3 or more digits
+/\d{3,5}/	Match 3, 4, or 5 digits
+
+
+/<.*>/	Greedy repetition: matches "<ruby>perl>"
+/<.*?>/	Nongreedy: matches "<ruby>" in "<ruby>perl>"
+
+/\D\d+/	No group: + repeats \d
+/(\D\d)+/	Grouped: + repeats \D\d pair
+/([Rr]uby(, )?)+/	Match "Ruby", "Ruby, ruby, ruby", etc.
+
+
+/([Rr])uby&\1ails/	Match ruby&rails or Ruby&Rails
+/(['"])(?:(?!\1).)*\1/	Single or double-quoted string. 
+\1 matches whatever the 1st group matched . \2 matches whatever the 2nd group matched, etc.
+
+
+/ruby|rube/	Match "ruby" or "rube"
+/rub(y|le))/	Match "ruby" or "ruble"
+/ruby(!+|\?)/	"ruby" followed by one or more ! or one ?
+
+
+/^Ruby/	Match "Ruby" at the start of a string or internal line
+/Ruby$/	Match "Ruby" at the end of a string or line
+/\ARuby/	Match "Ruby" at the start of a string
+/Ruby\Z/	Match "Ruby" at the end of a string
+/\bRuby\b/	Match "Ruby" at a word boundary
+/\brub\B/	\B is nonword boundary: match "rub" in "rube" and "ruby" but not alone
+/Ruby(?=!)/	Match "Ruby", if followed by an exclamation point
+/Ruby(?!!)/	Match "Ruby", if not followed by an exclamation point
+
+
+/R(?#comment)/	Matches "R". All the rest is a comment
+/R(?i)uby/	Case-insensitive while matching "uby"
+/R(?i:uby)/	Same as above
+/rub(?:y|le))/	Group only without creating \1 backreference
+
+
+//sub and gsub methods that use RE:
+
+line = gets
+newline = line.sub(/Perl/, 'Ruby') # replace first 'Perl' with 'Ruby'
+newerline = newline.gsub(/Python/, 'Ruby') # replace every 'Python' with 'Ruby'
+
+//making changes using above methods in the string itself
+If you want to modify the original string, use the sub! and gsub! forms:
+str = "now is the time"
+str.sub!(/i/, "*")
+str.gsub!(/t/, "T")
+
+Eg. :
+phone = "2004-959-559 #This is Phone Number"
+
+# Delete Ruby-style comments
+phone = phone.sub!(/#.*$/, "")   
+puts "Phone Num : #{phone}"
+
+# Remove anything other than digits
+phone = phone.gsub!(/\D/, "")    
+puts "Phone Num : #{phone}"
+
+Eg. :
+
+#!/usr/bin/ruby
+
+text = "rails are rails, really good Ruby on Rails"
+
+# Change "rails" to "Rails" throughout
+text.gsub!("rails", "Rails")
+
+# Capitalize the word "Rails" throughout
+text.gsub!(/\brails\b/, "Rails")
+
+puts "#{text}"
+
+//methods accepting RE as an argument
+def show_regexp(string, pattern)
+match = pattern.match(string)
+if match
+"#{match.pre_match}->#{match[0]}<-#{match.post_match}"
+else
+"no match"
+end
+end
+We could use this method like this:
+show_regexp('very interesting', /t/) # => very in->t<-eresting
+show_regexp('Fats Waller', /lle/) # => Fats Wa->lle<-r
+show_regexp('Fats Waller', /z/) # => no match
+
+================================================================================================================
+Database connectivity
+==================================================================================================================
+//code for database connectivity
+require "dbi"
+begin
+     # connect to the MySQL server
+     dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", 
+	                    "testuser", "test123")
+     # get server version string and display it
+     row = dbh.select_one("SELECT VERSION()")
+     puts "Server version: " + row[0]
+rescue DBI::DatabaseError => e
+     puts "An error occurred"
+     puts "Error code:    #{e.err}"
+     puts "Error message: #{e.errstr}"
+ensure
+     # disconnect from server
+     dbh.disconnect if dbh
+end
+
+//deleting and creating tables
+dbh.do("DROP TABLE IF EXISTS EMPLOYEE")
+dbh.do("CREATE TABLE EMPLOYEE (
+     FIRST_NAME  CHAR(20) NOT NULL,
+     LAST_NAME  CHAR(20),
+     AGE INT,  
+     SEX CHAR(1),
+     INCOME FLOAT )" );
+
+//inserting rows
+require "dbi"
+
+begin
+     # connect to the MySQL server
+     dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", 
+	                    "testuser", "test123")
+     dbh.do( "INSERT INTO EMPLOYEE(FIRST_NAME,
+                   LAST_NAME, 
+                   AGE, 
+		   SEX, 
+		   INCOME)
+          VALUES ('Mac', 'Mohan', 20, 'M', 2000)" )
+     puts "Record has been created"
+     dbh.commit
+rescue DBI::DatabaseError => e
+     puts "An error occurred"
+     puts "Error code:    #{e.err}"
+     puts "Error message: #{e.errstr}"
+     dbh.rollback
+ensure
+     # disconnect from server
+     dbh.disconnect if dbh
+end
+
+//storing queries in variables for reusability
+require "dbi"
+
+begin
+     # connect to the MySQL server
+     dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", 
+	                    "testuser", "test123")
+     sth = dbh.prepare( "INSERT INTO EMPLOYEE(FIRST_NAME,
+                   LAST_NAME, 
+                   AGE, 
+ 		   SEX, 
+		   INCOME)
+                   VALUES (?, ?, ?, ?, ?)" )
+     sth.execute('John', 'Poul', 25, 'M', 2300)
+     sth.execute('Zara', 'Ali', 17, 'F', 1000)
+     sth.finish
+     dbh.commit
+     puts "Record has been created"
+rescue DBI::DatabaseError => e
+     puts "An error occurred"
+     puts "Error code:    #{e.err}"
+     puts "Error message: #{e.errstr}"
+     dbh.rollback
+ensure
+     # disconnect from server
+     dbh.disconnect if dbh
+end
+
+//fetching data from tables
+require "dbi"
+
+begin
+     # connect to the MySQL server
+     dbh = DBI.connect("DBI:Mysql:TESTDB:localhost", 
+	                    "testuser", "test123")
+     sth = dbh.prepare("SELECT * FROM EMPLOYEE 
+                        WHERE INCOME > ?")
+     sth.execute(1000)
+
+     sth.fetch do |row|
+        printf "First Name: %s, Last Name : %s\n", row[0], row[1]
+        printf "Age: %d, Sex : %s\n", row[2], row[3]
+        printf "Salary :%d \n\n", row[4]
+     end
+     sth.finish
+rescue DBI::DatabaseError => e
+     puts "An error occurred"
+     puts "Error code:    #{e.err}"
+     puts "Error message: #{e.errstr}"
+ensure
+     # disconnect from server
+     dbh.disconnect if dbh
+end
+
+//update operation
+ sth = dbh.prepare("UPDATE EMPLOYEE SET AGE = AGE + 1
+                        WHERE SEX = ?")
+     sth.execute('M')
+
+//delete
+sth = dbh.prepare("DELETE FROM EMPLOYEE 
+                        WHERE AGE > ?")
+     sth.execute(20)
+
+//always use the below technique for accessing DB,to allow commit and rollback.
+dbh['AutoCommit'] = false # Set auto commit to false.
+   begin
+     dbh.do("UPDATE EMPLOYEE SET AGE = AGE+1 
+             WHERE FIRST_NAME = 'John'")
+     dbh.do("UPDATE EMPLOYEE SET AGE = AGE+1 
+             WHERE FIRST_NAME = 'Zara'")
+     dbh.commit
+   rescue
+     puts "transaction failed"
+     dbh.rollback
+   end
+   dbh['AutoCommit'] = true
+
+
+
+
+
+==================================================================================================================
+FIBERS,THREADS and PROCESSES
+==================================================================================================================
+
+Fibers are basically used to suspend and resume the execution at different lines in the code.
+//what happens is to perform threading you create an object of Fiber and Fiber.yield(num) basically calls a block in the class Fiber where
+the arguments that are passed to it in successive loop iterations get stored.Finally fiber_object.resume returns the stored values in the
+block defined in Fiber class.Also when u create a fiber object,the do end must be associated with it.Because if u don't use it,it gives an error
+no block is associated with Fiber.new object.
+Eg.
+twos = Fiber.new do
+num = 2
+loop do
+Fiber.yield(num) unless num % 3 == 0
+num += 2
+end
+end
+10.times { print twos.resume, " " }
+
+produces:
+6 12 18 24 30 36 42 48 54 60
+
+Eg.
+
+tb=Fiber.new do 
+for i in 0..100
+	if i%2==0 || i%3==0
+	Fiber.yield(i) 
+	end
+end
+end
+10.times{ print tb.resume," "}	
+produces:0 2 3 4 6 8 9 10 12 14
+===============================================================================================================
+SERIALIZATION
+===============================================================================================================
+
+//using Marshal
+class Animals
+def initialize(a1,a2,a3)
+@name,@color,@type=a1,a2,a3
+end
+end
+
+obj1=Animals.new("a1","b1","c1")
+obj2=Animals.new("a2","b2","c2")
+
+File.open("abc.txt", 'w+') {|f| f.write(Marshal.dump(obj1))}
+obj1_duplicate=Marshal.load(File.open("abc.txt")) #this object has the same attribute values as that of obj1
+
+
+//using yaml
+We can adapt our previous marshal example to use YAML. Rather than implement specific
+loading and dumping methods to control the marshal process, we simply define the method
+to_yaml_properties, which returns a list of instance variables to be saved:
+
+require 'yaml'
+class Special
+def initialize(valuable, volatile, precious)
+@valuable = valuable
+@volatile = volatile
+@precious = precious
+end
+def to_yaml_properties
+%w{ @precious @valuable }
+end
+def to_s
+"#@valuable #@volatile #@precious"
+end
+end
+obj = Special.new("Hello", "there", "World")
+puts "Before: obj = #{obj}"
+data = YAML.dump(obj)
+obj = YAML.load(data)
+puts "After: obj = #{obj}"
+produces:
+Before: obj = Hello there World
+After: obj = Hello World
+
+We can take a look at what YAML creates as the serialized form of the object—it’s pretty
+simple:
+obj = Special.new("Hello", "there", "World")
+puts YAML.dump(obj)
+produces:
+--- !ruby/object:Special
+precious: World
+valuable: Hello
+
+
+
+==============================================================================================================
+MULTITHREADING
+==============================================================================================================
+New threads are created with the Thread.new call. It is given a block that contains the code to
+be run in a new thread.
+You can pass any number of arguments into the block via Thread.new.
+Inside the loop, the threads use print to write out the
+messages, rather than puts. Why? Well, behind the scenes, puts splits its work into two chunks:
+it writes its argument, and then it writes a newline. Between these two, a thread could get
+scheduled, and the output would be interleaved. Calling print with a single string that already
+contains the newline gets around the problem.
+When a Ruby program terminates, all threads are killed, regardless of their states. However,
+you can wait for a particular thread to finish by calling that thread’s Thread#join method.
+Thread#value, returns the value of the last statement executed
+by the thread.
+In addition to join, a few other handy routines are used to manipulate threads. The current
+thread is always accessible using Thread.current. You can obtain a list of all threads using
+Thread.list, which returns a list of all Thread objects that are runnable or stopped. To determine
+the status of a particular thread, you can use Thread#status and Thread#alive?.
+
+You can adjust the priority of a thread using Thread#priority=. Higher-priority threads will
+run before lower-priority threads.
+
+//Thread variables:
+Class Thread has a facility that allows thread-local variables to
+be created and accessed by name. You simply treat the thread object as if it were a Hash,
+writing to elements using []= and reading them back using [].
+
+Eg.
+//No synchronizationcan,can be observed from output.
+count = 0
+threads = 10.times.map do |i|
+Thread.new do
+sleep(rand(0.1))
+Thread.current[:mycount] = count
+count += 1
+end
+end
+threads.each {|t| t.join; print t[:mycount], ", " }
+puts "count = #{count}"
+produces:
+7, 0, 6, 8, 4, 5, 1, 9, 2, 3, count = 10
+
+//Thread exceptions
+if a thread encounters an exception,other threads continue to execute and u don't even come to know.
+But if join is used to terminate all threads and the moment when join is called on that thread....exception occurs..hence handle it.
+Eg.
+threads = 4.times.map do |number|
+Thread.new(number) do |i|
+raise "Boom!" if i == 1
+print "#{i}\n"
+end
+end
+puts "Waiting"
+threads.each do |t|
+begin
+t.join
+rescue RuntimeError => e
+puts "Failed: #{e.message}"
+end
+end
+puts "Done"
+produces:
+0
+Waiting
+23
+Failed: Boom!
+Done
+
+
+The Thread class provides a number of methods that control the scheduler. Invoking Thread.stop
+stops the current thread, and invoking Thread#run arranges for a particular thread to be run.
+Thread.pass deschedules the current thread, allowing others to run, and Thread#join and #value
+suspend the calling thread until a given thread finishes
+
+//MUTUAL EXCLUSION 
+//create a mutex onject and use lock and unlock
+//amother way is to use mutex.synchronize do.......code......end ;then the code is executed using mutual exclusion
+count = 0
+mutex = Mutex.new
+
+threads = 10.times.map do |i|
+Thread.new do
+mutex.lock
+sleep(rand(0.1))
+puts "#{i}"
+count += 1
+mutex.unlock
+end
+end
+threads.each {|t| t.join }
+puts "count = #{count}"
+
+produces:
+//mutual exclusion	//without ME the i will be printed in any order
+0 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+count=10
+
+Sometimes you want to claim a lock if a mutex is currently unlocked, but you don’t want to
+suspend the current thread if it isn’t. The Mutex#try_lock method takes the lock if it can, but
+returns false if the lock is already taken.
+
+
+====================================================================================================================
+UNIT TESTING
+====================================================================================================================
+two libraries 'test/unit' OR 'minitest/unit' are doing it.
+
+here the romanbug is a .rb code that we are testing. 'test/unit' is the library by ruby for testing. below code is written in a separate
+.rb file. assert_equal says the output of 2nd arg should be first arg,that is what we are checking.
+
+require_relative 'romanbug'
+require 'test/unit'
+class TestRoman < Test::Unit::TestCase
+def test_simple
+assert_equal("i", Roman.new(1).to_s)
+assert_equal("ii", Roman.new(2).to_s)
+assert_equal("iii", Roman.new(3).to_s)
+assert_equal("iv", Roman.new(4).to_s)
+assert_equal("ix", Roman.new(9).to_s)
+end
+end
+
+//this is the romanbug.rb we are testing,
+class Roman
+MAX_ROMAN = 4999
+def initialize(value)
+if value <= 0 || value > MAX_ROMAN
+fail "Roman values must be > 0 and <= #{MAX_ROMAN}"
+end
+@value = value
+end
+FACTORS = [["m", 1000], ["cm", 900], ["d", 500], ["cd", 400],
+["c", 100], ["xc", 90], ["l", 50], ["xl", 40],
+["x", 10], ["ix", 9], ["v", 5], ["iv", 4],
+["i", 1]]
+def to_s
+value = @value
+roman = ""
+for code, factor in FACTORS
+count, value = value.divmod(factor)
+roman << code unless count.zero?
+end
+roman
+end
+end
+
+
+//output od the test code we wrote for testing romanbug.rb
+produces:
+Run options:
+# Running tests:
+F
+Finished tests in 0.006579s, 151.9988 tests/s, 303.9976 assertions/s.
+1) Failure:
+test_simple(TestRoman) [prog.rb:6]:
+<"ii"> expected but was
+<"i">.
+1 tests, 2 assertions, 1 failures, 0 errors, 0 skips
+ruby -v: ruby 2.0.0p0 (2013-02-24 revision 39474) [x86_64-darwin12.2.0]
+
+
+//how to check whether exceptions are thrown correctly in our code....suppose code can handle only the range 1...499.So pass 0 and 500.
+# but an exception for these
+assert_raises(RuntimeError) { Roman.new(0) }
+assert_raises(RuntimeError) { Roman.new(5000) }
+
+//exceptions thrown are sometimes not understaandable so,
+The one exception is the test refute_nil (or assert_not_nil in Test::Unit), where the message
+“Expected nil to not be nil” doesn’t help much. In that case, you may want to add some
+annotation of your own. (This code assumes the existence of some kind of User class.)
+require 'test/unit'
+class ATestThatFails < Test::Unit::TestCase
+def test_user_created
+user = User.find(1)
+refute_nil(user, "User with ID=1 should exist")
+end
+end
+
+
+//test suites
+having many .rb files for testing the same code and then importing all of them in one .rb code(test suite) and running it.
+require_relative 'test/unit'
+require_relative 'test_connect'
+require_relative 'test_query'
+require_relative 'test_update'
+require_relative 'test_delete'
+Now, if you run Ruby on the file above , you execute the test cases in the four files
+you’ve required.
+
+//Test::Unit assertions
+assert | refute(boolean, ‹message › )
+Fails if boolean is (is not) false or nil.
+
+assert_block { block }
+Expects the block to return true.
+
+assert_ | refute_ empty(collection, ‹message › )
+Expects empty? on collection to return true (false).
+
+assert_ | refute_ equal(expected, actual, ‹message › )
+Expects actual to equal/not equal expected, using ==.
+
+assert_ | refute_in_delta(expected_float, actual_float, delta, ‹message › )
+Expects that the actual floating-point value is (is not) within delta of the expected value.
+
+assert_ | refute_ in_epsilon(expected_float, actual_float, epsilon=0.001, ‹message › )
+Calculates a delta value as epsilon * min(expected, actual) and then calls the _in_delta test.
+
+assert_ | refute_ includes(collection, obj, ‹message › )
+Expects include?(obj) on collection to return true (false).
+
+assert_ | refute_ instance_of(klass, obj, message )
+Expects obj to be (not to be) a instance of klass.
+
+assert_ | refute_ kind_of(klass, obj, ‹message › )
+Expects obj to be (not to be) a kind of klass.
+
+assert_ | refute_ match(regexp, string, ‹message › )
+Expects string to (not) match regexp.
+
+assert_ | refute_ nil(obj, ‹message › )
+Expects obj to be (not) nil.
+
+assert_ | refute_ operator(obj1, operator, obj2, ‹message › )
+Expects the result of sending the message operator to obj1 with parameter obj2 to be (not
+to be) true.
+
+assert_raises(Exception, ...) { block }
+Expects the block to raise one of the listed exceptions.
+
+assert_ | refute_ respond_to(obj, message, ‹message › )
+Expects obj to respond to (not respond to) message (a symbol).
+
+assert_ | refute_ same(expected, actual, ‹message › )
+Expects expected.equal?(actual).
+
+assert_send(send_array, ‹message › )
+Sends the message in send_array[1] to the receiver in send_array[0], passing the rest of
+send_array as arguments. Expects the return value to be true.
+
+assert_throws(expected_symbol, ‹message › ) { block }
+Expects the block to throw the given symbol.
+
+flunk(message="Epic Fail!")
+Always fails.
+
+skip(message)
+Indicates that a test is deliberately not run.
+
+pass
+Always passes.
+
+//Duplicates.
+
+assert_not_equal(expected, actual, ‹message › )
+Expects actual not to equal expected, using ==. Like refute_equal.
+
+assert_not_match(regexp, string, ‹message › )
+Expects string not to match regexp. Like refute_match.
+
+assert_not_nil(obj, ‹message › )
+Expects obj not to be nil. Like refute_nil.
+
+assert_not_same(expected, actual, ‹message › )
+Expects !expected.equal?(actual). Like refute_same.
+
+assert_nothing_raised(Exception, ...) { block }
+Expects the block not to raise one of the listed exceptions.
+
+assert_nothing_thrown(expected_symbol, ‹message › ) { block }
+Expects the block not to throw the given symbol.
+
+assert_raise(Exception, ...) { block }
+Synonym for assert_raises.
+
+=================================================================================================================
+DEBUGGER
+=================================================================================================================
+ruby -r debug ‹debug-options ›‹programfile ›‹program-arguments› : ruby -r debug filne_name.rb
+setting breakpoint : b line_number
+running the code in debugger mode : c
+
+
+==================================================================================================================
+INTERACTIVE RUBY
+===================================================================================================================
+knowing the content at each line of ruby....the flow of code as well
+command: irb filen_name.rb
+
+//coverting cmd into interactive prompt
+<C:/users/.....>irb #converts cmd into prompt. #for exiting: exit
+
+===================================================================================================================
+BENCHMARK
+===================================================================================================================
+knowing how much time is spent in executing what.
+The Benchmark module has the bmbm method that runs the tests twice, once as a rehearsal
+and once to measure performance, in an attempt to minimize the distortion introduced by
+garbage collection.create a do loop with Benchmark.bm and put the code whose timing are tob efound out in var.report.
+bm gives only one attempt in finding time but it could be wrong due to garbage collection in ruby and hence bmbm should be used
+which gives two attempts in finding more correct time specs.
+
+Eg.
+require 'benchmark'
+
+n = 50000
+Benchmark.bm do |x|
+  x.report { for i in 1..n; a = "1"; end }
+  x.report { n.times do   ; a = "1"; end }
+  x.report { 1.upto(n) do ; a = "1"; end }
+end
+
+produces:
+C:\Users\amitabh\Desktop\ruby>ruby ruby_code.rb
+Rehearsal ------------------------------------
+   0.000000   0.000000   0.000000 (  0.000000)
+   0.000000   0.000000   0.000000 (  0.000000)
+   0.015000   0.000000   0.015000 (  0.015600)
+--------------------------- total: 0.015000sec
+
+       user     system      total        real
+   0.000000   0.000000   0.000000 (  0.000000)
+   0.000000   0.000000   0.000000 (  0.000000)
+   0.015000   0.000000   0.015000 (  0.015600)
+
+==============================================================================================================
+XML GENERATION ; using GEM : Builder
+==============================================================================================================
+//hardcoded generation is below.you can make it dynamic as well
+require 'builder'
+xml = Builder::XmlMarkup.new(target: STDOUT, indent: 2)
+xml.person(type: "programmer") do
+xml.name do
+xml.first "Dave"
+end
+xml.location "Texas"
+xml.preference("ruby")
+end
+
+produces:
+<person type="programmer">
+  <name>
+    <first>Dave</first>
+  </name>
+  <location>Texas</location>
+  <preference>ruby</preference>
+</person>
+
+==============================================================================================================
+GEMS
+===============================================================================================================
+it is basically a wrapper inside which you have ur .rb code,gemspec(details of creator),test files,README file,code description files.
+
+//create an account on http://rubygems.org
+Then you can push your gem online using:
+gem push anagram-0.0.1.gem
+Enter your RubyGems.org credentials.
+Email: dave@pragprog.com
+Password:
+Pushing gem to RubyGems.org...
+Successfully registered gem: anagram (0.0.1)
+
+//then how would others get that gem:
+$ gem search -r anagram
+*** REMOTE GEMS ***
+anagram (0.0.1)
+and, even better, can do this:
+$ gem install anagram
+
+================================================================================================================
+ENCODINGS
+================================================================================================================
+from ruby 2.0 ,default encoding is encoding: utf-8.
+
+**********************************************************************************************************************************
+WEB
+**********************************************************************************************************************************
+
+===================================================================================================================
+CGI
+===================================================================================================================
+changes made in httpd.conf for ruby as in http://editrocket.com/articles/ruby_apache_windows.html
+
+the .rb files with html need to be in htdocs of xampp server.
+
+//use this------------------->http://ruby-doc.org/stdlib-1.9.3/libdoc/cgi/rdoc/CGI/HtmlExtension.html#method-i-scrolling_list
+Eg.
+#!/Ruby21-x64/bin/ruby
+
+require 'cgi'
+print "Content-type: text/html\r\n\r\n"
+print "<html><body>Hello World! It's #{Time.now}</body></html>\r\n"
+
+
+//Form processing.
+//suppose there is a form in html page whose action is below .rb file. Whatever is entered in thatform can be retrieved in 
+following manner:
+
+cgi = CGI.new
+cgi.params # => {"name"=>["Dave Thomas"], "reason"=>["flexible",
+# .. "transparent", "fun"]}
+cgi.params['name'] # => ["Dave Thomas"]
+cgi.params['reason'] # => ["flexible", "transparent", "fun"]
+You can determine whether a particular parameter is present in a request using CGI#has_key?:
+require 'cgi'
+cgi = CGI.new
+cgi.has_key?('name') # => true
+cgi.has_key?('age') # => false
+
+//form generation #everything is cgi.method_name(){}
+
+a("HREF" => "http://www.example.com", "TARGET" => "_top") { "Example" }
+  # => "<A HREF=\"http://www.example.com\" TARGET=\"_top\">Example</A>"
+
+caption("left") { "Capital Cities" }
+  # => <CAPTION ALIGN=\"left\">Capital Cities</CAPTION>
+
+checkbox("name", "value", true)
+  # = checkbox("NAME" => "name", "VALUE" => "value", "CHECKED" => true)
+
+checkbox_group("name", ["1", "Foo"], ["2", "Bar", true], "Baz")
+  # <INPUT TYPE="checkbox" NAME="name" VALUE="1">Foo
+  # <INPUT TYPE="checkbox" CHECKED NAME="name" VALUE="2">Bar
+  # <INPUT TYPE="checkbox" NAME="name" VALUE="Baz">Baz
+
+file_field("NAME" => "name", "SIZE" => 40)
+  # <INPUT TYPE="file" NAME="name" SIZE="40">
+
+form("METHOD" => "post", "ENCTYPE" => "enctype") { "string" }
+  # <FORM METHOD="post" ENCTYPE="enctype">string</FORM>
+
+img("SRC" => "src", "ALT" => "alt", "WIDTH" => 100, "HEIGHT" => 50)
+  # <IMG SRC="src" ALT="alt" WIDTH="100" HEIGHT="50">
+
+password_field("password", "value", 80, 200)
+  # <INPUT TYPE="password" NAME="name" VALUE="value" SIZE="80" MAXLENGTH="200">
+
+popup_menu("name", ["1", "Foo"], ["2", "Bar", true], "Baz")
+  # <SELECT NAME="name">
+  #   <OPTION VALUE="1">Foo</OPTION>
+  #   <OPTION SELECTED VALUE="2">Bar</OPTION>
+  #   <OPTION VALUE="Baz">Baz</OPTION>
+  # </SELECT>
+
+radio_button("NAME" => "name", "VALUE" => "value", "ID" => "foo")
+  # <INPUT TYPE="radio" NAME="name" VALUE="value" ID="foo">
+
+radio_group("name", ["1", "Foo"], ["2", "Bar", true], "Baz")
+  # <INPUT TYPE="radio" NAME="name" VALUE="1">Foo
+  # <INPUT TYPE="radio" CHECKED NAME="name" VALUE="2">Bar
+  # <INPUT TYPE="radio" NAME="name" VALUE="Baz">Baz
+
+reset("VALUE" => "reset", "ID" => "foo")
+  # <INPUT TYPE="reset" VALUE="reset" ID="foo">
+
+reset("VALUE" => "reset", "ID" => "foo")
+  # <INPUT TYPE="reset" VALUE="reset" ID="foo">
+
+text_field("name", "value", 80, 200)
+  # <INPUT TYPE="text" NAME="name" VALUE="value" SIZE="80" MAXLENGTH="200">
+
+
+//Haml------------>use this--->http://haml.info/docs/yardoc/file.REFERENCE.html
+it basically provides another way of generating html(4.0) (HTML Markup Abstraction language-Haml)
+
+====================================================================================================================
+erb
+====================================================================================================================
+embedding ruby with other languages like asp,php etc.
+
+<% ruby code %>
+This executes the Ruby code between the delimiters.
+
+<%= ruby expression %>
+This evaluates the Ruby expression and replaces the sequence with
+the expression’s value.
+
+<%# ruby code %> 
+The Ruby code between the delimiters is ignored (useful for testing).
+
+% line of ruby code
+A line that starts with a percent is assumed to contain just Ruby
+code
+
+You can run erb from the command line:
+erb ‹options ›‹document›
+If the document is omitted, erb will read from standard input.
+
+Eg.
+
+% 99.downto(96) do |number|
+<%= number %> bottles of beer...
+% end
+The lines starting with the percent sign simply execute the given Ruby. In this case, it’s a
+loop that iterates the line between them. The sequence <%= number %> in the middle line
+substitutes in the value of number into the output.
+$ erb f1.erb
+99 bottles of beer...
+98 bottles of beer...
+97 bottles of beer...
+96 bottles of beer...
+
+//Using ERB templates in .rb codes
+require 'erb'
+SOURCE =
+%{<% for number in min..max %>
+The number is <%= number %>
+<% end %>
+}
+erb = ERB.new(SOURCE)
+min = 4
+max = 6
+puts erb.result(binding)
+produces:
+The number is 4
+The number is 5
+The number is 6
+
+
+=================================================================================================================
+COOKIES
+=================================================================================================================
+#!/usr/bin/ruby
+require 'cgi'
+COOKIE_NAME = 'chocolate chip'
+cgi = CGI.new
+values = cgi.cookies[COOKIE_NAME]
+if values.empty?
+msg = "It looks as if you haven't visited recently"
+else
+msg = "You last visited #{values[0]}"
+end
+cookie = CGI::Cookie.new(COOKIE_NAME, Time.now.to_s)
+cookie.expires = Time.now + 30*24*3600 # 30 days
+cgi.out("cookie" => cookie ) { msg }
+
+=================================================================================================================
+SESSIONS
+==================================================================================================================
+require 'cgi'
+require 'cgi/session'
+cgi = CGI.new("html4")
+sess = CGI::Session.new(cgi, "session_key" => "rubyweb",
+"prefix" => "web-session.")
+if sess['lastaccess']
+msg = "<p>You were last here #{sess['lastaccess']}.</p>"
+else
+msg = "<p>Looks like you haven't been here for a while</p>"
+end
+count = (sess["accesscount"] || 0).to_i
+count += 1
+msg << "<p>Number of visits: #{count}</p>"
+sess["accesscount"] = count
+sess["lastaccess"] = Time.now.to_s
+sess.close
+cgi.out {
+cgi.html {
+cgi.body {
+msg
+}
+}
+}
+
+
+
+
