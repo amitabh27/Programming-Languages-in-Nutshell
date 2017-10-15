@@ -1,0 +1,1211 @@
+========================================================================================================================
+psql
+========================================================================================================================
+
+\? 	Get a help message
+\do	 List operators
+\dt 	List tables
+\dT 	List types
+\h <cmd> 		Get help on a SQL command; replace <cmd> with the actual command
+\i <filename>	 Execute commands read from the filename <filename>
+\r 	Reset the buffer (discard any typing)
+\q 	Quit psql
+
+This is the shell prompt where we execute sql commands.
+
+// Storing queries in scripts and executing them.
+
+We give script files a .sql extension by convention, and execute them with the \i internal
+command:
+bpsimple=#\i create_tables-bpsimple.sql
+CREATE TABLE
+CREATE TABLE
+...
+bpsimple=#
+
+
+// Alternatively, we can use the -f command line option to get psql to execute the file and
+then exit:
+
+$ psql -f report.sql bpsimple
+count
+--------
+15
+(1 row)
+
+
+// Redirecting query outputs to .txt files
+
+We can redirect query output to a file by using the -o command-line option, or to a file or
+filter program with the \o internal command from within a session. For example, from within
+a psql session, we can create a text file called customers.txt containing all of our customers by
+issuing the following commands:
+bpsimple=# \o customers.txt
+bpsimple=# SELECT * FROM customer;
+bpsimple=# \o
+The final command, \o without a filename parameter, stops the redirecting of query output
+and closes the output file.
+
+// \d
+
+The \d command lists all of the relations—tables, sequences, and views, if any—in our
+database. Here is an example:
+bpsimple=# \d customer
+
+// \dt
+It restricts the listing to tables only.
+
+
+// General Syntax of psql commands run on CMD :
+
+psql [options] [dbname [username]]
+
+-a Echo all input from script
+-A Unaligned table output mode; same as -P format=unaligned
+-c <query> Run only single query (or internal command) and exit
+-d <dbname> Specify database name to connect to (default: $PGDATABASE or current
+login name)
+-e Echo queries sent to server
+-E Display queries that internal commands generate
+-f <filename> Execute queries from file, then exit
+-F <string> Set field separator (default: |); same as -P fieldsep=<string>
+-h <host> Specify database server host (default: $PGHOST or local machine)
+-H Set HTML table output mode; same as -P format=html
+--help Show help, then exit
+-l List available databases, then exit
+-n Disable readline; prevents line editing
+-o <filename> Send query output to filename (use the form |pipe to send output to a
+filter program)
+-p <port> Specify database server port (default: $PGPORT or compiled-in default,
+usually 5432)
+-P var[=arg] Set printing option var to arg (see \pset command)
+-q Run quietly (no messages, only query output)
+-R <string> Set record separator (default: newline); same as -P recordsep=<string>
+-s Set single-step mode (confirm each query)
+-S Set single-line mode (end of line terminates query rather than semicolon)
+-t Print rows only; same as -P tuples_only
+-T <text> Set HTML table tag options (width, border); same as -P tableattr=<text>
+-U <username> Specify database username (default: $PGUSER or current login)
+-v name=value Set psql variable name to value
+--version Show version information and exit; also –V
+-W Prompt for password (should happen automatically, if a password is required)
+-x Turn on expanded table output; same as -P expanded
+-X Do not read startup file (~/.psqlrc)
+
+
+// Internal Commands :
+
+\? List all available psql internal commands
+\a Toggle between unaligned and aligned mode
+\c[onnect] [dbname|- [user]] Connect to new database; use - as the database name to connect
+to the default database if you need to give a username
+\C <title> Set table title for output; same as \pset title
+\cd <dir> Change the working directory
+\copy ... Perform SQL COPY with data stream to the client machine
+\copyright Show PostgreSQL usage and distribution terms
+\d <table> Describe table (or view, index, sequence)
+\d{t|i|s|v} List tables/indices/sequences/views
+\d{p|S|l} List permissions/system tables/lobjects
+\da List aggregates
+\db List tablespaces
+\dc List conversions
+\dC List casts
+\dd [object] List comment for table, type, function, or operator
+\dD List domains
+\df List functions
+\dg List groups
+\dl List large objects; also \lo list
+\dn List schemas
+\do List operators
+\dT List data types
+\du List users
+\e [file] Edit the current query buffer or file with external editor
+\echo <text> Write text to standard output
+\encoding <encoding> Set client encoding
+\f <sep> Change field separator
+\g [file] Send query to back-end (and results in file, or |pipe)
+\h [cmd] Help on syntax of SQL commands; use * for detail on all
+commands
+\H Toggle HTML mode
+\i <file> Read and execute queries from file
+\l List all databases
+\lo_export, \lo_import, \lo_list,
+\lo_unlink
+Perform large object operations
+\o [file] Send all query results to file, or |pipe
+\p Show the content of the current query buffer
+\pset <opt> Set table output option, which can be one of the following:
+format, border, expanded, fieldsep, footer, null, recordsep,
+tuples_only, title, tableattr, pager
+\q Quit psql
+\qecho <txt> Write text to query output stream (see \o)
+\r Reset (clear) the query buffer
+\s [file] Print history or save it in file
+
+\set <var> <value> Set internal variable
+\t Show only rows (toggles between modes)
+\T <tags> Set HTML table tags; same as \pset tableattr
+\timing Toggle timing of commands
+\unset <var> Unset (delete) internal variable
+\w <file> Write current query buffer to file
+\x Toggle expanded output
+\z List access permissions for tables, views, and sequences
+\! [cmd] Escape to shell or execute a shell command
+
+=========================================================================================================================
+pgAdminIII
+=========================================================================================================================
+
+pgAdmin III offers a variety of features. With it, we can do the following:
+1 Create and delete tablespaces, databases, tables, and schemas
+2 Execute SQL with a query window
+3 Export the results of SQL queries to files
+4 Back up and restore databases or individual tables
+5 Configure users, groups, and privileges
+6 View, edit, and insert table data
+
+
+It's a tool like SQL Developer that provides interface to run the queries.
+
+=========================================================================================================================
+phpPgAdmin
+=========================================================================================================================
+
+web-based alternative for managing PostgreSQL databases is phpPgAdmin. This is an application
+(written in the PHP programming language) that is installed on a web server and provides a
+browser-based interface for administration of database servers
+
+It's an exact replica of PHPMyAdmin
+
+========================================================================================================================
+Rekall
+========================================================================================================================
+
+A tool to extract, display, and update data from several different database
+types. It works with PostgreSQL, MySQL, and IBM DB2 using native drivers, and other
+databases using ODBC.
+
+It's a replica of Microsoft Access where in you can create entire DB and UI-forms to access and perform operations on DB, create UML diagrams etc.
+
+
+=======================================================================================================================
+Data Interfacing
+=======================================================================================================================
+
+Supposed while creating a table say Customer you had specified type of customer_id as serial that means while inserting rows you will never provide any value for that 
+column but rather postgreSQL would generate unique SR. Nos for it
+
+when we ask PostgreSQL
+to describe the table using \d, we see the column is specially defined:
+customer_id integer not null default nextval('customer_customer_id_seq'::text)
+PostgreSQL has created a special counter for the column, a sequence, which it can use to
+generate unique IDs. Notice that the sequence is always named <tablename>_<columnname>_seq.
+The default behavior for the column has been automatically specified by PostgreSQL to be the
+result of the function nextval('customer_customer_id_seq').
+
+When inserting data like this, you can usually find the value of a sequence number using
+the currval function:
+currval('sequence name');
+PostgreSQL will tell you the current value of the sequence number:
+bpsimple=# SELECT currval('customer_customer_id_seq');
+currval
+---------
+16
+(1 row)
+bpsimple=#
+
+
+When we try to insert data into the customer table, leaving the
+customer_id column to PostgreSQL, it attempts to provide a value for the column by calling the
+nextval function:
+nextval('sequence number');
+This function first increments the provided sequence number, and then returns the result.
+We can try this directly:
+bpsimple=# SELECT nextval('customer_customer_id_seq');
+nextval
+---------
+17
+(1 row)
+bpsimple=#
+
+
+
+Of course, we could get to the correct value for the sequence by repeatedly calling nextval,
+but that would not be much use if the value were too large or too small. Instead, we can use the
+setval function:
+setval('sequence number', new value);
+First, we need to discover what the sequence value should be. This is accomplished by
+selecting the maximum value of the column that is already in the database. To do this, we will
+use the max(column name) function, which simply tells us the maximum value stored in a column:
+
+bpsimple=# SELECT max(customer_id) FROM customer;
+max
+-----
+19
+(1 row)
+bpsimple=#
+
+Now we set the sequence, using the function setval(sequence, value), which allows
+us to set a sequence to any value we choose.
+
+bpsimple=# SELECT setval('customer_customer_id_seq', 19);
+setval
+--------
+19
+(1 row)
+bpsimple=#
+
+
+// \copy
+
+EG :
+
+cust.txt file that looks like this:
+21,Miss,Emma,Neill,21 Sheepy Lane,Hightown,NT2 1YQ,023 4245
+22,Mr,Gavin,Neill,21 Sheepy Lane,Hightown,NT2 1YQ,023 4245
+23,Mr,Duncan,Neill,21 Sheepy Lane,Hightown,NT2 1YQ,023 4245
+
+\copy customer from 'cust.txt' using delimiters ','
+
+// Loading data from one table into another :
+
+bpsimple=# INSERT INTO customer(title, fname, lname, addressline, town,
+bpsimple-# zipcode, phone) SELECT title, fname, lname, addressline, town,
+bpsimple-# zipcode, phone FROM tcust WHERE phone IS NOT NULL;
+
+// Correlated Subqueries :
+
+The subquery types we have seen so far are those where we executed a query to get an answer,
+which we then “plug in” to a second query. The two queries are otherwise unrelated and are
+called uncorrelated subqueries. This is because there are no linked tables between the inner
+and outer queries. We may be using the same column from the same table in both parts of the
+SELECT statement, but they are related only by the result of the subquery being fed back into the
+main query’s WHERE clause.
+There is another group of subqueries, called correlated subqueries, where the relationship
+between the two parts of the query is somewhat more complex. In a correlated subquery, a table in
+the inner SELECT will be joined to a table in the outer SELECT, thereby defining a relationship
+between these two queries. This is a powerful group of subqueries, which quite often cannot be
+rewritten as simple SELECT statements with joins. A correlated query has the general form:
+
+
+
+SELECT columnA from table1 T1
+WHERE T1.columnB =
+(SELECT T2.columnB FROM table2 T2 WHERE T2.columnC = T1.columnC)
+
+=========================================================================================================================
+DDL and DML
+=========================================================================================================================
+
+//PostgreSQL-Style Arrays
+To declare a column in a table as an array, you simply add [] after the type; there is no need to
+declare the number of elements. If you do declare a size, PostgreSQL accepts the definition, but
+it doesn’t enforce the number of elements.
+
+test=> CREATE TABLE empworkday (
+test(> refcode char(5),
+test(> workdays int[]
+test(> );
+
+test=> INSERT INTO empworkday VALUES('val01', '{0,1,0,1,1,1,1}');
+
+test=> SELECT * FROM empworkday;
+refcode | workdays
+---------+-----------------
+val01 | {0,1,0,1,1,1,1}
+val02 | {0,1,1,1,1,0,1}
+(2 rows)
+
+We can also select individual elements by giving an array index:
+test=> SELECT workdays[2] FROM empworkday WHERE refcode = 'val02';
+workdays
+----------
+1
+(1 row)
+
+
+// cast 
+
+It is basically typecasting.
+PostgreSQL uses a cast notation:
+cast(column-name AS type-definition-to-convert-to)
+
+Suppose we wanted to grab the date from the orderinfo table in our original bpsimple
+database as a char(10). We would write the following:
+SELECT cast(date_placed AS char(10)) FROM orderinfo;
+
+// Functions for data manipulation :
+
+length(column-name) Returns the length of a string.
+trim(column-name) Removes leading and trailing spaces.
+strpos(column-name, string) Returns the position of a string in the column.
+substr(column-name, position, length) Returns the length characters from the string, starting the
+search from the given character position. The first character
+is counted as position 1.
+round(column-name, length) Rounds a number to a given number of decimal places.
+abs(number) Gets the absolute value of a number.
+
+
+//Magic Variables :
+
+Occasionally, we want to store some information in the database that relates to the current
+user or time in some way, perhaps to implement an audit trail. PostgreSQL provides several
+“magic” variables for doing this. The following are the most useful of these variables:
+CURRENT_DATE
+CURRENT_TIME
+CURRENT_TIMESTAMP
+CURRENT_USER
+
+
+eg:
+SELECT item_id, quantity, CURRENT_TIMESTAMP FROM stock;
+item_id | quantity | timestamptz
+---------+----------+-------------------------------
+1 | 12 | 2004-10-19 18:03:14.500694+01
+2 | 2 | 2004-10-19 18:03:14.500694+01
+4 | 8 | 2004-10-19 18:03:14.500694+01
+5 | 3 | 2004-10-19 18:03:14.500694+01
+7 | 8 | 2004-10-19 18:03:14.500694+01
+8 | 18 | 2004-10-19 18:03:14.500694+01
+10 | 1 | 2004-10-19 18:03:14.500694+01
+
+bpsimple=> SELECT CURRENT_USER, CURRENT_TIME;
+current_user | timetz
+--------------+--------------------
+rick | 18:03:40.862712+01
+(1 row)
+bpsimple=>
+
+These magic variables can also be used in INSERT and UPDATE statements, as in this
+example:
+INSERT INTO orderinfo(orderinfo_id, customer_id, date_placed, date_shipped,
+shipping) VALUES (5, 8, CURRENT_DATE, NULL, 0.0);
+
+
+//The OID Column
+You will have noticed that each time we insert data, PostgreSQL responds with an almost arbitrary
+looking number, as well as the number of rows inserted.
+
+bpsimple=> SELECT oid, fname, lname FROM customer;
+oid | fname | lname
+-------+-----------+---------
+19888 | Jenny | Stones
+19889 | Andrew | Stones
+19890 | Alex | Matthew
+
+// ON UPDATE and ON DELETE
+
+We could CASCADE the change from the table with the primary key.
+We could SET NULL to make the column NULL, since it no longer references the primary
+table.
+Here is an example:
+CREATE TABLE orderinfo
+(
+orderinfo_id serial ,
+customer_id integer NOT NULL,
+date_placed date NOT NULL,
+date_shipped date ,
+shipping numeric(7,2) ,
+CONSTRAINT orderinfo_pk PRIMARY KEY(orderinfo_id),
+CONSTRAINT orderinfo_customer_id_fk FOREIGN KEY(customer_id)
+REFERENCES customer(customer_id) ON DELETE CASCADE
+);
+This example tells PostgreSQL that if we delete a row in customer with a customer_id that is
+being used in the orderinfo table, it should automatically delete the related rows in orderinfo.
+
+
+The SET NULL option is usually used with UPDATE or DELETE statements. It looks like this:
+CREATE TABLE orderinfo
+(
+orderinfo_id serial ,
+customer_id integer NOT NULL,
+date_placed date NOT NULL,
+date_shipped date ,
+shipping numeric(7,2) ,
+CONSTRAINT orderinfo_pk PRIMARY KEY(orderinfo_id),
+CONSTRAINT orderinfo_customer_id_fk FOREIGN KEY(customer_id)
+REFERENCES customer(customer_id) ON UPDATE SET NULL
+);
+
+
+// Savepoints and RollBacks :
+
+.....
+SAVEPOINT any_unique_name;
+......
+ROLLBACK TO any_unique_name;
+......
+ROLLBACK; --rollback to begin
+
+// COMMIT :
+enforce the changes committed so far to the DB.
+
+
+========================================================================================================================
+Accessing PostgreSQL from C Using libpq
+========================================================================================================================
+A typical libpq program has this structure:
+#include <libpq-fe.h>
+main()
+{
+/* Connect to a PostgreSQL database */
+LOOP:
+/* Execute SQL statement */
+/* Read query results */
+/* Disconnect from database */
+}
+
+The program would be compiled and linked into an executable program by using a
+command line similar to this:
+gcc -o program program.c -I/usr/local/pgsql/include -L/usr/local/pgsql/lib -lpq
+
+
+PGconn *PQconnectdb(const char *conninfo);
+
+
+The PQconnnectdb function returns a pointer to the new connection descriptor. The return
+result will be NULL if a new descriptor could not be allocated, perhaps because there was a lack
+of memory to allocate the new descriptor. A non-NULL pointer returned from PQconnectdb does
+not mean that the connection succeeded, however. We need to check the state of the connection,
+as described shortly.
+The single argument to PQconnectdb is a string that specifies to which database to connect.
+Embedded in it are various options we can use to modify the way the connection is made. The
+conninfo string argument consists of space-separated options of the form option=value.
+
+-- options :
+
+dbname Database to connect to $PGDATABASE or name of user if not
+set
+user Username to use when connecting $PGUSER or name of user if not set
+password Password for the specified user $PGPASSWORD or none if not set
+host Name of the server to connect to $PGHOST or localhost if not set
+hostaddr IP address of the server to connect to $PGHOSTADDR
+port TCP/IP port to connect to on the server $PGPORT or 5432 if not set
+
+
+For example, to connect to the bpfinal database on the local machine, we would use a
+conninfo string like this:
+"dbname=bpfinal"
+To include spaces in option values, or to enter an empty value, the value must be quoted
+with single quotes, like this:
+"host=beast password='' user=neil"
+
+The format of the
+hostaddr value is a dotted quad, the normal way of writing an IP address as four byte values
+separated by dots:
+"hostaddr=192.168.0.111 dbname=neil"
+If no host or hostaddr option is specified, PQconnectdb will try to connect to the local machine.
+
+
+//Checking the State of the Connection
+As mentioned earlier, the fact that PQconnectdb returns a non-NULL connection handle does not
+mean that the connection was made without error.
+We need to use another function, PQstatus, to check the state of our connection:
+ConnStatusType PQstatus(const PGconn *conn);
+ConnStatusType is an enumerated type that includes (among others) the constants
+CONNECTION_OK and CONNECTION_BAD. PQconnectdb will return one of these two values, depending
+on whether or not the connection succeeded.
+
+
+//Closing a Connection
+When we have finished with a database connection, we must close it, just as we would with
+open file descriptors. We do this by passing the connection descriptor pointer to PQfinish:
+void PQfinish(PGconn *conn);
+A call to PQfinish allows the libpq library to release resources being consumed by the
+connection.
+
+//Resetting a Connection
+If problems arise with a connection, it may be useful to attempt to reset it. The PQreset function is
+provided for this purpose. It will close the connection to the back-end server and try to make a
+new connection with the same parameters that were used in the original connection setup:
+void PQreset(PGconn *conn);
+
+//complete code
+
+#include <stdlib.h>
+#include <libpq-fe.h>
+int main()
+{
+PGconn *myconnection = PQconnectdb("");
+if(PQstatus(myconnection) == CONNECTION_OK)
+printf("connection made\n");
+else
+printf("connection failed\n");
+PQfinish(myconnection);
+return EXIT_SUCCESS;
+}
+Let’s execute the program, first without the required options, and then after assigning the
+PGDATABASE and PGUSER environment variables:
+$ gcc -o connect –I/usr/local/pgsql/include connect.c –L/usr/local/pgsql/lib -lpq
+$ ./connect
+connection failed
+$ PGDATABASE=bpfinal PGUSER=neil ./connect
+connection made
+
+
+//Retrieving Information About Connection Errors
+
+We can retrieve a readable string that describes the state of the
+connection or an error that has occurred by calling PQerrorMessage:
+char *PQerrorMessage(const PGconn *conn);
+This function returns a pointer to a descriptive string. This string will be overwritten by
+other libpq functions, so it should be used or copied immediately after the call to PQerrorMessage
+and before any call to other libpq functions.
+For example, we could have made our connection failure message more helpful, like this:
+printf("connection failed: %s", PQerrorMessage(myconnection));
+Then we would see the following, more informative error message:
+connection failed: FATAL: database "neil" does not exist
+
+//Connection Parameters :
+
+char *PQdb(const PGconn *conn): Returns the database name.
+char *PQuser(const PGconn *conn): Returns the username.
+char *PQpass(const PGconn *conn): Returns the user password.
+char *PQhost(const PGconn *conn): Returns the server name.
+char *PQport(const PGconn *conn): Returns the server port number.
+char *PQoptions(const PGconn *conn): Returns the options associated with a
+connection.
+All of these values will not change during the lifetime of a connection.
+
+//Executing queries 
+
+Now that we can connect to a PostgreSQL database from within a C program, the next step is
+to execute SQL statements. The query process is initiated with the PQexec function:
+PGresult *PQexec(PGconn *conn, const char *sql_string);
+
+PQexec(myconnection, "SELECT customer_id FROM customer");
+PQexec(myconnection, "CREATE TABLE number (value INTEGER, name VARCHAR)");
+PQexec(myconnection, "INSERT INTO number VALUES (42, 'The Answer')");
+
+//determining query status
+
+We can determine the status of the SQL statement execution by probing the result with the
+PQresultStatus function, which returns one of a number of values that make up the enumerated
+type ExecStatusType:
+ExecStatusType PQresultStatus(const PGresult *result);
+
+
+Here’s an example of a code fragment that uses PQresultStatus to determine the precise
+results of a call to PQexec:
+PGresult *result;
+result = PQexec(myconnection, "SELECT customer_id FROM customer");
+switch(PQresultStatus(result)) {
+case PGRES_TUPLES_OK:
+/* may have some data to process, find out */
+if(PQntuples(result)) {
+/* process data */
+break;
+}
+/* no data, drop through to no data case */
+case PGRES_COMMAND_OK:
+/* all OK, no data to process */
+break;
+case PGRES_EMPTY_QUERY:
+/* server had nothing to do, a bug maybe? */
+break;
+case PGRES_NONFATAL_ERROR:
+/* can continue, possibly retry the command */
+break;
+case PGRES_BAD_RESPONSE:
+case PGRES_FATAL_ERROR:
+default:
+/* fatal or unknown error, cannot continue */
+}
+
+//Creating a Variable Query
+To include user-specified data into the SQL, we might create a string to pass to PQexec that
+contains the values we want. To add all single-digit integers, we might write this:
+for(n = 0; n < 10; n++) {
+sprintf(buffer,"INSERT INTO number VALUES(%d, 'single digit')", n);
+PQexec(buffer);
+}
+
+
+//Retrieving data from query results
+
+When PQexec executes a SELECT without an error, we expect to see a result status of
+PGRES_TUPLES_OK. The next step is to determine how many rows are present in the result
+set. We do this by calling PQntuples to get the total number of rows in our result (which
+may be zero):
+int PQntuples(const PGresult *result);
+
+We can retrieve the number of fields (attributes or columns) in our tuples by calling
+PQnfields:
+int PQnfields(const PGresult *result);
+
+The fields in the result are numbered starting from zero, and we can retrieve their names
+by calling PQfname:
+char *PQfname(const PGresult *result, int index);
+
+The size of the field is given by PQfsize:
+int PQfsize(const PGresult *result, int index);
+
+For fixed-sized fields, PQfsize returns the number of bytes that a value in that particular
+column would occupy. For variable-length fields, PQfsize returns –1.
+
+The index number for a column with a given name can be retrieved by calling PQfnumber:
+int PQfnumber(const PGresult *result, const char *field);
+
+
+Let’s modify our doSQL function to print out some information about the data returned
+from a SELECT query. Here’s our next version:
+void doSQL(PGconn *conn, char *command);
+{
+PGresult *result;
+printf("%s\n", command);
+result = PQexec(conn, command);
+printf("status is %s\n", PQresStatus(PQresultStatus(result)));
+printf("#rows affected %s\n", PQcmdTuples(result));
+printf("result message: %s\n", PQresultErrorMessage(result));
+switch(PQresultStatus(result)) {
+case PGRES_TUPLES_OK:
+{
+int n = 0;
+int nrows = PQntuples(result);
+int nfields = PQnfields(result);
+printf("number of rows returned = %d\n", nrows);
+printf("number of fields returned = %d\n", nfields);
+/* Print the field names */
+for(n = 0; n < nfields; n++) {
+printf(" %s:%d",
+PQfname(result, n), PQfsize(result, n));
+}
+printf("\n");
+}
+}
+PQclear(result);
+}
+
+
+
+Now when executing a SELECT, we can see the characteristics of the data being returned:
+doSQL(conn, "SELECT * FROM number WHERE value = 29");
+
+This call results in the following output:
+status is PGRES_TUPLES_OK
+#rows affected
+result message:
+number of rows returned = 2
+number of fields returned = 2
+value:4 name:-1
+
+
+As mentioned earlier, both the tuple (row) number and field (column) number start at zero.
+Let’s add some data display to our doSQL function:
+void doSQL(PGconn *conn, char *command)
+{
+PGresult *result;
+printf("%s\n", command);
+result = PQexec(conn, command);
+printf("status is %s\n", PQresStatus(PQresultStatus(result)));
+printf("#rows affected %s\n", PQcmdTuples(result));
+printf("result message: %s\n", PQresultErrorMessage(result));
+switch(PQresultStatus(result)) {
+case PGRES_TUPLES_OK:
+{
+int r, n;
+int nrows = PQntuples(result);
+int nfields = PQnfields(result);
+printf("number of rows returned = %d\n", nrows);
+printf("number of fields returned = %d\n", nfields);
+for(r = 0; r < nrows; r++) {
+for(n = 0; n < nfields; n++)
+printf(" %s = %s(%d),",
+PQfname(result, n),
+PQgetvalue(result, r, n),
+PQgetlength(result, r, n));
+printf("\n");
+}
+}
+}
+PQclear(result);
+}
+The complete result of the SELECT query is printed, including the lengths of the strings
+containing the data:
+SELECT * FROM number WHERE value = 29
+Status is PGRES_TUPLES_OK
+#rows affected
+result message:
+number of rows returned = 2
+number of fields returned = 2
+value = 29(2), name = My Age(6),
+value = 29(2), name = Anniversary(11),
+
+
+//Checking null values returned by queries
+
+for(n = 0; n < nfields; n++) {
+if(PQgetisnull(result, r, n))
+printf(" %s is NULL,", PQfname(result, n));
+else
+printf(" %s = %s(%d),",
+PQfname(result, n),
+PQgetvalue(result, r, n),
+PQgetlength(result, r, n));
+}
+
+========================================================================================================================
+Accessing PostgreSQL from PHP
+========================================================================================================================
+
+//DB connection
+
+$dbname = 'bpsimple';
+$user = 'jon';
+$password = 'secret';
+$db_handle = pg_connect("dbname=$dbname user=$user password=$password");
+
+<?php
+$db_handle = pg_connect('dbname=bpsimple user=jon password=secret');
+if ($db_handle) {
+echo 'Connection attempt succeeded.';
+} else {
+echo 'Connection attempt failed.';
+}
+pg_close($db_handle);
+?>
+
+//closing connection
+
+pg_close($db_handle);
+If the provided connection handle is invalid, pg_close() will return false. Otherwise,
+pg_close() will return true upon success.
+
+//connection parameters :
+
+pg_dbname() Returns the name of the current database
+pg_host() Returns the host name associated with the current connection
+pg_options() Returns the options associated with the current connection (except for the
+database name)
+pg_port() Returns the port number of the current connection
+pg_tty() Returns the TTY name associated with the current connection
+
+All of these functions require a connection handle as their sole argument and will return
+either a string or a number upon success. Otherwise, they will return false. Here is an example:
+<?php
+$db_handle = pg_connect('dbname=bpsimple user=jon password=secret');
+echo "<h1>Connection Information</h1>\n";
+echo 'Database name: ' . pg_dbname($db_handle) . "<br />\n";
+echo 'Hostname: ' . pg_host($db_handle) . "<br />\n";
+echo 'Options: ' . pg_options($db_handle) . "<br />\n";
+echo 'Port: ' . pg_port($db_handle) . "<br />\n";
+echo 'TTY name: ' . pg_tty($db_handle) . "<br />\n";
+pg_close($db_handle);
+?>
+
+//query generation :
+
+<?php
+$db_handle = pg_connect('dbname=bpsimple user=jon password=secret');
+$query = 'DELETE FROM item WHERE item_id = ';
+$query .= implode(' or item_id = ', $item_ids);
+$result = pg_query($db_handle, $query);
+echo pg_affected_rows($result) . ' rows were deleted.’;
+pg_close($db_handle);
+?>
+
+Eg:
+
+<?php
+$db_handle = pg_connect('dbname=bpsimple user=jon password=secret');
+$query = 'SELECT * FROM customer';
+$result = pg_query($db_handle, $query);
+if ($result) {
+echo "The query executed successfully.<br />\n";
+echo "Number of rows in result: " . pg_num_rows($result) . "<br />\n";
+echo "Number of fields in result: " . pg_num_fields($result);
+} else {
+echo "The query failed with the following error:<br />\n";
+echo pg_errormessage($db_handle);
+}
+pg_close($db_handle);
+?>
+These functions will return -1 if they encounter an error.
+There’s also the pg_affected_rows() function, which will return the number of rows
+affected by the query.
+
+//displaying query results :
+
+<?php
+$db_handle = pg_connect('dbname=bpsimple user=jon password=secret');
+$query = 'SELECT title, fname, lname FROM customer';
+$result = pg_query($db_handle, $query);
+if ($result) {
+echo "The query executed successfully.<br />\n";
+for ($row = 0; $row < pg_num_rows($result); $row++) {
+$fullname = pg_fetch_result($result, $row, 'title') . " ";
+$fullname .= pg_fetch_result($result, $row, 'fname') . " ";
+$fullname .= pg_fetch_result($result, $row, 'lname');
+echo "Customer: $fullname<br />\n";
+}
+} else {
+echo "The query failed with the following error:<br />\n";
+echo pg_last_error($db_handle);
+}
+pg_close($db_handle);
+?>
+
+
+Another Eg: pg_fetch_row() returns an array that corresponds to a single row in the result set. The array
+is indexed numerically, starting from zero. Here is the previous example rewritten to use
+pg_fetch_row():
+<?php
+$db_handle = pg_connect('dbname=bpsimple user=jon password=secret');
+$query = 'SELECT title, fname, lname FROM customer';
+$result = pg_query($db_handle, $query);
+if ($result) {
+echo "The query executed successfully.<br />\n";
+for ($row = 0; $row < pg_num_rows($result); $row++) {
+$values = pg_fetch_row($result, $row);
+echo 'Customer: ' . implode(' ', $values) . "<br />\n";
+}
+} else {
+echo "The query failed with the following error:<br />\n";
+echo pg_last_error($db_handle);
+}
+pg_close($db_handle);
+?>
+
+//Determining Null
+
+pg_field_is_null() function so that we may determine whether a field value is NULL based on
+the PostgreSQL definition of NULL:
+if (pg_field_is_null($result, $row, $field)) {
+echo "$field is NULL.";
+}
+
+========================================================================================================================
+Accessing PostgreSQL from Java
+========================================================================================================================
+
+assuming a database named test on the local machine:
+try {
+// Load the JDBC driver
+Class.forName("org.postgresql.Driver");
+// Create a properties object with username and password
+Properties prop = new Properties();
+prop.setProperty("user", "meeraj");
+prop.setProperty("password", "waheeda");
+// Set the JDBC URL
+String url = "jdbc:postgresql:test";
+// Get the connection
+Connection con = DriverManager.getConnection(url, prop);
+} catch(ClassNotFoundException e) {
+// Handle exception
+} catch(SQLException e) {
+// Handle exception
+}
+
+//conn parameters
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+public class PostgreSQLMetaData {
+public static void main(String args[]) throws Exception {
+Class.forName("org.postgresql.Driver");
+String url = "jdbc:postgresql://gw1/bpfinal";
+Connection con =
+DriverManager.getConnection(url,"rick","password");
+DatabaseMetaData dbmd = con.getMetaData();
+System.out.print("Database Product Name : ");
+System.out.println(dbmd.getDatabaseProductName());
+System.out.print("Database Product Version : ");
+System.out.println(dbmd.getDatabaseProductVersion());
+System.out.print("Driver Major Version : ");
+System.out.println(dbmd.getDriverMajorVersion());
+System.out.print("Driver Minor Version : ");
+System.out.println(dbmd.getDriverMinorVersion());
+System.out.print("Driver Name : ");
+System.out.println(dbmd.getDriverName());
+System.out.print("Driver Version : ");
+System.out.println(dbmd.getDriverVersion());
+System.out.print("JDBC URL : ");
+System.out.println(dbmd.getURL());
+System.out.print("Supports Transactions : ");
+System.out.println(dbmd.supportsTransactions());
+System.out.print("Default Transaction Isolation level : ");
+System.out.println(dbmd.getDefaultTransactionIsolation());
+System.out.print("Uses Local Files : ");
+System.out.println(dbmd.usesLocalFiles());
+con.close();
+}
+}
+
+
+// Connection to Database
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class PostgreSQLJDBC {
+   public static void main(String args[]) {
+      Connection c = null;
+      try {
+         Class.forName("org.postgresql.Driver");
+         c = DriverManager
+            .getConnection("jdbc:postgresql://localhost:5432/testdb",
+            "postgres", "123");
+      } catch (Exception e) {
+         e.printStackTrace();
+         System.err.println(e.getClass().getName()+": "+e.getMessage());
+         System.exit(0);
+      }
+      System.out.println("Opened database successfully");
+   }
+}
+
+
+//create table
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+
+public class PostgreSQLJDBC {
+   public static void main( String args[] )
+     {
+       Connection c = null;
+       Statement stmt = null;
+       try {
+         Class.forName("org.postgresql.Driver");
+         c = DriverManager
+            .getConnection("jdbc:postgresql://localhost:5432/testdb",
+            "manisha", "123");
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         String sql = "CREATE TABLE COMPANY " +
+                      "(ID INT PRIMARY KEY     NOT NULL," +
+                      " NAME           TEXT    NOT NULL, " +
+                      " AGE            INT     NOT NULL, " +
+                      " ADDRESS        CHAR(50), " +
+                      " SALARY         REAL)";
+         stmt.executeUpdate(sql);
+         stmt.close();
+         c.close();
+       } catch ( Exception e ) {
+         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+         System.exit(0);
+       }
+       System.out.println("Table created successfully");
+     }
+}
+
+//Insert operation
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+public class PostgreSQLJDBC {
+   public static void main(String args[]) {
+      Connection c = null;
+      Statement stmt = null;
+      try {
+         Class.forName("org.postgresql.Driver");
+         c = DriverManager
+            .getConnection("jdbc:postgresql://localhost:5432/testdb",
+            "manisha", "123");
+         c.setAutoCommit(false);
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         String sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
+               + "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
+         stmt.executeUpdate(sql);
+
+         sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
+               + "VALUES (2, 'Allen', 25, 'Texas', 15000.00 );";
+         stmt.executeUpdate(sql);
+
+         sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
+               + "VALUES (3, 'Teddy', 23, 'Norway', 20000.00 );";
+         stmt.executeUpdate(sql);
+
+         sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
+               + "VALUES (4, 'Mark', 25, 'Rich-Mond ', 65000.00 );";
+         stmt.executeUpdate(sql);
+
+         stmt.close();
+         c.commit();
+         c.close();
+      } catch (Exception e) {
+         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+         System.exit(0);
+      }
+      System.out.println("Records created successfully");
+   }
+}
+
+
+//select operation
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+
+public class PostgreSQLJDBC {
+   public static void main( String args[] )
+     {
+       Connection c = null;
+       Statement stmt = null;
+       try {
+       Class.forName("org.postgresql.Driver");
+         c = DriverManager
+            .getConnection("jdbc:postgresql://localhost:5432/testdb",
+            "manisha", "123");
+         c.setAutoCommit(false);
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         ResultSet rs = stmt.executeQuery( "SELECT * FROM COMPANY;" );
+         while ( rs.next() ) {
+            int id = rs.getInt("id");
+            String  name = rs.getString("name");
+            int age  = rs.getInt("age");
+            String  address = rs.getString("address");
+            float salary = rs.getFloat("salary");
+            System.out.println( "ID = " + id );
+            System.out.println( "NAME = " + name );
+            System.out.println( "AGE = " + age );
+            System.out.println( "ADDRESS = " + address );
+            System.out.println( "SALARY = " + salary );
+            System.out.println();
+         }
+         rs.close();
+         stmt.close();
+         c.close();
+       } catch ( Exception e ) {
+         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+         System.exit(0);
+       }
+       System.out.println("Operation done successfully");
+     }
+}
+
+
+// Update operation
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+
+public class PostgreSQLJDBC {
+   public static void main( String args[] )
+     {
+       Connection c = null;
+       Statement stmt = null;
+       try {
+       Class.forName("org.postgresql.Driver");
+         c = DriverManager
+            .getConnection("jdbc:postgresql://localhost:5432/testdb",
+            "manisha", "123");
+         c.setAutoCommit(false);
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         String sql = "UPDATE COMPANY set SALARY = 25000.00 where ID=1;";
+         stmt.executeUpdate(sql);
+         c.commit();
+
+         ResultSet rs = stmt.executeQuery( "SELECT * FROM COMPANY;" );
+         while ( rs.next() ) {
+            int id = rs.getInt("id");
+            String  name = rs.getString("name");
+            int age  = rs.getInt("age");
+            String  address = rs.getString("address");
+            float salary = rs.getFloat("salary");
+            System.out.println( "ID = " + id );
+            System.out.println( "NAME = " + name );
+            System.out.println( "AGE = " + age );
+            System.out.println( "ADDRESS = " + address );
+            System.out.println( "SALARY = " + salary );
+            System.out.println();
+         }
+         rs.close();
+         stmt.close();
+         c.close();
+       } catch ( Exception e ) {
+         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+         System.exit(0);
+       }
+       System.out.println("Operation done successfully");
+     }
+}
+
+//Delete statement
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+
+public class PostgreSQLJDBC6 {
+   public static void main( String args[] )
+     {
+       Connection c = null;
+       Statement stmt = null;
+       try {
+       Class.forName("org.postgresql.Driver");
+         c = DriverManager
+            .getConnection("jdbc:postgresql://localhost:5432/testdb",
+            "manisha", "123");
+         c.setAutoCommit(false);
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         String sql = "DELETE from COMPANY where ID=2;";
+         stmt.executeUpdate(sql);
+         c.commit();
+
+         ResultSet rs = stmt.executeQuery( "SELECT * FROM COMPANY;" );
+         while ( rs.next() ) {
+            int id = rs.getInt("id");
+            String  name = rs.getString("name");
+            int age  = rs.getInt("age");
+            String  address = rs.getString("address");
+            float salary = rs.getFloat("salary");
+            System.out.println( "ID = " + id );
+            System.out.println( "NAME = " + name );
+            System.out.println( "AGE = " + age );
+            System.out.println( "ADDRESS = " + address );
+            System.out.println( "SALARY = " + salary );
+            System.out.println();
+         }
+         rs.close();
+         stmt.close();
+         c.close();
+       } catch ( Exception e ) {
+         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+         System.exit(0);
+       }
+       System.out.println("Operation done successfully");
+     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
