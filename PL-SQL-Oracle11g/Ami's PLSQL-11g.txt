@@ -1,0 +1,3610 @@
+=========================================================================================================================
+PL/SQL Language Fundamentals
+=========================================================================================================================
+
+
+// Character Sets and Lexical Units :
+
+PL/SQL supports two character sets: the database character set, which is used for
+identifiers and source code, and the national character set, which is used for national
+language data.
+
+Eg : PL/SQL procedure
+SQL> DECLARE
+2 x NUMBER := 10;
+3 y NUMBER := 5;
+4 max NUMBER;
+5 BEGIN
+6 IF x>y THEN max:=x;ELSE max:=y;END IF; -- correct but hard to read
+7
+8 -- Easier to read:
+9
+10 IF x > y THEN
+11 max:=x;
+12 ELSE
+13 max:=y;
+14 END IF;
+15 END;
+16 /
+PL/SQL procedure successfully completed.
+
+//case sensitivity :
+
+PL/SQL is not case-sensitive with respect to identifiers. For example, PL/SQL
+considers the following to be the same:
+lastname
+LastName
+LASTNAME
+
+
+//Numeric Literals :
+
+An integer literal is an optionally signed whole number without a decimal point. For
+example:
+030 6 -14 0 +32767
+A real literal is an optionally signed whole or fractional number with a decimal point.
+For example:
+6.6667 0.0 -12.0 3.14159 +8300.00 .5 25.
+PL/SQL considers numbers such as 12.0 and 25. to be reals even though they have
+integral values.
+A numeric literal value that is composed only of digits and falls in the range
+-2147483648 to 2147483647 has a PLS_INTEGER data type; otherwise this literal has the
+NUMBER data type. You can add the f of d suffix to a literal value that is composed
+only of digits to specify the BINARY_FLOAT or BINARY_TABLE respectively
+
+//xEy
+
+Numeric literals cannot contain dollar signs or commas, but can be written using
+scientific notation. Simply suffix the number with an E (or e) followed by an
+optionally signed integer. For example:
+2E5 1.0E-7 3.14159e0 -1E38 -9.5e-3
+xEy stands for "x times ten to the power of y."
+5E3 = 5 * 10**3 = 5 * 1000 = 5000
+
+The absolute value of a NUMBER literal can be in the range 1.0E-130 up to (but not
+including) 1.0E126.
+
+//Floats and Doubles :
+
+Example 2–2 Using BINARY_FLOAT and BINARY_DOUBLE
+SQL> DECLARE
+2 x BINARY_FLOAT := sqrt(2.0f);
+3 -- single-precision floating-point number
+4 y BINARY_DOUBLE := sqrt(2.0d);
+5 -- double-precision floating-point number
+6 BEGIN
+7 NULL;
+8 END;
+9 /
+
+//Character Literals :
+
+PL/SQL is case sensitive within character literals. For example, PL/SQL considers the
+literals 'Z' and 'z' to be different. Also, the character literals '0'..'9' are not
+equivalent to integer literals but can be used in arithmetic expressions because they are
+implicitly convertible to integers.
+
+//String Literals :
+
+PL/SQL is case sensitive within string literals. For example, PL/SQL considers the
+following literals to be different:
+'baker'
+'Baker'
+
+To represent an apostrophe within a string, you can write two single quotes, which is
+not the same as writing a double quote:
+'I''m a string, you''re a string.'
+
+You can also use the following notation to define your own delimiter characters for the
+literal. You choose a character that is not present in the string, and then need not
+escape other single quotation marks inside the literal:
+-- q'!...!' notation allows use of single quotes inside literal
+string_var := q'!I'm a string, you're a string.!';
+
+For NCHAR and NVARCHAR2 literals, use the prefix nq instead of q, as in the following
+example, where 00E0 represents the character é:
+where_clause := nq'#WHERE COL_VALUE LIKE '%\00E9'#';
+
+//  BOOLEAN Literals:
+
+BOOLEAN literals are the predefined values TRUE, FALSE, and NULL. NULL stands for a
+missing, unknown, or inapplicable value.
+
+//Comments :
+-- single line comment
+/* multi line comment */
+
+
+// Variables :
+
+Example 2–6 Declaring Variables
+SQL> DECLARE
+2 birthday DATE;
+3 emp_count SMALLINT := 0;
+4 pi REAL := 3.14159;
+5 radius REAL := 1;
+6 area REAL := pi * radius**2;
+7 BEGIN
+8 NULL;
+9 END;
+
+// Constants :
+
+Example 2–7 Declaring Constants
+SQL> DECLARE
+2 credit_limit CONSTANT REAL := 5000.00;
+3 max_days_in_year CONSTANT INTEGER := 366;
+4 urban_legend CONSTANT BOOLEAN := FALSE;
+5 BEGIN
+6 NULL;
+7 END;
+
+// Default values :
+
+Example 2–8 Assigning Default Values to Variables with DEFAULT Keyword
+SQL> DECLARE
+2 blood_type CHAR DEFAULT 'O'; -- Same as blood_type CHAR := 'O';
+3
+4 hours_worked INTEGER DEFAULT 40; -- Typical value
+5 employee_count INTEGER := 0; -- No typical value
+6
+7 BEGIN
+8 NULL;
+9 END;
+
+// NOT Null :
+
+Example 2–9 Declaring Variables with NOT NULL Constraint
+SQL> DECLARE
+2 acct_id INTEGER(4) NOT NULL := 9999;
+3 a NATURALN := 9999;
+4 b POSITIVEN := 9999;
+5 c SIMPLE_INTEGER := 9999;
+6 BEGIN
+7 NULL;
+8 END;
+
+// %TYPE Attribute :
+
+The %TYPE attribute lets you declare a constant, variable, field, or parameter to be of
+the same data type a previously declared variable, field, record, nested table, or
+database column
+
+SQL> DECLARE
+2 credit PLS_INTEGER RANGE 1000..25000;
+3 debit credit%TYPE; -- inherits data type
+4
+5 name VARCHAR2(20) := 'JoHn SmItH';
+6 upper_name name%TYPE; -- inherits data type and default value
+7 lower_name name%TYPE; -- inherits data type and default value
+8 init_name name%TYPE; -- inherits data type and default value
+9 BEGIN
+10 DBMS_OUTPUT.PUT_LINE ('name: ' || name);
+11 DBMS_OUTPUT.PUT_LINE ('upper_name: ' || UPPER(name));
+12 DBMS_OUTPUT.PUT_LINE ('lower_name: ' || LOWER(name));
+13 DBMS_OUTPUT.PUT_LINE ('init_name: ' || INITCAP(name));
+14 END;
+
+Eg : Improper use of %TYPE
+
+Example 2–11 Using %TYPE Incorrectly with NOT NULL Referenced Type
+SQL> DECLARE
+2 name VARCHAR2(20) NOT NULL := 'JoHn SmItH';
+3 same_name name%TYPE;
+4 BEGIN
+5 NULL;
+6 END;
+7 /
+same_name name%TYPE;
+*
+ERROR at line 3:
+ORA-06550: line 3, column 15:
+PLS-00218: a variable declared NOT NULL must have an initialization assignment
+
+Eg:
+Example 2–13 Using %TYPE to Declare Variables of the Types of Table Columns
+SQL> CREATE TABLE employees_temp (
+2 empid NUMBER(6) NOT NULL PRIMARY KEY,
+3 deptid NUMBER(6) CONSTRAINT c_employees_temp_deptid
+4 CHECK (deptid BETWEEN 100 AND 200),
+5 deptname VARCHAR2(30) DEFAULT 'Sales'
+6 );
+Table created.
+SQL>
+SQL> DECLARE
+2 v_empid employees_temp.empid%TYPE;
+3 v_deptid employees_temp.deptid%TYPE;
+4 v_deptname employees_temp.deptname%TYPE;
+5 BEGIN
+6 v_empid := NULL; -- Null constraint not inherited
+7 v_deptid := 50; -- Check constraint not inherited
+8 DBMS_OUTPUT.PUT_LINE
+9 ('v_deptname: ' || v_deptname); -- Default value not inherited
+10 END;
+
+//  %ROWTYPE Attribute :
+
+The %ROWTYPE attribute lets you declare a record that represents a row in a table or
+view.
+
+Example 2–14 Using %ROWTYPE to Declare a Record that Represents a Table Row
+SQL> CREATE TABLE employees_temp (
+2 empid NUMBER(6) NOT NULL PRIMARY KEY,
+3 deptid NUMBER(6) CONSTRAINT c_employees_temp_deptid
+4 CHECK (deptid BETWEEN 100 AND 200),
+5 deptname VARCHAR2(30) DEFAULT 'Sales'
+6 );
+Table created.
+SQL>
+SQL> DECLARE
+2 emprec employees_temp%ROWTYPE;
+3 BEGIN
+4 emprec.empid := NULL; -- Null constraint not inherited
+5 emprec.deptid := 50; -- Check constraint not inherited
+6 DBMS_OUTPUT.PUT_LINE
+7 ('emprec.deptname: ' || emprec.deptname);
+8 -- Default value not inherited
+9 END;
+10 /
+emprec.deptname:
+
+Example 2–15 Declaring a Record that Represents a Subset of Table Columns
+SQL> DECLARE
+2 CURSOR c1 IS
+3 SELECT department_id, department_name
+4 FROM departments;
+5
+6 dept_rec c1%ROWTYPE; -- includes subset of columns in table
+7
+8 BEGIN
+9 NULL;
+10 END;
+
+Example 2–16 Declaring a Record that Represents a Row from a Join
+SQL> DECLARE
+2 CURSOR c2 IS
+3 SELECT employee_id, email, employees.manager_id, location_id
+4 FROM employees, departments
+5 WHERE employees.department_id = departments.department_id;
+6
+7 join_rec c2%ROWTYPE; -- includes columns from two tables
+8
+9 BEGIN
+10 NULL;
+11 END;
+
+Example 2–17 Assigning One Record to Another, Correctly and Incorrectly
+SQL> DECLARE
+2 dept_rec1 departments%ROWTYPE;
+3 dept_rec2 departments%ROWTYPE;
+4
+5 CURSOR c1 IS SELECT department_id, location_id
+6 FROM departments;
+7
+8 dept_rec3 c1%ROWTYPE;
+9 dept_rec4 c1%ROWTYPE;
+10
+11 BEGIN
+12 dept_rec1 := dept_rec2; -- declarations refer to same table
+13 dept_rec3 := dept_rec4; -- declarations refer to same cursor
+14 dept_rec2 := dept_rec3;
+15 END;
+16 /
+dept_rec2 := dept_rec3;
+*
+ERROR at line 14:
+ORA-06550: line 14, column 16:
+PLS-00382: expression is of wrong type
+ORA-06550: line 14, column 3:
+
+Example 2–18 Using SELECT INTO for Aggregate Assignment
+SQL> DECLARE
+2 dept_rec departments%ROWTYPE;
+3 BEGIN
+4 SELECT * INTO dept_rec
+5 FROM departments
+6 WHERE department_id = 30
+7 AND ROWNUM < 2;
+8 END;
+
+// ALIASES :
+
+Example 2–19 Using an Alias for an Expression Associated with %ROWTYPE
+SQL> BEGIN
+2 FOR item IN
+3 (SELECT (first_name || ' ' || last_name) complete_name
+4 FROM employees
+5 WHERE ROWNUM < 11
+6 ) LOOP
+7 DBMS_OUTPUT.PUT_LINE
+8 ('Employee name: ' || item.complete_name);
+9 END LOOP;
+10 END;
+11 /
+Employee name: Ellen Abel
+Employee name: Sundar Ande
+Employee name: Mozhe Atkinson
+
+// DECLARATIONS :
+
+i, j, k, l SMALLINT; -- Error you cannot declare variables like this even though they have same data type; declare them separately.
+
+// Naming Conventions :
+
+Simple—procedure name only:
+raise_salary(employee_id, amount);
+
+Qualified—procedure name preceded by the name of the package that contains it
+(this is called dot notation because a dot separates the package name from the
+procedure name):
+emp_actions.raise_salary(employee_id, amount);
+
+Remote—procedure name followed by the remote access indicator (@) and a link
+to the database on which the procedure is stored:
+raise_salary@newyork(employee_id, amount);
+
+Qualified and remote:
+emp_actions.raise_salary@newyork(employee_id, amount);
+
+
+Example 2–22 Using a Block Label for Name Resolution
+SQL> CREATE TABLE employees2 AS
+2 SELECT last_name FROM employees;
+Table created.
+SQL>
+SQL> -- Deletes everyone, because both LAST_NAMEs refer to the column:
+SQL>
+SQL> BEGIN
+2 DELETE FROM employees2
+3 WHERE last_name = last_name;
+4 DBMS_OUTPUT.PUT_LINE('Deleted ' || SQL%ROWCOUNT || ' rows.');
+5 END;
+6 /
+Deleted 107 rows.
+
+
+SQL> -- Avoid error by qualifying variable with block name:
+SQL>
+SQL> <<main>> -- Label block for future reference
+2 DECLARE
+3 last_name VARCHAR2(10) := 'King';
+4 v_last_name VARCHAR2(10) := 'King';
+5 BEGIN
+6 DELETE FROM employees2
+7 WHERE last_name = main.last_name;
+8 DBMS_OUTPUT.PUT_LINE('Deleted ' || SQL%ROWCOUNT || ' rows.');
+9 END;
+10 /
+Deleted 2 rows.
+PL/SQL procedure successfully
+
+Example 2–23 Using a Subprogram Name for Name Resolution
+SQL> DECLARE
+2 FUNCTION dept_name (department_id IN NUMBER)
+3 RETURN departments.department_name%TYPE
+4 IS
+5 department_name departments.department_name%TYPE;
+6 BEGIN
+7 SELECT department_name INTO dept_name.department_name
+8 -- ^column ^local variable
+9 FROM departments
+10 WHERE department_id = dept_name.department_id;
+11 -- ^column ^formal parameter
+12 RETURN department_name
+
+13 END;
+14 BEGIN
+15 FOR item IN (SELECT department_id FROM departments)
+16 LOOP
+17 DBMS_OUTPUT.PUT_LINE
+18 ('Department: ' || dept_name(item.department_id));
+19 END LOOP;
+20 END;
+
+
+//SCOPE of Variables
+
+DECLARE
+a char; --Scope of a starts here
+BEGIN
+
+END; -- Here it ends i.e when the corresponding BEGIN of Declare ends.
+
+Example 2–25 Qualifying a Redeclared Global Identifier with a Block Label
+SQL> <<outer>>
+2 DECLARE
+3 birthdate DATE := '09-AUG-70';
+4 BEGIN
+5 DECLARE
+6 birthdate DATE;
+7 BEGIN
+8 birthdate := '29-SEP-70';
+9
+10 IF birthdate = outer.birthdate THEN
+11 DBMS_OUTPUT.PUT_LINE ('Same Birthday');
+12 ELSE
+13 DBMS_OUTPUT.PUT_LINE ('Different Birthday');
+14 END IF;
+15 END;
+16 END;
+
+Example 2–26 Qualifying an Identifier with a Subprogram Name
+SQL> CREATE OR REPLACE PROCEDURE check_credit (limit NUMBER) AS
+2 rating NUMBER := 3;
+3
+4 FUNCTION check_rating RETURN BOOLEAN IS
+5 rating NUMBER := 1;
+6 over_limit BOOLEAN;
+7 BEGIN
+8 IF check_credit.rating <= limit THEN
+9 over_limit := FALSE;
+10 ELSE
+11 over_limit := TRUE;
+12 rating := limit;
+13 END IF;
+14 RETURN over_limit;
+15 END check_rating;
+16 BEGIN
+17 IF check_rating THEN
+18 DBMS_OUTPUT.PUT_LINE
+19 ('Credit rating over limit (' || TO_CHAR(limit) || '). '
+20 || 'Rating: ' || TO_CHAR(rating));
+21 ELSE
+22 DBMS_OUTPUT.PUT_LINE
+23 ('Credit rating OK. ' || 'Rating: ' || TO_CHAR(rating));
+24 END IF;
+25 END;
+
+Example 2–27 Label and Subprogram with Same Name in Same Scope
+SQL> <<echo>>
+2 DECLARE
+3 x NUMBER := 5;
+4
+5 PROCEDURE echo AS
+6 x NUMBER := 0;
+7 BEGIN
+8 DBMS_OUTPUT.PUT_LINE('x = ' || x);
+9 DBMS_OUTPUT.PUT_LINE('echo.x = ' || echo.x);
+10 END;
+11
+12 BEGIN
+13 echo;
+14 END;
+
+SQL> <<compute_ratio>>
+2 <<another_label>>
+3 DECLARE
+4 numerator NUMBER := 22;
+5 denominator NUMBER := 7;
+6 BEGIN
+7 <<another_label>>
+8 DECLARE
+9 denominator NUMBER := 0;
+10 BEGIN
+11 DBMS_OUTPUT.PUT_LINE('Ratio with compute_ratio.denominator = ');
+12 DBMS_OUTPUT.PUT_LINE(numerator/compute_ratio.denominator);
+13
+14 DBMS_OUTPUT.PUT_LINE('Ratio with another_label.denominator = ');
+15 DBMS_OUTPUT.PUT_LINE(numerator/another_label.denominator);
+16
+17 EXCEPTION
+18 WHEN ZERO_DIVIDE THEN
+19 DBMS_OUTPUT.PUT_LINE('Divide-by-zero error: can''t divide '
+20 || numerator || ' by ' || denominator);
+21 WHEN OTHERS THEN
+22 DBMS_OUTPUT.PUT_LINE('Unexpected error.');
+23 END inner_label;
+24 END compute_ratio;
+25 /
+Ratio with compute_ratio.denominator =
+3.14285714285714285714285714285714285714
+Ratio with another_label.denominator =
+Divide-by-zero error: cannot divide 22 by 0
+
+Variables are initialized every time a block or subprogram is entered. By default,
+variables are initialized to NULL. Unless you explicitly initialize a variable, its value is
+NULL, as Example 2–29 shows.
+Example 2–29 Variable Initialized to NULL by Default
+SQL> DECLARE
+2 counter INTEGER;
+3 BEGIN
+4 counter := counter + 1;
+5
+6 IF counter IS NULL THEN
+7 DBMS_OUTPUT.PUT_LINE('counter is NULL.');
+8 END IF;
+9 END;
+
+
+// Assigning Values :
+
+Boolean:
+done := FALSE;
+
+Example 2–31 Assigning Query Results to Variables
+SQL> DECLARE
+2 emp_id employees.employee_id%TYPE := 100;
+3 emp_name employees.last_name%TYPE;
+4 wages NUMBER(7,2);
+5 BEGIN
+6 SELECT last_name, salary + (salary * nvl(commission_pct,0))
+7 INTO emp_name, wages
+8 FROM employees
+9 WHERE employee_id = emp_id;
+10
+11 DBMS_OUTPUT.PUT_LINE
+12 ('Employee ' || emp_name || ' might make ' || wages);
+13 END;
+14 /
+Employee King might make 24000
+
+
+//COMPARISON Operators :
+
+Concatenation operator:
+
+Example 2–32 Concatenation Operator
+SQL> DECLARE
+2 x VARCHAR2(4) := 'suit';
+3 y VARCHAR2(4) := 'case';
+4 BEGIN
+5 DBMS_OUTPUT.PUT_LINE (x || y);
+6 END;
+
+Logical Operator : AND,OR and NOT.
+
+Short-Circuit Evaluation:
+
+When evaluating a logical expression, PL/SQL uses short-circuit evaluation. That is,
+PL/SQL stops evaluating the expression as soon as the result can be determined. This
+lets you write expressions that might otherwise cause errors.
+
+Example 2–38 Short-Circuit Evaluation
+SQL> DECLARE
+2 on_hand INTEGER := 0;
+3 on_order INTEGER := 100;
+4 BEGIN
+5 -- Does not cause divide-by-zero error;
+6 -- evaluation stops after first expression
+7
+8 IF (on_hand = 0) OR ((on_order / on_hand) < 5) THEN
+9 DBMS_OUTPUT.PUT_LINE('On hand quantity is zero.');
+10 END IF;
+11 END;
+
+Esacpe character:
+
+IF sale_sign LIKE '50\% off!' ESCAPE '\' THEN
+....
+
+BETWEEN Operator The BETWEEN operator tests whether a value lies in a specified
+range. x BETWEEN a AND b means that x >= a and x <= b.
+
+IN Operator The IN operator tests set membership. x IN (set) means that x is equal to
+any member of set.
+
+Example 2–43 IN Operator
+SQL> DECLARE
+2 letter VARCHAR2(1) := 'm';
+3 BEGIN
+4 print_boolean (
+5 'letter IN (''a'', ''b'', ''c'')',
+6 letter IN ('a', 'b', 'c')
+7 );
+8
+9 print_boolean (
+10 'letter IN (''z'', ''m'', ''y'', ''p'')',
+11 letter IN ('z', 'm', 'y', 'p')
+12 );
+13 END;
+14 /
+letter IN ('a', 'b', 'c') = FALSE
+letter IN ('z', 'm', 'y', 'p') = TRUE
+
+//CASE Statement :
+
+Example 2–46 Using the WHEN Clause with a CASE Statement
+SQL> DECLARE
+2 grade CHAR(1) := 'B';
+3 appraisal VARCHAR2(20);
+4 BEGIN
+5 appraisal :=
+6 CASE grade
+7 WHEN 'A' THEN 'Excellent'
+8 WHEN 'B' THEN 'Very Good'
+9 WHEN 'C' THEN 'Good'
+10 WHEN 'D' THEN 'Fair'
+11 WHEN 'F' THEN 'Poor'
+12 ELSE 'No such grade'
+13 END;
+14 DBMS_OUTPUT.PUT_LINE
+15 ('Grade ' || grade || ' is ' || appraisal);
+16 END;
+17 /
+Grade B is Very Good
+
+NULL Values:
+
+Example 2–48 NULL Value in Unequal Comparison
+SQL> DECLARE
+2 x NUMBER := 5;
+3 y NUMBER := NULL;
+4 BEGIN
+5 IF x != y THEN -- yields NULL, not TRUE
+6 DBMS_OUTPUT.PUT_LINE('x != y'); -- not executed
+7 ELSIF x = y THEN -- also yields NULL
+8 DBMS_OUTPUT.PUT_LINE('x = y');
+9 ELSE
+10 DBMS_OUTPUT.PUT_LINE
+11 ('Can''t tell if x and y are equal or not.');
+12 END IF;
+13 END;
+
+also null is not equal to another null.
+
+Use the IS NULL operator to test for null strings, as follows:
+IF v_string IS NULL THEN ...
+
+NULL Values and the Concatenation Operator
+The concatenation operator ignores null operands. For example:
+SQL> BEGIN
+2 DBMS_OUTPUT.PUT_LINE ('apple' || NULL || NULL || 'sauce');
+3 END;
+4 /
+applesauce
+
+The function DECODE compares its first argument to one or more search expressions,
+which are paired with result expressions. Any search or result expression can be NULL.
+If a search is successful, the corresponding result is returned.
+
+Example 2–50 NULL Value as Argument to DECODE Function
+SQL> DECLARE
+2 manager VARCHAR2(40);
+3 name employees.last_name%TYPE;
+4 BEGIN
+5 -- NULL is a valid argument to DECODE.
+6 -- In this case, manager_id is NULL
+7 -- and the DECODE function returns 'nobody'.
+8
+9 SELECT DECODE(manager_id, NULL, 'nobody', 'somebody'), last_name
+10 INTO manager, name
+11 FROM employees
+12 WHERE employee_id = 100;
+13
+14 DBMS_OUTPUT.PUT_LINE
+15 (name || ' is managed by ' || manager);
+16 END;
+
+The function NVL returns the value of its second argument if its first argument is NULL.
+
+Example 2–51 NULL Value as Argument to NVL Function
+SQL> DECLARE
+2 manager employees.manager_id%TYPE;
+3 name employees.last_name%TYPE;
+4 BEGIN
+5 -- NULL is a valid argument to NVL.
+6 -- In this case, manager_id is null
+7 -- and the NVL function returns -1.
+8
+9 SELECT NVL(manager_id, -1), last_name
+10 INTO manager, name
+11 FROM employees
+12 WHERE employee_id = 100;
+13
+14 DBMS_OUTPUT.PUT_LINE
+15 (name || ' is managed by employee Id: ' || manager);
+16 END;
+
+
+The function REPLACE returns the value of its first argument if its second argument is
+NULL, whether the optional third argument is present or not
+
+Example 2–52 NULL Value as Second Argument to REPLACE Function
+SQL> DECLARE
+2 string_type VARCHAR2(60);
+3 old_string string_type%TYPE := 'Apples and oranges';
+4 v_string string_type%TYPE := 'more apples';
+5
+6 -- NULL is a valid argument to REPLACE,
+7 -- but does not match anything,
+8 -- so no replacement is done.
+9
+10 new_string string_type%TYPE := REPLACE(old_string, NULL, v_string);
+11 BEGIN
+12 DBMS_OUTPUT.PUT_LINE('Old string = ' || old_string);
+13 DBMS_OUTPUT.PUT_LINE('New string = ' || new_string);
+14 END;
+
+If its third argument is NULL, REPLACE returns its first argument with every
+occurrence of its second argument removed
+
+
+// CONDITIONAL COMPILING :
+
+Using Conditional Compilation Selection Directives:
+
+The conditional compilation selection directive evaluates static expressions to
+determine which text to include in the compilation. The selection directive is of the
+form:
+$IF boolean_static_expression $THEN text
+[$ELSIF boolean_static_expression $THEN text]
+[$ELSE text]
+$END
+
+Using Conditional Compilation Error Directives:
+
+$ERROR varchar2_static_expression $END
+
+Using Conditional Compilation Inquiry Directives:
+
+Using Predefined Inquiry Directives with Conditional Compilation
+Predefined inquiry directive names, which can be used in conditional expressions,
+include:
+
+ PLSQL_LINE, a PLS_INTEGER literal whose value indicates the line number
+reference to $$PLSQL_LINE in the current PL/SQL unit
+An example of $$PLSQL_LINE in a conditional expression is:
+$IF $$PLSQL_LINE = 32 $THEN ...
+
+PLSQL_UNIT, a VARCHAR2 literal whose value indicates the current PL/SQL unit
+For a named PL/SQL unit, $$PLSQL_UNIT contains, but might not be limited to,
+the unit name. For an anonymous block, $$PLSQL_UNIT contains the empty
+string.
+
+An example of $$PLSQL_UNIT in a conditional expression is:
+IF $$PLSQL_UNIT = 'AWARD_BONUS' THEN ...
+
+The preceding example shows the use of PLSQL_UNIT in regular PL/SQL.
+Because $$PLSQL_UNIT = 'AWARD_BONUS' is a VARCHAR2 comparison, not a
+static expression, it is not supported with $IF. 
+One valid use of $IF with PLSQL_
+UNIT is to determine an anonymous block, as follows:
+$IF $$PLSQL_UNIT IS NULL $THEN ...
+
+
+To get DBMS Version:
+
+$IF DBMS_DB_VERSION.VER_LE_10_1 $THEN
+3 $ERROR 'unsupported database release'
+
+
+========================================================================================================================
+PL/SQL Data types
+========================================================================================================================
+
+==========================
+Numeric
+==========================
+PLS_INTEGER or
+BINARY_INTEGER=
+Signed integer in range -2,147,483,648 through 2,147,483,647, represented
+in 32 bits
+
+BINARY_FLOAT =Single-precision IEEE 754-format floating-point number
+
+BINARY_DOUBLE =Double-precision IEEE 754-format floating-point number
+
+NUMBER =Fixed-point or floating-point number with absolute value in range 1E-130
+to (but not including) 1.0E126. A NUMBER variable can also represent 0.
+
+
+//Predefined Subtypes of PLS_INTEGER Data Type :
+
+NATURAL= Nonnegative PLS_INTEGER value
+NATURALN= Nonnegative PLS_INTEGER value with NOT NULL constraint
+POSITIVE =Positive PLS_INTEGER value
+POSITIVEN =Positive PLS_INTEGER value with NOT NULL constraint
+SIGNTYPE =PLS_INTEGER value -1, 0, or 1 (useful for programming tri-state logic)
+SIMPLE_INTEGER =PLS_INTEGER value with NOT NULL constraint
+
+//BINARY_FLOAT and BINARY_DOUBLE Data Types:
+
+BINARY_FLOAT_NAN1 BINARY_FLOAT= value for which the condition IS NAN
+(not a number) is true
+BINARY_FLOAT_INFINITY =Single-precision positive infinity
+BINARY_FLOAT_MAX_NORMAL= Maximum normal BINARY_FLOAT value
+BINARY_FLOAT_MIN_NORMAL =Minimum normal BINARY_FLOAT value
+BINARY_FLOAT_MAX_SUBNORMAL= Maximum subnormal BINARY_FLOAT value
+BINARY_FLOAT_MIN_SUBNORMAL= Minimum subnormal BINARY_FLOAT value
+BINARY_DOUBLE_NAN =BINARY_DOUBLE value for which the condition IS NAN
+(not a number) is true
+BINARY_DOUBLE_INFINITY=Double-precision positive infinity
+
+BINARY_DOUBLE_MAX_NORMAL= Maximum normal BINARY_DOUBLE value
+BINARY_DOUBLE_MIN_NORMAL= Minimum normal BINARY_DOUBLE value
+BINARY_DOUBLE_MAX_SUBNORMAL= Maximum subnormal BINARY_DOUBLE value
+BINARY_DOUBLE_MIN_SUBNORMAL =Minimum subnormal BINARY_DOUBLE value
+
+// Number Data Type:
+
+NUMBER(precision)
+For precision, the maximum value is 38. The default value is 39 or 40, or the
+maximum for your system, whichever is least.
+For scale, the minimum and maximum values are -84 and 127, respectively. The
+default value is zero.
+
+//Subtypes of NUMBER Data Type:
+
+DEC, DECIMAL, or
+NUMERIC
+=Fixed-point NUMBER with maximum precision of 38 decimal digits
+DOUBLE PRECISION
+or FLOAT
+=Floating-point NUMBER with maximum precision of 126 binary digits
+(approximately 38 decimal digits)
+INT, INTEGER, or
+SMALLINT
+=Integer with maximum precision of 38 decimal digits
+REAL =Floating-point NUMBER with maximum precision of 63 binary digits
+(approximately 18 decimal digits)
+
+
+//Character Data Types and Subtypes:
+
+CHAR =Fixed-length character string with maximum size of 32,767 bytes
+VARCHAR2 =Variable-length character string with maximum size of 32,767 bytes
+RAW =Variable-length binary or byte string with maximum size of 32,767 bytes, not
+interpreted by PL/SQL
+NCHAR= Fixed-length national character string with maximum size of 32,767 bytes
+
+NVARCHAR2 =Variable-length national character string with maximum size of 32,767 bytes
+LONG=Variable-length character string with maximum size of 32,760 bytes
+LONG RAW= Variable-length binary or byte string with maximum size of 32,760 bytes, not
+interpreted by PL/SQL
+ROWID=Physical row identifier, the address of a row in an ordinary table
+UROWID =Universal row identifier (physical, logical, or foreign row identifier)
+
+CHAR and VARCHAR2 :
+
+the value assigned to last_name in the following statement has six
+trailing blanks, not only one:
+last_name CHAR(10) := 'CHEN '; -- note trailing blank
+If the data type of the receiver is VARCHAR2, PL/SQL neither blank-pads the value nor
+strips trailing blanks. Character values are assigned intact, and no information is lost.
+
+Example 3–1 Comparing Two CHAR Values
+SQL> DECLARE
+2 last_name1 CHAR(5) := 'BELLO'; -- no trailing blanks
+3 last_name2 CHAR(10) := 'BELLO '; -- trailing blanks
+4 BEGIN
+5 IF last_name1 = last_name2 THEN
+6 DBMS_OUTPUT.PUT_LINE
+7 (last_name1 || ' is equal to ' || last_name2);
+8 ELSE
+9 DBMS_OUTPUT.PUT_LINE
+10 (last_name2 || ' is not equal to ' || last_name1);
+11 END IF;
+12 END;
+13 /
+BELLO is equal to BELLO
+PL/SQL procedure successfully completed.
+SQL>
+Example 3–2 Comparing Two VARCHAR2 Values
+SQL> DECLARE
+2 last_name1 VARCHAR2(10) := 'DOW'; -- no trailing blanks
+3 last_name2 VARCHAR2(10) := 'DOW '; -- trailing blanks
+4 BEGIN
+5 IF last_name1 = last_name2 THEN
+6 DBMS_OUTPUT.PUT_LINE
+7 (last_name1 || ' is equal to ' || last_name2 );
+8 ELSE
+9 DBMS_OUTPUT.PUT_LINE
+10 (last_name2 || ' is not equal to ' || last_name1);
+11 END IF;
+12 END;
+13 /
+DOW is not equal to DOW
+PL/SQL procedure successfully completed.
+SQL>
+Example 3–3 Comparing CHAR Value and VARCHAR2 Value
+SQL> DECLARE
+2 last_name1 VARCHAR2(10) := 'STAUB';
+3 last_name2 CHAR(10) := 'STAUB'; -- PL/SQL blank-pads value
+4 BEGIN
+5 IF last_name1 = last_name2 THEN
+6 DBMS_OUTPUT.PUT_LINE
+7 (last_name1 || ' is equal to ' || last_name2);
+8 ELSE
+9 DBMS_OUTPUT.PUT_LINE
+10 (last_name2 || ' is not equal to ' || last_name1 );
+11 END IF;
+12 END;
+13 /
+STAUB is not equal to STAUB
+PL/SQL procedure successfully completed.
+
+// RAW Data type :
+
+The syntax for specifying a RAW data item is:
+RAW (maximum_size)
+For example:
+RAW(256)
+The maximum_size, in bytes, must be an integer literal in the range 1..32767, not a
+constant or variable. The default value is one.
+The largest RAW value that you can insert into a RAW database column is 2,000 bytes.
+
+// DATE TIME  :
+
+Field Names : YEAR,MONTH,DAY,HOR,MINUTE,SECOND.
+Intervals : non-zero interger,0 to 11,non-zero integer,0 to 23,0 to 59,0 to 59.9(n)  where 9(n) is the precision of interval fractional seconds.
+
+Eg:
+Example 3–4 Assigning a Literal Value to a TIMESTAMP Variable
+SQL> DECLARE
+2 checkout TIMESTAMP(3);
+3 BEGIN
+4 checkout := '22-JUN-2004 07:48:53.275';
+5 DBMS_OUTPUT.PUT_LINE( TO_CHAR(checkout));
+6 END;
+7 /
+22-JUN-04 07.48.53.275 AM
+PL/SQL procedure successfully completed.
+
+// INTERVAL :
+
+INTERVAL DAY TO SECOND Data Type
+You use the data type INTERVAL DAY TO SECOND to store and manipulate intervals of
+days, hours, minutes, and seconds. The syntax is:
+INTERVAL DAY[(leading_precision)
+TO SECOND (fractional_seconds_precision)
+where leading_precision and fractional_seconds_precision specify the
+number of digits in the days field and seconds field, respectively.
+
+Example 3–10 Assigning Literals to an INTERVAL DAY TO SECOND Variable
+SQL> DECLARE
+2 lag_time INTERVAL DAY(3) TO SECOND(3);
+3 BEGIN
+4 lag_time := '7 09:24:30';
+5
+6 IF lag_time > INTERVAL '6' DAY THEN
+7 DBMS_OUTPUT.PUT_LINE ('Greater than 6 days');
+8 ELSE
+9 DBMS_OUTPUT.PUT_LINE ('Less than 6 days');
+10 END IF;
+11 END;
+12 /
+Greater than 6 days
+
+// LOB Data Types :
+
+BFILE Used to store large binary objects in operating system files outside the database. System-dependent. Cannot exceed 4 gigabytes (GB).
+BLOB Used to store large binary objects in the database. 8 to 128 terabytes(TB)
+CLOB Used to store large blocks of character data in the database. 8 to 128 TB
+NCLOB Used to store large blocks of NCHAR data in the database. 8 to 128 TB
+
+
+//Defining Subtypes
+You can define your own subtypes in the declarative part of any PL/SQL block,
+subprogram, or package using the following syntax:
+SUBTYPE subtype_name IS base_type[(constraint)] [NOT NULL];
+
+SQL> DECLARE
+2 SUBTYPE BirthDate IS DATE NOT NULL; -- Based on DATE type
+3 SUBTYPE Counter IS NATURAL; -- Based on NATURAL subtype
+4
+5 TYPE NameList IS TABLE OF VARCHAR2(10);
+6 SUBTYPE DutyRoster IS NameList; -- Based on TABLE type
+7
+8 TYPE TimeRec IS RECORD (minutes INTEGER, hours INTEGER);
+9 SUBTYPE FinishTime IS TimeRec; -- Based on RECORD type
+10 SUBTYPE ID_Num IS employees.employee_id%TYPE; -- Based on column type
+11 BEGIN
+12 NULL;
+13 END;
+
+Example 3–11 Using Ranges with Subtypes
+SQL> DECLARE
+2 v_sqlerrm VARCHAR2(64);
+3
+4 SUBTYPE pinteger IS PLS_INTEGER RANGE -9..9;
+5 y_axis pinteger;
+6
+7 PROCEDURE p (x IN pinteger) IS
+8 BEGIN
+9 DBMS_OUTPUT.PUT_LINE (x);
+10 END p;
+11
+12 BEGIN
+13 y_axis := 9;
+14 p(10);
+15
+16 EXCEPTION
+17 WHEN OTHERS THEN
+18 v_sqlerrm := SUBSTR(SQLERRM, 1, 64);
+19 DBMS_OUTPUT.PUT_LINE('Error: ' || v_sqlerrm);
+20 END;
+21 /
+Error: ORA-06502: PL/SQL: numeric or value error
+
+========================================================================================================================
+PL/SQL Control Strucutres
+========================================================================================================================
+
+// IF-THEN :
+
+SQL> DECLARE
+2 sales NUMBER(8,2) := 10100;
+3 quota NUMBER(8,2) := 10000;
+4 bonus NUMBER(6,2);
+5 emp_id NUMBER(6) := 120;
+6 BEGIN
+7 IF sales > (quota + 200) THEN
+8 bonus := (sales - quota)/4;
+9
+10 UPDATE employees SET salary =
+11 salary + bonus
+12 WHERE employee_id = emp_id;
+13 END IF;
+14 END;
+
+//IF-THEN-ELSE :
+
+IF sales > (quota + 200) THEN
+8 bonus := (sales - quota)/4;
+9 ELSE
+10 bonus := 50;
+11 END IF;
+
+//ELSIF :
+
+IF sales > 50000 THEN
+7 bonus := 1500;
+8 ELSIF sales > 35000 THEN
+9 bonus := 500;
+10 ELSE
+11 bonus := 100;
+12 END IF;
+
+//Case :
+
+SQL> DECLARE
+2 grade CHAR(1);
+3 BEGIN
+4 grade := 'B';
+5
+6 CASE grade
+7 WHEN 'A' THEN DBMS_OUTPUT.PUT_LINE('Excellent');
+8 WHEN 'B' THEN DBMS_OUTPUT.PUT_LINE('Very Good');
+9 WHEN 'C' THEN DBMS_OUTPUT.PUT_LINE('Good');
+10 WHEN 'D' THEN DBMS_OUTPUT.PUT_LINE('Fair');
+11 WHEN 'F' THEN DBMS_OUTPUT.PUT_LINE('Poor');
+12 ELSE DBMS_OUTPUT.PUT_LINE('No such grade');
+13 END CASE;
+14 END;
+
+Exception instead of Else in above Eg :
+
+Example 4–8 Using EXCEPTION Instead of ELSE Clause in CASE Statement
+SQL> DECLARE
+2 grade CHAR(1);
+3 BEGIN
+4 grade := 'B';
+5
+6 CASE
+7 WHEN grade = 'A' THEN DBMS_OUTPUT.PUT_LINE('Excellent');
+8 WHEN grade = 'B' THEN DBMS_OUTPUT.PUT_LINE('Very Good');
+9 WHEN grade = 'C' THEN DBMS_OUTPUT.PUT_LINE('Good');
+10 WHEN grade = 'D' THEN DBMS_OUTPUT.PUT_LINE('Fair');
+11 WHEN grade = 'F' THEN DBMS_OUTPUT.PUT_LINE('Poor');
+12 END CASE;
+13
+14 EXCEPTION
+15 WHEN CASE_NOT_FOUND THEN
+16 DBMS_OUTPUT.PUT_LINE('No such grade');
+17 END;
+
+===============================
+LOOP
+===============================
+
+// Basic Loop :
+
+LOOP
+sequence_of_statements
+END LOOP;
+
+//Using Exit :
+
+SQL> DECLARE
+2 x NUMBER := 0;
+3 BEGIN
+4 LOOP
+5 DBMS_OUTPUT.PUT_LINE
+6 ('Inside loop: x = ' || TO_CHAR(x));
+7
+8 x := x + 1;
+9
+10 IF x > 3 THEN
+11 EXIT;
+12 END IF;
+13 END LOOP;
+14 -- After EXIT, control resumes here
+15
+16 DBMS_OUTPUT.PUT_LINE
+17 (' After loop: x = ' || TO_CHAR(x));
+18 END;
+
+// Using Exit-When in above eg :
+
+EXIT WHEN x > 3;
+
+// Using CONTINUE :
+
+When a CONTINUE statement is encountered, the current iteration of the loop
+completes immediately and control passes to the next iteration of the loop,
+
+LOOP -- After CONTINUE statement, control resumes here
+5 DBMS_OUTPUT.PUT_LINE ('Inside loop: x = ' || TO_CHAR(x));
+6 x := x + 1;
+7
+8 IF x < 3 THEN
+9 CONTINUE;
+..........
+
+similarly , instead of line 8-9 :
+
+CONTINUE WHEN x < 3;
+
+
+//LABELLED Loops:
+
+Example 4–13 Labeled Loops
+SQL> DECLARE
+2 s PLS_INTEGER := 0;
+3 i PLS_INTEGER := 0;
+4 j PLS_INTEGER;
+5 BEGIN
+6 <<outer_loop>>
+7 LOOP
+8 i := i + 1;
+9 j := 0;
+10 <<inner_loop>>
+11 LOOP
+12 j := j + 1;
+13 s := s + i * j; -- Sum several products
+14 EXIT inner_loop WHEN (j > 5);
+15 EXIT outer_loop WHEN ((i * j) > 15);
+16 END LOOP inner_loop;
+17 END LOOP outer_loop;
+18 DBMS_OUTPUT.PUT_LINE
+19 ('The sum of products equals: ' || TO_CHAR(s));
+20 END;
+21 /
+The sum of products equals: 166
+
+
+// WHILE Loop :
+
+WHILE condition LOOP
+sequence_of_statements
+END LOOP;
+
+LOOP
+sequence_of_statements
+EXIT WHEN boolean_expression
+END LOOP;
+
+To ensure that a WHILE loop executes at least once, use an initialized Boolean variable
+in the condition, as follows:
+
+done := FALSE;
+WHILE NOT done LOOP
+sequence_of_statements
+done := boolean_expression
+END LOOP;
+
+
+// FOR Loop:
+
+Example 4–14 Simple FOR-LOOP Statement
+SQL> BEGIN
+2 FOR i IN 1..3 LOOP
+3 DBMS_OUTPUT.PUT_LINE (TO_CHAR(i));
+4 END LOOP;
+5 END;
+
+Example 4–15 Reverse FOR-LOOP Statement
+SQL> BEGIN
+2 FOR i IN REVERSE 1..3 LOOP
+3 DBMS_OUTPUT.PUT_LINE (TO_CHAR(i));
+4 END LOOP;
+5 END;
+
+Inside a FOR loop, the counter can be read but cannot be changed otherwise an error would occur.
+
+Example 4–18 Specifying a LOOP Range at Run Time
+SQL> CREATE TABLE temp (
+2 emp_no NUMBER,
+3 email_addr VARCHAR2(50)
+4 );
+Table created.
+SQL>
+SQL> DECLARE
+2 emp_count NUMBER;
+3 BEGIN
+4 SELECT COUNT(employee_id) INTO emp_count
+5 FROM employees;
+6
+7 FOR i IN 1..emp_count LOOP
+8 INSERT INTO temp
+9 VALUES(i, 'to be added later');
+10 END LOOP;
+11 END;
+
+// GOTO :
+
+Example 4–26 Simple GOTO Statement
+SQL> DECLARE
+2 p VARCHAR2(30);
+3 n PLS_INTEGER := 37;
+4 BEGIN
+5 FOR j in 2..ROUND(SQRT(n)) LOOP
+6 IF n MOD j = 0 THEN
+7 p := ' is not a prime number';
+8 GOTO print_now;
+9 END IF;
+10 END LOOP;
+12 p := ' is a prime number';
+13
+14 <<print_now>>
+15 DBMS_OUTPUT.PUT_LINE(TO_CHAR(n) || p);
+16 END;
+
+A GOTO statement cannot branch into an IF statement, CASE statement, LOOP
+statement, or sub-block.
+A GOTO statement cannot branch from one IF statement clause to another, or from
+one CASE statement WHEN clause to another.
+ A GOTO statement cannot branch from an outer block into a sub-block (that is, an
+inner BEGIN-END block).
+A GOTO statement cannot branch out of a subprogram. To end a subprogram early,
+either use the RETURN statement or have GOTO branch to a place right before the
+end of the subprogram.
+A GOTO statement cannot branch from an exception handler back into the current
+BEGIN-END block
+
+========================================================================================================================
+PL/SQL COLLECTIONS
+========================================================================================================================
+
+//Associative Array:
+
+Like a database table, an associative array holds a data set of arbitrary size, and you
+can access its elements without knowing their positions in the array. An associative
+array does not need the disk space or network operations of a database table, but an
+associative array cannot be manipulated by SQL statements (such as INSERT and
+DELETE).
+An associative array is intended for temporary data storage.
+
+Example 5–1 Declaring and Using an Associative Array
+SQL> DECLARE
+2 -- Associative array indexed by string:
+3
+4 TYPE population IS TABLE OF NUMBER -- Associative array type
+5 INDEX BY VARCHAR2(64);
+6
+7 city_population population; -- Associative array variable
+8 i VARCHAR2(64);
+9
+10 BEGIN
+11 -- Add new elements to associative array:
+12
+13 city_population('Smallville') := 2000;
+14 city_population('Midland') := 750000;
+15 city_population('Megalopolis') := 1000000;
+16
+17 -- Change value associated with key 'Smallville':
+18
+19 city_population('Smallville') := 2001;
+20
+21 -- Print associative array:
+22
+23 i := city_population.FIRST;
+24
+25 WHILE i IS NOT NULL LOOP
+26 DBMS_Output.PUT_LINE
+27 ('Population of ' || i || ' is ' || TO_CHAR(city_population(i)));
+28 i := city_population.NEXT(i);
+29 END LOOP;
+30 END;
+31 /
+Population of Megalopolis is 1000000
+Population of Midland is 750000
+Population of Smallville is 2001
+
+Another eg:
+
+Example 5–2 Declaring an Associative Array
+DECLARE
+TYPE EmpTabTyp IS TABLE OF employees%ROWTYPE
+INDEX BY PLS_INTEGER;
+emp_tab EmpTabTyp;
+BEGIN
+/* Retrieve employee record. */
+SELECT * INTO emp_tab(100) FROM employees
+WHERE employee_id = 100;
+END;
+
+
+//Understanding Nested Tables:
+
+
+Conceptually, a nested table is like a one-dimensional array with an arbitrary number
+of elements.
+Within the database, a nested table is a column type that holds a set of values. The
+database stores the rows of a nested table in no particular order. When you retrieve a
+nested table from the database into a PL/SQL variable, the rows are given consecutive
+subscripts starting at 1. These subscripts give you array-like access to individual rows.
+A nested table differs from an array in these important ways:
+
+An array has a declared number of elements, but a nested table does not. The size
+of a nested table can increase dynamically
+
+An array is always dense (that is, it always has consecutive subcripts). A nested
+array is dense initially, but it can become sparse, because you can delete elements
+from it.
+
+// Understanding Variable-Size Arrays (Varrays):
+
+A variable-size array (varray) is an item of the data type VARRAY. A varray has a
+maximum size, which you specify in its type definition. A varray can contain a
+varying number of elements, from zero (when empty) to the maximum size. A varray
+index has a fixed lower bound of 1 and an extensible upper bound. To access an
+element of a varray, you use standard subscripting syntax.
+Figure 5–2 shows a varray named Grades, which has maximum size 10 and contains
+seven elements. The current upper bound for Grades is 7, but you can increase it to
+the maximum of 10. Grades(n) references the nth element of Grades.
+
+
+Eg of above 3 collections :
+
+Example 5–3 Declaring Nested Tables, Varrays, and Associative Arrays
+DECLARE
+TYPE nested_type IS TABLE OF VARCHAR2(30);
+TYPE varray_type IS VARRAY(5) OF INTEGER;
+TYPE assoc_array_num_type
+IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+TYPE assoc_array_str_type
+IS TABLE OF VARCHAR2(32) INDEX BY PLS_INTEGER;
+TYPE assoc_array_str_type2
+IS TABLE OF VARCHAR2(32) INDEX BY VARCHAR2(64);
+v1 nested_type;
+v2 varray_type;
+v3 assoc_array_num_type;
+v4 assoc_array_str_type;
+v5 assoc_array_str_type2;
+BEGIN
+-- an arbitrary number of strings can be inserted v1
+v1 := nested_type('Shipping','Sales','Finance','Payroll');
+v2 := varray_type(1, 2, 3, 4, 5); -- Up to 5 integers
+v3(99) := 10; -- Just start assigning to elements
+v3(7) := 100; -- Subscripts can be any integer values
+v4(42) := 'Smith'; -- Just start assigning to elements
+v4(54) := 'Jones'; -- Subscripts can be any integer values
+v5('Canada') := 'North America';
+-- Just start assigning to elements
+v5('Greece') := 'Europe';
+-- Subscripts can be string values
+END;
+
+Example 5–5 Declaring a Procedure Parameter as a Nested Table
+CREATE PACKAGE personnel AS
+TYPE staff_list IS TABLE OF employees.employee_id%TYPE;
+PROCEDURE award_bonuses (empleos_buenos IN staff_list);
+END personnel;
+/
+CREATE PACKAGE BODY personnel AS
+PROCEDURE award_bonuses (empleos_buenos staff_list) IS
+BEGIN
+FOR i IN empleos_buenos.FIRST..empleos_buenos.LAST
+LOOP
+UPDATE employees SET salary = salary + 100
+WHERE employees.employee_id = empleos_buenos(i);
+END LOOP;
+END;
+END;
+/
+To invoke personnel.award_bonuses from outside the package, you declare a
+variable of type personnel.staff_list and pass that variable as the parameter.
+Example 5–6 Invoking a Procedure with a Nested Table Parameter
+DECLARE
+good_employees personnel.staff_list;
+BEGIN
+good_employees := personnel.staff_list(100, 103, 107);
+personnel.award_bonuses (good_employees);
+END;
+
+Example 5–10 Constructor for a Nested Table
+DECLARE
+TYPE dnames_tab IS TABLE OF VARCHAR2(30);
+dept_names dnames_tab;
+BEGIN
+dept_names := dnames_tab('Shipping','Sales','Finance','Payroll');
+END;
+
+Example 5–11 Constructor for a Varray
+DECLARE
+-- In the varray, put an upper limit on the number of elements
+TYPE dnames_var IS VARRAY(20) OF VARCHAR2(30);
+dept_names dnames_var;
+BEGIN
+-- Because dnames is declared as VARRAY(20),
+-- you can put up to 10 elements in the constructor
+dept_names := dnames_var('Shipping','Sales','Finance','Payroll');
+END;
+
+Example 5–15 Referencing a Nested Table Element
+DECLARE
+TYPE Roster IS TABLE OF VARCHAR2(15);
+names Roster :=
+Roster('D Caruso', 'J Hamil', 'D Piro', 'R Singh');
+PROCEDURE verify_name(the_name VARCHAR2) IS
+BEGIN
+DBMS_OUTPUT.PUT_LINE(the_name);
+END;
+BEGIN
+FOR i IN names.FIRST .. names.LAST
+LOOP
+IF names(i) = 'J Hamil' THEN
+DBMS_OUTPUT.PUT_LINE(names(i));
+-- reference to nested table element
+END IF;
+END LOOP;
+verify_name(names(3));
+-- procedure call with reference to element
+END;
+
+DECLARE
+TYPE sum_multiples IS TABLE OF PLS_INTEGER INDEX BY PLS_INTEGER;
+n PLS_INTEGER := 5; -- number of multiples to sum for display
+sn PLS_INTEGER := 10; -- number of multiples to sum
+m PLS_INTEGER := 3; -- multiple
+FUNCTION get_sum_multiples
+(multiple IN PLS_INTEGER, num IN PLS_INTEGER)
+RETURN sum_multiples IS
+s sum_multiples;
+BEGIN
+FOR i IN 1..num LOOP
+s(i) := multiple * ((i * (i + 1)) / 2);
+-- sum of multiples
+END LOOP;
+RETURN s;
+END get_sum_multiples;
+BEGIN
+-- invoke function to retrieve
+-- element identified by subscript (key)
+DBMS_OUTPUT.PUT_LINE
+('Sum of the first ' || TO_CHAR(n) || ' multiples of ' ||
+TO_CHAR(m) || ' is ' || TO_CHAR(get_sum_multiples (m, sn)(n)));
+END;
+
+
+// Multilevel  Collections :
+
+Example 5–25 Multilevel VARRAY
+DECLARE
+TYPE t1 IS VARRAY(10) OF INTEGER;
+TYPE nt1 IS VARRAY(10) OF t1; -- multilevel varray type
+va t1 := t1(2,3,5);
+-- initialize multilevel varray
+nva nt1 := nt1(va, t1(55,6,73), t1(2,4), va);
+i INTEGER;
+va1 t1;
+BEGIN
+-- multilevel access
+i := nva(2)(3); -- i will get value 73
+DBMS_OUTPUT.PUT_LINE('I = ' || i);
+-- add a new varray element to nva
+nva.EXTEND;
+-- replace inner varray elements
+nva(5) := t1(56, 32);
+nva(4) := t1(45,43,67,43345);
+-- replace an inner integer element
+nva(4)(4) := 1; -- replaces 43345 with 1
+-- add a new element to the 4th varray element
+-- and store integer 89 into it.
+nva(4).EXTEND;
+nva(4)(5) := 89;
+END;
+/
+
+
+Example 5–26 Multilevel Nested Table
+DECLARE
+TYPE tb1 IS TABLE OF VARCHAR2(20);
+TYPE Ntb1 IS TABLE OF tb1; -- table of table elements
+TYPE Tv1 IS VARRAY(10) OF INTEGER;
+TYPE ntb2 IS TABLE OF tv1; -- table of varray elements
+vtb1 tb1 := tb1('one', 'three');
+vntb1 ntb1 := ntb1(vtb1);
+vntb2 ntb2 := ntb2(tv1(3,5), tv1(5,7,3));
+-- table of varray elements
+BEGIN
+vntb1.EXTEND;
+vntb1(2) := vntb1(1);
+-- delete the first element in vntb1
+vntb1.DELETE(1);
+-- delete the first string
+-- from the second table in the nested table
+vntb1(2).DELETE(1);
+END;
+/
+
+
+Example 5–27 Multilevel Associative Array
+DECLARE
+TYPE tb1 IS TABLE OF INTEGER INDEX BY PLS_INTEGER;
+-- the following is index-by table of index-by tables
+TYPE ntb1 IS TABLE OF tb1 INDEX BY PLS_INTEGER;
+TYPE va1 IS VARRAY(10) OF VARCHAR2(20);
+-- the following is index-by table of varray elements
+TYPE ntb2 IS TABLE OF va1 INDEX BY PLS_INTEGER;
+v1 va1 := va1('hello', 'world');
+v2 ntb1;
+v3 ntb2;
+v4 tb1;
+v5 tb1; -- empty table
+BEGIN
+v4(1) := 34;
+v4(2) := 46456;
+v4(456) := 343;
+v2(23) := v4;
+v3(34) := va1(33, 456, 656, 343);
+-- assign an empty table to v2(35) and try again
+v2(35) := v5;
+v2(35)(2) := 78; -- it works now
+END;
+
+
+// COLLECTION Methods :
+
+Example 5–28 Checking Whether a Collection Element EXISTS
+DECLARE
+TYPE NumList IS TABLE OF INTEGER;
+n NumList := NumList(1,3,5,7);
+BEGIN
+n.DELETE(2); -- Delete the second element
+IF n.EXISTS(1) THEN
+DBMS_OUTPUT.PUT_LINE('OK, element #1 exists.');
+END IF;
+IF n.EXISTS(2) = FALSE THEN
+DBMS_OUTPUT.PUT_LINE('OK, element #2 was deleted.');
+END IF;
+IF n.EXISTS(99) = FALSE THEN
+DBMS_OUTPUT.PUT_LINE('OK, element #99 does not exist at all.');
+END IF;
+END;
+
+Example 5–29 Counting Collection Elements with COUNT
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(2,4,6,8);
+-- Collection starts with 4 elements.
+BEGIN
+DBMS_OUTPUT.PUT_LINE
+('There are ' || n.COUNT || ' elements in N.');
+n.EXTEND(3); -- Add 3 new elements at the end.
+DBMS_OUTPUT.PUT_LINE
+('Now there are ' || n.COUNT || ' elements in N.');
+n := NumList(86,99); -- Assign a completely new value with 2 elements.
+DBMS_OUTPUT.PUT_LINE
+('Now there are ' || n.COUNT || ' elements in N.');
+n.TRIM(2); -- Remove the last 2 elements, leaving none.
+DBMS_OUTPUT.PUT_LINE
+('Now there are ' || n.COUNT || ' elements in N.');
+END;
+
+//Checking the Maximum Size of a Collection (LIMIT Method):
+
+LIMIT returns the maximum number of elements that a collection can have. If the
+collection has no maximum size, LIMIT returns NULL.
+
+collec_name.LIMIT;
+
+
+//Finding the First or Last Collection Element (FIRST and LAST Methods):
+
+For a collection indexed by integers, FIRST and LAST return the first and last (smallest
+and largest) index numbers.
+For an associative array indexed by strings, FIRST and LAST return the lowest and
+highest key values.
+
+//Looping Through Collection Elements (PRIOR and NEXT Methods):
+
+PRIOR(n) returns the index number that precedes index n in a collection. NEXT(n)
+returns the index number that succeeds index n. If n has no predecessor, PRIOR(n)
+returns NULL. If n has no successor, NEXT(n) returns NULL.
+
+Example 5–32 Using PRIOR and NEXT to Access Collection Elements
+DECLARE
+TYPE NumList IS TABLE OF NUMBER;
+n NumList := NumList(1966,1971,1984,1989,1999);
+BEGIN
+DBMS_OUTPUT.PUT_LINE('The element after #2 is #' || n.NEXT(2));
+DBMS_OUTPUT.PUT_LINE('The element before #2 is #' || n.PRIOR(2));
+n.DELETE(3);
+-- Delete an element to show how NEXT can handle gaps.
+DBMS_OUTPUT.PUT_LINE
+('Now the element after #2 is #' || n.NEXT(2));
+IF n.PRIOR(n.FIRST) IS NULL THEN
+DBMS_OUTPUT.PUT_LINE
+('Can''t get PRIOR of the first element or NEXT of the last.');
+END IF;
+END;
+
+
+//Increasing the Size of a Collection (EXTEND Method):
+
+To increase the size of a nested table or varray, use EXTEND.
+This procedure has three forms:
+EXTEND appends one null element to a collection.
+EXTEND(n) appends n null elements to a collection.
+EXTEND(n,i) appends n copies of the ith element to a collection.
+You cannot use EXTEND with index-by tables. You cannot use EXTEND to add elements
+to an uninitialized collection.
+
+
+//Decreasing the Size of a Collection (TRIM Method):
+(can't be used with associative array)
+
+This procedure has two forms:
+TRIM removes one element from the end of a collection.
+TRIM(n) removes n elements from the end of a collection.
+
+If you want to remove all elements, use DELETE without parameters.
+
+
+//Deleting Collection Elements (DELETE Method):
+
+This procedure has these forms:
+DELETE with no parameters removes all elements from a collection, setting COUNT
+to 0.
+DELETE(n) removes the nth element from an associative array with a numeric
+key or a nested table. If the associative array has a string key, the element
+corresponding to the key value is deleted. If n is null, DELETE(n) does nothing.
+DELETE(m,n) removes all elements in the range m..n from an associative array or
+nested table. If m is larger than n or if m or n is NULL, DELETE(m,n) does nothing.
+
+====================================
+Records
+====================================
+
+
+// Records and collections :
+
+Example 5–44 Returning a Record from a Function
+DECLARE
+TYPE EmpRecTyp IS RECORD (
+emp_id NUMBER(6),
+salary NUMBER(8,2));
+CURSOR desc_salary RETURN EmpRecTyp IS
+SELECT employee_id, salary
+FROM employees
+ORDER BY salary DESC;
+emp_rec EmpRecTyp;
+FUNCTION nth_highest_salary (n INTEGER) RETURN EmpRecTyp IS
+BEGIN
+OPEN desc_salary;
+FOR i IN 1..n LOOP
+FETCH desc_salary INTO emp_rec;
+END LOOP;
+CLOSE desc_salary;
+RETURN emp_rec;
+END nth_highest_salary;
+BEGIN
+NULL;
+END;
+
+Example 5–45 Using a Record as Parameter to a Procedure
+DECLARE
+TYPE EmpRecTyp IS RECORD (
+emp_id NUMBER(6),
+emp_sal NUMBER(8,2) );
+PROCEDURE raise_salary (emp_info EmpRecTyp) IS
+BEGIN
+UPDATE employees SET salary = salary + salary * .10
+WHERE employee_id = emp_info.emp_id;
+END raise_salary;
+BEGIN
+NULL;
+END;
+
+
+Example 5–47 Assigning Default Values to a Record
+DECLARE
+TYPE RecordTyp IS RECORD (field1 NUMBER,
+field2 VARCHAR2(32) DEFAULT 'something');
+rec1 RecordTyp;
+rec2 RecordTyp;
+BEGIN
+-- At first, rec1 has the values you assign.
+rec1.field1 := 100; rec1.field2 := 'something else';
+-- Assigning an empty record to rec1
+-- resets fields to their default values.
+-- Field1 is NULL and field2 is 'something'
+-- due to the DEFAULT clause
+rec1 := rec2;
+DBMS_OUTPUT.PUT_LINE
+('Field1 = ' || NVL(TO_CHAR(rec1.field1),'<NULL>') || ',
+field2 = ' || rec1.field2);
+END;
+
+
+Example 5–49 Using SELECT INTO to Assign Values in a Record
+DECLARE
+TYPE RecordTyp IS RECORD (last employees.last_name%TYPE,
+id employees.employee_id%TYPE);
+rec1 RecordTyp;
+BEGIN
+SELECT last_name, employee_id INTO rec1
+FROM employees WHERE ROWNUM < 2;
+WHERE ROWNUM < 2;
+DBMS_OUTPUT.PUT_LINE
+('Employee #' || rec1.id || ' = ' || rec1.last);
+END;
+
+Example 5–52 Using the RETURNING INTO Clause with a Record
+DECLARE
+TYPE EmpRec IS RECORD (last_name employees.last_name%TYPE,
+salary employees.salary%TYPE);
+emp_info EmpRec;
+emp_id NUMBER := 100;
+BEGIN
+UPDATE employees SET salary = salary * 1.1
+WHERE employee_id = emp_id
+RETURNING last_name, salary INTO emp_info;
+DBMS_OUTPUT.PUT_LINE
+('Just gave a raise to ' || emp_info.last_name ||
+', who now makes ' || emp_info.salary);
+ROLLBACK;
+END;
+
+
+//BULK Collect :
+
+You can use the BULK COLLECT clause with a SELECT INTO or FETCH statement to
+retrieve a set of rows into a collection of records.
+Example 5–53 Using BULK COLLECT with a SELECT INTO Statement
+DECLARE
+TYPE EmployeeSet IS TABLE OF employees%ROWTYPE;
+underpaid EmployeeSet;
+-- Holds set of rows from EMPLOYEES table.
+CURSOR c1 IS SELECT first_name, last_name FROM employees;
+TYPE NameSet IS TABLE OF c1%ROWTYPE;
+some_names NameSet;
+-- Holds set of partial rows from EMPLOYEES table.
+BEGIN
+-- With one query,
+-- bring all relevant data into collection of records.
+SELECT * BULK COLLECT INTO underpaid FROM employees
+WHERE salary < 5000 ORDER BY salary DESC;
+-- Process data by examining collection or passing it to
+-- eparate procedure, instead of writing loop to FETCH each row.
+DBMS_OUTPUT.PUT_LINE
+(underpaid.COUNT || ' people make less than 5000.');
+FOR i IN underpaid.FIRST .. underpaid.LAST
+LOOP
+DBMS_OUTPUT.PUT_LINE
+(underpaid(i).last_name || ' makes ' || underpaid(i).salary);
+END LOOP;
+-- You can also bring in just some of the table columns.
+-- Here you get the first and last names of 10 arbitrary employees.
+SELECT first_name, last_name
+BULK COLLECT INTO some_names
+FROM employees
+WHERE ROWNUM < 11;
+FOR i IN some_names.FIRST .. some_names.LAST
+LOOP
+DBMS_OUTPUT.PUT_LINE
+('Employee = ' || some_names(i).first_name
+|| ' ' || some_names(i).last_name);
+END LOOP;
+END;
+
+
+========================================================================================================================
+STATIC SQL
+========================================================================================================================
+
+Example 6–1 Data Manipulation with PL/SQL
+CREATE TABLE employees_temp
+AS SELECT employee_id, first_name, last_name
+FROM employees;
+DECLARE
+emp_id employees_temp.employee_id%TYPE;
+emp_first_name employees_temp.first_name%TYPE;
+emp_last_name employees_temp.last_name%TYPE;
+BEGIN
+INSERT INTO employees_temp VALUES(299, 'Bob', 'Henry');
+UPDATE employees_temp
+SET first_name = 'Robert' WHERE employee_id = 299;
+DELETE FROM employees_temp WHERE employee_id = 299
+RETURNING first_name, last_name
+INTO emp_first_name, emp_last_name;
+COMMIT;
+DBMS_OUTPUT.PUT_LINE( emp_first_name || ' ' || emp_last_name);
+END;
+
+Example 6–2 Checking SQL%ROWCOUNT After an UPDATE
+CREATE TABLE employees_temp AS SELECT * FROM employees;
+BEGIN
+UPDATE employees_temp
+SET salary = salary * 1.05 WHERE salary < 5000;
+DBMS_OUTPUT.PUT_LINE('Updated ' || SQL%ROWCOUNT || ' salaries.');
+END;
+
+// CURRVAL and NEXTVAL:
+
+A sequence is a schema object that generates sequential numbers. When you create a
+sequence, you can specify its initial value and an increment. CURRVAL returns the
+current value in a specified sequence. Before you can reference CURRVAL in a session,
+you must use NEXTVAL to generate a number. A reference to NEXTVAL stores the
+current sequence number in CURRVAL. NEXTVAL increments the sequence and returns
+the next value. To get the current or next value in a sequence, use dot notation:
+sequence_name.CURRVAL
+sequence_name.NEXTVAL
+
+Example 6–5 Using CURRVAL and NEXTVAL
+CREATE TABLE employees_temp
+AS SELECT employee_id, first_name, last_name
+FROM employees;
+CREATE TABLE employees_temp2
+AS SELECT employee_id, first_name, last_name
+FROM employees;
+DECLARE
+seq_value NUMBER;
+BEGIN
+-- Generate initial sequence number
+seq_value := employees_seq.NEXTVAL;
+-- Print initial sequence number:
+DBMS_OUTPUT.PUT_LINE
+('Initial sequence value: ' || TO_CHAR(seq_value));
+-- Use NEXTVAL to create unique number when inserting data:
+INSERT INTO employees_temp VALUES (employees_seq.NEXTVAL,
+'Lynette', 'Smith');
+-- Use CURRVAL to store same value somewhere else:
+INSERT INTO employees_temp2 VALUES (employees_seq.CURRVAL,
+'Morgan', 'Smith');
+-- Because NEXTVAL values might be referenced
+-- by different users and applications,
+-- and some NEXTVAL values might not be stored in the database,
+-- there might be gaps in the sequence.
+-- Use CURRVAL to specify the record to delete:
+seq_value := employees_seq.CURRVAL;
+DELETE FROM employees_temp2 WHERE employee_id = seq_value;
+-- Udpate employee_id with NEXTVAL for specified record:
+UPDATE employees_temp SET employee_id = employees_seq.NEXTVAL
+WHERE first_name = 'Lynette' AND last_name = 'Smith';
+-- Display final value of CURRVAL:
+seq_value := employees_seq.CURRVAL;
+DBMS_OUTPUT.PUT_LINE
+('Ending sequence value: ' || TO_CHAR(seq_value));
+END;
+
+//ROWNUM
+ROWNUM returns a number indicating the order in which a row was selected from a
+table. The first row selected has a ROWNUM of 1, the second row has a ROWNUM of 2, and
+so on.
+
+Example 6–6 Using ROWNUM
+CREATE TABLE employees_temp AS SELECT * FROM employees;
+DECLARE
+CURSOR c1 IS SELECT employee_id, salary FROM employees_temp
+WHERE salary > 2000 AND ROWNUM <= 10; -- 10 arbitrary rows
+CURSOR c2 IS SELECT * FROM
+(SELECT employee_id, salary FROM employees_temp
+WHERE salary > 2000 ORDER BY salary DESC)
+WHERE ROWNUM < 5; -- first 5 rows, in sorted order
+BEGIN
+-- Each row gets assigned a different number
+UPDATE employees_temp SET employee_id = ROWNUM;
+END;
+
+// SQL%FOUND :
+
+%FOUND Attribute: Has a DML Statement Changed Rows? Until a SQL data manipulation
+statement is executed, %FOUND yields NULL. Thereafter, %FOUND yields TRUE if an
+INSERT, UPDATE, or DELETE statement affected one or more rows, or a SELECT INTO
+statement returned one or more rows. Otherwise, %FOUND yields FALSE.
+
+Example 6–7 Using SQL%FOUND
+CREATE TABLE dept_temp AS SELECT * FROM departments;
+DECLARE
+dept_no NUMBER(4) := 270;
+BEGIN
+DELETE FROM dept_temp WHERE department_id = dept_no;
+IF SQL%FOUND THEN -- delete succeeded
+INSERT INTO dept_temp VALUES (270, 'Personnel', 200, 1700);
+END IF;
+END;
+
+%ISOPEN Attribute: Always FALSE for SQL Cursors The database closes the SQL cursor
+automatically after executing its associated SQL statement. As a result, %ISOPEN
+always yields FALSE.
+
+%NOTFOUND Attribute: Has a DML Statement Failed to Change Rows? %NOTFOUND is the
+logical opposite of %FOUND. %NOTFOUND yields TRUE if an INSERT, UPDATE, or
+DELETE statement affected no rows, or a SELECT INTO statement returned no rows.
+Otherwise, %NOTFOUND yields FALSE.
+
+%ROWCOUNT Attribute: How Many Rows Affected So Far? %ROWCOUNT yields the number of
+rows affected by an INSERT, UPDATE, or DELETE statement, or returned by a SELECT
+INTO statement. %ROWCOUNT yields 0 if an INSERT, UPDATE, or DELETE statement
+affected no rows, or a SELECT INTO statement returned no rows.
+
+
+Example 6–8 Using SQL%ROWCOUNT
+CREATE TABLE employees_temp AS SELECT * FROM employees;
+DECLARE
+mgr_no NUMBER(6) := 122;
+BEGIN
+DELETE FROM employees_temp WHERE manager_id = mgr_no;
+DBMS_OUTPUT.PUT_LINE
+('Number of employees deleted: ' || TO_CHAR(SQL%ROWCOUNT));
+END;
+
+================================
+CURSOR
+================================
+
+// Declaring a Cursor
+DECLARE
+my_emp_id NUMBER(6); -- variable for employee_id
+my_job_id VARCHAR2(10); -- variable for job_id
+my_sal NUMBER(8,2); -- variable for salary
+CURSOR c1 IS SELECT employee_id, job_id, salary FROM employees
+WHERE salary > 2000;
+my_dept departments%ROWTYPE; -- variable for departments row
+CURSOR c2 RETURN departments%ROWTYPE IS
+SELECT * FROM departments WHERE department_id = 110;
+
+//Opening a Cursor
+Opening the cursor executes the query and identifies the result set, which consists of
+all rows that meet the query search criteria. For cursors declared using the FOR
+UPDATE clause, the OPEN statement also locks those rows. An example of the OPEN
+statement follows:
+DECLARE
+CURSOR c1 IS
+SELECT employee_id, last_name, job_id, salary
+FROM employees
+WHERE salary > 2000;
+BEGIN
+OPEN c1;
+Rows in the result set are retrieved by the FETCH statement, not when the OPEN
+statement is executed.
+
+//Example 6–10 Fetching with a Cursor
+DECLARE
+v_jobid employees.job_id%TYPE; -- variable for job_id
+v_lastname employees.last_name%TYPE; -- variable for last_name
+CURSOR c1 IS SELECT last_name, job_id FROM employees
+WHERE REGEXP_LIKE (job_id, 'S[HT]_CLERK');
+v_employees employees%ROWTYPE; -- record variable for row
+CURSOR c2 is SELECT * FROM employees
+WHERE REGEXP_LIKE (job_id, '[ACADFIMKSA]_M[ANGR]');
+BEGIN
+OPEN c1; -- open the cursor before fetching
+LOOP
+-- Fetches 2 columns into variables
+FETCH c1 INTO v_lastname, v_jobid;
+EXIT WHEN c1%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE( RPAD(v_lastname, 25, ' ') || v_jobid );
+END LOOP;
+CLOSE c1;
+DBMS_OUTPUT.PUT_LINE( '-------------------------------------' );
+OPEN c2;
+LOOP
+-- Fetches entire row into the v_employees record
+FETCH c2 INTO v_employees;
+EXIT WHEN c2%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE( RPAD(v_employees.last_name, 25, ' ') ||
+v_employees.job_id );
+END LOOP;
+CLOSE c2;
+END;
+
+Example 6–12 Fetching the Same Cursor Into Different Variables
+DECLARE
+CURSOR c1 IS SELECT last_name FROM employees ORDER BY last_name;
+name1 employees.last_name%TYPE;
+name2 employees.last_name%TYPE;
+name3 employees.last_name%TYPE;
+BEGIN
+OPEN c1;
+FETCH c1 INTO name1; -- this fetches first row
+FETCH c1 INTO name2; -- this fetches second row
+FETCH c1 INTO name3; -- this fetches third row
+CLOSE c1;
+END;
+
+//Closing a Cursor
+The CLOSE statement disables the cursor, and the result set becomes undefined. Once a
+cursor is closed, you can reopen it, which runs the query again with the latest values of
+any cursor parameters and variables referenced in the WHERE clause. Any other
+operation on a closed cursor raises the predefined exception INVALID_CURSOR.
+
+%FOUND Attribute: Has a Row Been Fetched? After a cursor or cursor variable is opened
+but before the first fetch, %FOUND returns NULL. After any fetches, it returns TRUE if
+the last fetch returned a row, or FALSE if the last fetch did not return a row.
+
+cursor_name%FOUND 
+
+%ISOPEN Attribute: Is the Cursor Open? %ISOPEN returns TRUE if its cursor or cursor
+variable is open; otherwise, %ISOPEN returns FALSE. Example 6–15 uses %ISOPEN to
+select an action.
+
+%NOTFOUND Attribute: Has a Fetch Failed? %NOTFOUND is the logical opposite of %FOUND.
+%NOTFOUND yields FALSE if the last fetch returned a row, or TRUE if the last fetch
+failed to return a row.
+
+%ROWCOUNT Attribute: How Many Rows Fetched So Far? When its cursor or cursor variable
+is opened, %ROWCOUNT is zeroed. Before the first fetch, %ROWCOUNT yields zero.
+Thereafter, it yields the number of rows fetched so far. The number is incremented if
+the last fetch returned a row.
+
+Example 6–18 Using an Alias For Expressions in a Query
+BEGIN
+FOR item IN
+( SELECT first_name || ' ' || last_name AS full_name,
+salary * 10 AS dream_salary FROM employees WHERE ROWNUM <= 5 )
+LOOP
+DBMS_OUTPUT.PUT_LINE
+(item.full_name || ' dreams of making ' || item.dream_salary);
+END LOOP;
+END;
+
+Example 6–20 Using a Subquery in a FROM Clause
+DECLARE
+CURSOR c1 IS
+SELECT t1.department_id, department_name, staff
+FROM departments t1,
+( SELECT department_id, COUNT(*) as staff
+FROM employees GROUP BY department_id) t2
+WHERE
+t1.department_id = t2.department_id
+AND staff >= 5;
+BEGIN
+FOR dept IN c1
+LOOP
+DBMS_OUTPUT.PUT_LINE ('Department = '
+|| dept.department_name || ', staff = ' || dept.staff);
+END LOOP;
+END;
+
+Example 6–21 Using a Correlated Subquery
+DECLARE
+-- For each department, find the average salary.
+-- Then find all the employees in
+-- that department making more than that average salary.
+CURSOR c1 IS
+SELECT department_id, last_name, salary FROM employees t
+WHERE salary >
+( SELECT AVG(salary)
+FROM employees
+WHERE t.department_id = department_id )
+ORDER BY department_id;
+BEGIN
+FOR person IN c1
+LOOP
+DBMS_OUTPUT.PUT_LINE('Making above-average salary = ' || person.last_name);
+END LOOP;
+END;
+
+
+
+//Passing Cursor Variables As Parameters :
+
+Example 6–27 Passing a REF CURSOR as a Parameter
+DECLARE
+TYPE empcurtyp IS REF CURSOR RETURN employees%ROWTYPE;
+emp empcurtyp;
+-- after result set is built,
+-- process all the rows inside a single procedure
+-- rather than invoking a procedure for each row
+PROCEDURE process_emp_cv (emp_cv IN empcurtyp) IS
+person employees%ROWTYPE;
+BEGIN
+DBMS_OUTPUT.PUT_LINE('-----');
+DBMS_OUTPUT.PUT_LINE
+('Here are the names from the result set:');
+LOOP
+FETCH emp_cv INTO person;
+EXIT WHEN emp_cv%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE('Name = ' || person.first_name ||
+' ' || person.last_name);
+END LOOP;
+END;
+BEGIN
+-- First find 10 arbitrary employees.
+OPEN emp FOR SELECT * FROM employees WHERE ROWNUM < 11;
+process_emp_cv(emp);
+CLOSE emp;
+-- find employees matching a condition.
+OPEN emp FOR SELECT * FROM employees WHERE last_name LIKE 'R%';
+process_emp_cv(emp);
+CLOSE emp;
+END;
+
+Example 6–28 Checking If a Cursor Variable is Open
+DECLARE
+TYPE empcurtyp IS REF CURSOR RETURN employees%ROWTYPE;
+emp_cv empcurtyp;
+BEGIN
+IF NOT emp_cv%ISOPEN THEN -- open cursor variable
+OPEN emp_cv FOR SELECT * FROM employees;
+END IF;
+CLOSE emp_cv;
+END;
+
+
+=====================================
+Transaction Processing in PL/SQL
+======================================
+
+
+// Using COMMIT in PL/SQL :
+
+Example 6–36 Using COMMIT with the WRITE Clause
+CREATE TABLE accounts (account_id NUMBER(6), balance NUMBER (10,2));
+INSERT INTO accounts VALUES (7715, 6350.00);
+INSERT INTO accounts VALUES (7720, 5100.50);
+DECLARE
+transfer NUMBER(8,2) := 250;
+BEGIN
+UPDATE accounts SET balance = balance - transfer
+WHERE account_id = 7715;
+UPDATE accounts SET balance = balance + transfer
+WHERE account_id = 7720;
+COMMIT COMMENT 'Transfer from 7715 to 7720'
+WRITE IMMEDIATE NOWAIT;
+END;
+
+// ROLLBack :
+
+Example 6–37 Using ROLLBACK
+CREATE TABLE emp_name AS SELECT employee_id, last_name
+FROM employees;
+CREATE UNIQUE INDEX empname_ix ON emp_name (employee_id);
+CREATE TABLE emp_sal AS SELECT employee_id, salary FROM employees;
+CREATE UNIQUE INDEX empsal_ix ON emp_sal (employee_id);
+CREATE TABLE emp_job AS SELECT employee_id, job_id FROM employees;
+CREATE UNIQUE INDEX empjobid_ix ON emp_job (employee_id);
+DECLARE
+emp_id NUMBER(6);
+emp_lastname VARCHAR2(25);
+emp_salary NUMBER(8,2);
+emp_jobid VARCHAR2(10);
+BEGIN
+SELECT employee_id, last_name, salary,
+job_id INTO emp_id, emp_lastname, emp_salary, emp_jobid
+FROM employees
+WHERE employee_id = 120;
+INSERT INTO emp_name VALUES (emp_id, emp_lastname);
+INSERT INTO emp_sal VALUES (emp_id, emp_salary);
+INSERT INTO emp_job VALUES (emp_id, emp_jobid);
+EXCEPTION
+WHEN DUP_VAL_ON_INDEX THEN
+ROLLBACK;
+DBMS_OUTPUT.PUT_LINE('Inserts were rolled back');
+END;
+
+//SAVEPOINT :
+
+SAVEPOINT names and marks the current point in the processing of a transaction.
+Savepoints let you roll back part of a transaction instead of the whole transaction
+
+Example 6–38 Using SAVEPOINT with ROLLBACK
+CREATE TABLE emp_name
+AS SELECT employee_id, last_name, salary
+FROM employees;
+CREATE UNIQUE INDEX empname_ix ON emp_name (employee_id);
+DECLARE
+emp_id employees.employee_id%TYPE;
+emp_lastname employees.last_name%TYPE;
+emp_salary employees.salary%TYPE;
+BEGIN
+SELECT employee_id, last_name, salary
+INTO emp_id, emp_lastname, emp_salary
+FROM employees
+WHERE employee_id = 120;
+UPDATE emp_name SET salary = salary * 1.1
+WHERE employee_id = emp_id;
+DELETE FROM emp_name WHERE employee_id = 130;
+SAVEPOINT do_insert;
+INSERT INTO emp_name VALUES (emp_id, emp_lastname, emp_salary);
+EXCEPTION
+WHEN DUP_VAL_ON_INDEX THEN
+ROLLBACK TO do_insert;
+DBMS_OUTPUT.PUT_LINE('Insert was rolled back');
+END;
+
+
+==================================
+SETTING TRANSACTIONS
+==================================
+
+You use the SET TRANSACTION statement to begin a read-only or read/write
+transaction, establish an isolation level, or assign your current transaction to a
+specified rollback segment. Read-only transactions are useful for running multiple
+queries while other users update the same tables.
+
+Example 6–40 Using SET TRANSACTION to Begin a Read-only Transaction
+DECLARE
+daily_order_total NUMBER(12,2);
+weekly_order_total NUMBER(12,2);
+monthly_order_total NUMBER(12,2);
+BEGIN
+COMMIT; -- ends previous transaction
+SET TRANSACTION READ ONLY NAME 'Calculate Order Totals';
+SELECT SUM (order_total) INTO daily_order_total FROM orders
+WHERE order_date = SYSDATE;
+SELECT SUM (order_total) INTO weekly_order_total FROM orders
+WHERE order_date = SYSDATE - 7;
+SELECT SUM (order_total) INTO monthly_order_total FROM orders
+WHERE order_date = SYSDATE - 30;
+COMMIT; -- ends read-only transaction
+END;
+
+================================
+Overriding Default Locking
+================================
+
+// Using FOR UPDATE :
+
+When you declare a cursor that will be referenced in the CURRENT OF clause of an
+UPDATE or DELETE statement, you must use the FOR UPDATE clause to acquire
+exclusive row locks. For example:
+DECLARE
+CURSOR c1 IS SELECT employee_id, salary FROM employees
+WHERE job_id = 'SA_REP' AND commission_pct > .10
+FOR UPDATE NOWAIT;
+The SELECT FOR UPDATE statement identifies the rows that will be updated or
+deleted, then locks each row in the result set. This is useful when you want to base an
+update on the existing values in a row. In that case, you must make sure the row is not
+changed by another user before the update.
+The optional keyword NOWAIT tells the database not to wait if requested rows have
+been locked by another user. Control is immediately returned to your program so that
+it can do other work before trying again to acquire the lock. If you omit the keyword
+NOWAIT, the database waits until the rows are available.
+All rows are locked when you open the cursor, not as they are fetched. The rows are
+unlocked when you commit or roll back the transaction. Since the rows are no longer
+locked, you cannot fetch from a FOR UPDATE cursor after a commit.
+
+
+Example 6–41 Using CURRENT OF to Update the Latest Row Fetched from a Cursor
+DECLARE
+my_emp_id NUMBER(6);
+my_job_id VARCHAR2(10);
+my_sal NUMBER(8,2);
+CURSOR c1 IS SELECT employee_id, job_id, salary
+FROM employees FOR UPDATE;
+BEGIN
+OPEN c1;
+LOOP
+FETCH c1 INTO my_emp_id, my_job_id, my_sal;
+IF my_job_id = 'SA_REP' THEN
+UPDATE employees SET salary = salary * 1.02
+WHERE CURRENT OF c1;
+END IF;
+EXIT WHEN c1%NOTFOUND;
+END LOOP;
+END;
+
+// Using LOCK TABLE :
+
+You use the LOCK TABLE statement to lock entire database tables in a specified lock
+mode so that you can share or deny access to them. Row share locks allow concurrent
+access to a table; they prevent other users from locking the entire table for exclusive
+use. Table locks are released when your transaction issues a commit or rollback.
+LOCK TABLE employees IN ROW SHARE MODE NOWAIT;
+
+=====================================
+AUTONOMOUS PROCESING
+=====================================
+
+Example 6–43 Declaring an Autonomous Function in a Package
+CREATE OR REPLACE PACKAGE emp_actions AS -- package specification
+FUNCTION raise_salary (emp_id NUMBER, sal_raise NUMBER)
+RETURN NUMBER;
+END emp_actions;
+/
+CREATE OR REPLACE PACKAGE BODY emp_actions AS -- package body
+-- code for function raise_salary
+FUNCTION raise_salary (emp_id NUMBER, sal_raise NUMBER)
+RETURN NUMBER IS
+PRAGMA AUTONOMOUS_TRANSACTION;
+new_sal NUMBER(8,2);
+BEGIN
+UPDATE employees SET salary =
+salary + sal_raise WHERE employee_id = emp_id;
+COMMIT;
+SELECT salary INTO new_sal FROM employees
+WHERE employee_id = emp_id;
+RETURN new_sal;
+END raise_salary;
+END emp_actions;
+
+Example 6–44 Declaring an Autonomous Standalone Procedure
+CREATE PROCEDURE lower_salary (emp_id NUMBER, amount NUMBER) AS
+PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+UPDATE employees SET salary =
+salary - amount WHERE employee_id = emp_id;
+COMMIT;
+END lower_salary;
+
+Example 6–45 Declaring an Autonomous PL/SQL Block
+DECLARE
+PRAGMA AUTONOMOUS_TRANSACTION;
+emp_id NUMBER(6);
+amount NUMBER(6,2);
+BEGIN
+emp_id := 200;
+amount := 200;
+UPDATE employees SET salary = salary - amount WHERE employee_id = emp_id;
+COMMIT;
+END;
+
+Example 6–46 Declaring an Autonomous Trigger
+CREATE TABLE emp_audit ( emp_audit_id NUMBER(6), up_date DATE,
+new_sal NUMBER(8,2), old_sal NUMBER(8,2) );
+CREATE OR REPLACE TRIGGER audit_sal
+AFTER UPDATE OF salary ON employees FOR EACH ROW
+DECLARE
+PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+-- bind variables are used here for values
+INSERT INTO emp_audit VALUES( :old.employee_id, SYSDATE,
+:new.salary, :old.salary );
+COMMIT;
+END;
+
+Example 6–48 Invoking an Autonomous Function
+-- create the debug table
+CREATE TABLE debug_output (msg VARCHAR2(200));
+-- create the package spec
+CREATE PACKAGE debugging AS
+FUNCTION log_msg (msg VARCHAR2) RETURN VARCHAR2;
+PRAGMA RESTRICT_REFERENCES(log_msg, WNDS, RNDS);
+END debugging;
+/
+-- create the package body
+CREATE PACKAGE BODY debugging AS
+FUNCTION log_msg (msg VARCHAR2) RETURN VARCHAR2 IS
+PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+-- the following insert does not violate the constraint
+-- WNDS because this is an autonomous routine
+INSERT INTO debug_output VALUES (msg);
+COMMIT;
+RETURN msg;
+END;
+END debugging;
+/
+-- invoke the packaged function from a query
+DECLARE
+my_emp_id NUMBER(6);
+my_last_name VARCHAR2(25);
+my_count NUMBER;
+BEGIN
+my_emp_id := 120;
+SELECT debugging.log_msg(last_name)
+INTO my_last_name FROM employees
+WHERE employee_id = my_emp_id;
+-- even if you roll back in this scope, the insert into 'debug_output' remains
+-- committed because it is part of an autonomous transaction
+ROLLBACK;
+END;
+
+=======================================================================================================================
+DYNAMIC SQL
+=======================================================================================================================
+
+Example 7–1 Invoking a Subprogram from a Dynamic PL/SQL Block
+-- Subprogram that dynamic PL/SQL block invokes:
+CREATE PROCEDURE create_dept ( deptid IN OUT NUMBER,
+dname IN VARCHAR2,
+mgrid IN NUMBER,
+locid IN NUMBER
+) AS
+BEGIN
+deptid := departments_seq.NEXTVAL;
+INSERT INTO departments VALUES (deptid, dname, mgrid, locid);
+END;
+/
+DECLARE
+plsql_block VARCHAR2(500);
+new_deptid NUMBER(4);
+new_dname VARCHAR2(30) := 'Advertising';
+new_mgrid NUMBER(6) := 200;
+new_locid NUMBER(4) := 1700;
+BEGIN
+-- Dynamic PL/SQL block invokes subprogram:
+plsql_block := 'BEGIN create_dept(:a, :b, :c, :d); END;';
+/* Specify bind arguments in USING clause.
+Specify mode for first parameter.
+Modes of other parameters are correct by default. */
+EXECUTE IMMEDIATE plsql_block
+USING IN OUT new_deptid, new_dname, new_mgrid, new_locid;
+END;
+
+// Explanation :
+
+sql_stmt := 'INSERT INTO payroll VALUES (:x, :x, :y, :x)';
+
+In the corresponding USING clause, you must supply four bind arguments. They can
+be different; for example:
+EXECUTE IMMEDIATE sql_stmt USING a, b, c, d;
+
+The preceding EXECUTE IMMEDIATE statement executes the following SQL statement:
+INSERT INTO payroll VALUES (a, b, c, d)
+
+To associate the same bind argument with each occurrence of :x, you must repeat that
+bind argument; for example:
+EXECUTE IMMEDIATE sql_stmt USING a, a, b, a;
+
+The preceding EXECUTE IMMEDIATE statement executes the following SQL statement:
+INSERT INTO payroll VALUES (a, a, b, a)
+
+Example 7–5 Repeated Placeholder Names in Dynamic PL/SQL Block
+CREATE PROCEDURE calc_stats (
+w NUMBER,
+x NUMBER,
+y NUMBER,
+z NUMBER )
+IS
+BEGIN
+DBMS_OUTPUT.PUT_LINE(w + x + y + z);
+END;
+/
+DECLARE
+a NUMBER := 4;
+b NUMBER := 7;
+plsql_block VARCHAR2(100);
+BEGIN
+plsql_block := 'BEGIN calc_stats(:x, :x, :y, :x); END;';
+EXECUTE IMMEDIATE plsql_block USING a, b; -- calc_stats(a, a, b, a)
+END;
+
+====================================
+DBMS_SQL Package
+====================================
+
+The DBMS_SQL package defines an entity called a SQL cursor number. Because the
+SQL cursor number is a PL/SQL integer, you can pass it across call boundaries and
+store it. You can also use the SQL cursor number to obtain information about the SQL
+statement that you are executing.
+
+DBMS_SQL.TO_REFCURSOR Function :
+
+Example 7–6 Switching from DBMS_SQL Package to Native Dynamic SQL
+CREATE OR REPLACE TYPE vc_array IS TABLE OF VARCHAR2(200);
+/
+CREATE OR REPLACE TYPE numlist IS TABLE OF NUMBER;
+/
+CREATE OR REPLACE PROCEDURE do_query_1 (
+placeholder vc_array,
+bindvars vc_array,
+sql_stmt VARCHAR2 )
+IS
+TYPE curtype IS REF CURSOR;
+src_cur curtype;
+curid NUMBER;
+bindnames vc_array;
+empnos numlist;
+depts numlist;
+ret NUMBER;
+isopen BOOLEAN;
+BEGIN
+-- Open SQL cursor number:
+curid := DBMS_SQL.OPEN_CURSOR;
+-- Parse SQL cursor number:
+DBMS_SQL.PARSE(curid, sql_stmt, DBMS_SQL.NATIVE);
+bindnames := placeholder;
+-- Bind arguments:
+FOR i IN 1 .. bindnames.COUNT LOOP
+DBMS_SQL.BIND_VARIABLE(curid, bindnames(i), bindvars(i));
+END LOOP;
+-- Execute SQL cursor number:
+ret := DBMS_SQL.EXECUTE(curid);
+-- Switch from DBMS_SQL to native dynamic SQL:
+src_cur := DBMS_SQL.TO_REFCURSOR(curid);
+FETCH src_cur BULK COLLECT INTO empnos, depts;
+-- This would cause an error because curid was converted to a REF CURSOR:
+-- isopen := DBMS_SQL.IS_OPEN(curid);
+CLOSE src_cur;
+END;
+
+
+
+DBMS_SQL.TO_CURSOR_NUMBER Function :
+
+Example 7–7 Switching from Native Dynamic SQL to DBMS_SQL Package
+CREATE OR REPLACE PROCEDURE do_query_2 (sql_stmt VARCHAR2) IS
+TYPE curtype IS REF CURSOR;
+src_cur curtype;
+curid NUMBER;
+desctab DBMS_SQL.DESC_TAB;
+colcnt NUMBER;
+namevar VARCHAR2(50);
+numvar NUMBER;
+datevar DATE;
+empno NUMBER := 100;
+BEGIN
+-- sql_stmt := SELECT ... FROM employees WHERE employee_id = :b1';
+-- Open REF CURSOR variable:
+OPEN src_cur FOR sql_stmt USING empno;
+-- Switch from native dynamic SQL to DBMS_SQL package:
+curid := DBMS_SQL.TO_CURSOR_NUMBER(src_cur);
+DBMS_SQL.DESCRIBE_COLUMNS(curid, colcnt, desctab);
+-- Define columns:
+FOR i IN 1 .. colcnt LOOP
+IF desctab(i).col_type = 2 THEN
+DBMS_SQL.DEFINE_COLUMN(curid, i, numvar);
+ELSIF desctab(i).col_type = 12 THEN
+DBMS_SQL.DEFINE_COLUMN(curid, i, datevar);
+-- statements
+ELSE
+DBMS_SQL.DEFINE_COLUMN(curid, i, namevar, 50);
+END IF;
+END LOOP;
+-- Fetch rows with DBMS_SQL package:
+WHILE DBMS_SQL.FETCH_ROWS(curid) > 0 LOOP
+FOR i IN 1 .. colcnt LOOP
+IF (desctab(i).col_type = 1) THEN
+DBMS_SQL.COLUMN_VALUE(curid, i, namevar);
+ELSIF (desctab(i).col_type = 2) THEN
+DBMS_SQL.COLUMN_VALUE(curid, i, numvar);
+ELSIF (desctab(i).col_type = 12) THEN
+DBMS_SQL.COLUMN_VALUE(curid, i, datevar);
+-- statements
+END IF;
+END LOOP;
+END LOOP;
+DBMS_SQL.CLOSE_CURSOR(curid);
+END;
+
+
+
+
+=============================================
+Avoiding SQL Injection in PL/SQL
+=============================================
+
+Example 7–13 Using Validation Checks to Guard Against SQL Injection
+CREATE OR REPLACE PROCEDURE raise_emp_salary (
+column_value NUMBER,
+emp_column VARCHAR2,
+amount NUMBER )
+IS
+v_column VARCHAR2(30);
+sql_stmt VARCHAR2(200);
+BEGIN
+-- Check validity of column name that was given as input:
+SELECT COLUMN_NAME INTO v_column
+FROM USER_TAB_COLS
+WHERE TABLE_NAME = 'EMPLOYEES'
+AND COLUMN_NAME = emp_column;
+sql_stmt := 'UPDATE employees SET salary = salary + :1 WHERE '
+|| DBMS_ASSERT.ENQUOTE_NAME(v_column,FALSE) || ' = :2';
+EXECUTE IMMEDIATE sql_stmt USING amount, column_value;
+-- If column name is valid:
+IF SQL%ROWCOUNT > 0 THEN
+DBMS_OUTPUT.PUT_LINE('Salaries were updated for: '
+|| emp_column || ' = ' || column_value);
+END IF;
+-- If column name is not valid:
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE ('Invalid Column: ' || emp_column);
+END raise_emp_salary;
+/
+DECLARE
+plsql_block VARCHAR2(500);
+BEGIN
+-- Invoke raise_emp_salary from a dynamic PL/SQL block:
+plsql_block :=
+'BEGIN raise_emp_salary(:cvalue, :cname, :amt); END;';
+EXECUTE IMMEDIATE plsql_block
+USING 110, 'DEPARTMENT_ID', 10;
+-- Invoke raise_emp_salary from a dynamic SQL statement:
+EXECUTE IMMEDIATE 'BEGIN raise_emp_salary(:cvalue, :cname, :amt); END;'
+USING 112, 'EMPLOYEE_ID', 10;
+END;
+
+Example 7–14 Using Explicit Format Models to Guard Against SQL Injection
+SQL> REM Create invulnerable procedure
+SQL> REM Return records not older than a month
+SQL>
+SQL> CREATE OR REPLACE PROCEDURE get_recent_record
+(user_name IN VARCHAR2,
+service_type IN VARCHAR2,
+record OUT VARCHAR2)
+IS
+query VARCHAR2(4000);
+BEGIN
+-- Following SELECT statement is vulnerable to modification
+-- because it uses concatenation to build WHERE clause.
+query := 'SELECT value FROM secret_records WHERE user_name='''
+|| user_name
+|| ''' AND service_type='''
+|| service_type
+|| ''' AND date_created> DATE '''
+|| TO_CHAR(SYSDATE - 30,'YYYY-MM-DD')
+|| '''';
+DBMS_OUTPUT.PUT_LINE('Query: ' || query);
+EXECUTE IMMEDIATE query INTO record;
+DBMS_OUTPUT.PUT_LINE('Record: ' || record);
+END;
+/
+.
+Procedure created.
+.
+SQL>
+SQL> REM Attempt statement modification
+SQL>
+SQL> ALTER SESSION SET NLS_DATE_FORMAT='"'' OR service_type=''Merger"';
+.
+Session altered.
+.
+SQL> DECLARE
+2 record_value VARCHAR2(4000);
+3 BEGIN
+4 get_recent_record('Anybody', 'Anything', record_value);
+5 END;
+6 /
+Query: SELECT value FROM secret_records WHERE user_name='Anybody' AND
+service_type='Anything' AND date_created> DATE '2008-05-27'
+
+DECLARE
+*
+ERROR at line 1:
+ORA-01403: no data found
+ORA-06512: at "SYS.GET_RECENT_RECORD", line 18
+ORA-06512: at line 4
+.
+SQL>
+
+
+=======================================================================================================================
+PL/SQL Subprograms
+=======================================================================================================================
+
+8–1 Declaring, Defining, and Invoking a Simple PL/SQL Procedure
+-- Declarative part of block begins
+DECLARE
+in_string VARCHAR2(100) := 'This is my test string.';
+out_string VARCHAR2(200);
+-- Procedure declaration and definition begins
+PROCEDURE double (original IN VARCHAR2,
+new_string OUT VARCHAR2)
+IS
+-- Declarative part of procedure (optional) goes here
+-- Executable part of procedure begins
+BEGIN
+new_string := original || ' + ' || original;
+-- Executable part of procedure ends
+-- Exception-handling part of procedure begins
+EXCEPTION
+WHEN VALUE_ERROR THEN
+DBMS_OUTPUT.PUT_LINE('Output buffer not long enough.');
+END;
+-- Exception-handling part of procedure ends
+-- Procedure declaration and definition ends
+-- Declarative part of block ends
+-- Executable part of block begins
+BEGIN
+double(in_string, out_string); -- Procedure invocation
+DBMS_OUTPUT.PUT_LINE(in_string || ' - ' || out_string);
+END;
+-- Executable part of block ends
+/
+
+// RETURN :
+
+A subprogram can contain several RETURN statements. The subprogram need not end
+with a RETURN statement. Executing any RETURN statement completes the
+subprogram immediately.
+In a procedure, a RETURN statement cannot contain an expression and does not return
+a value.
+In a function, a RETURN statement must contain an expression. When the RETURN
+statement executes, the expression is evaluated, and its value is assigned to thefunction identifier. The function identifier acts like a variable of the type specified in
+the RETURN clause.
+The expression in a function RETURN statement can be arbitrarily complex. For
+example:
+CREATE OR REPLACE FUNCTION half_of_square(original NUMBER)
+RETURN NUMBER IS
+BEGIN
+RETURN (original * original)/2 + (original * 4);
+END half_of_square;
+/
+
+Example 8–2 Declaring, Defining, and Invoking a Simple PL/SQL Function
+-- Declarative part of block begins
+DECLARE
+-- Function declaration and definition begins
+FUNCTION square (original NUMBER)
+RETURN NUMBER -- RETURN clause
+AS
+-- Declarative part of function begins
+original_squared NUMBER;
+-- Declarative part of function ends
+-- Executable part of function begins
+BEGIN
+original_squared := original * original;
+RETURN original_squared; -- RETURN statement
+-- Exception-handling part of function (optional) goes here
+END;
+-- Executable part of function ends
+-- Function declaration and definition ends
+-- Declarative part of block ends
+-- Executable part of block begins
+BEGIN
+DBMS_OUTPUT.PUT_LINE(square(100)); -- Function invocation
+END;
+-- Executable part of block ends
+/
+
+Example 8–3 Creating Nested Subprograms that Invoke Each Other
+DECLARE
+-- Declare proc1 (forward declaration):
+PROCEDURE proc1(number1 NUMBER);
+-- Declare and define proc 2:
+PROCEDURE proc2(number2 NUMBER) IS
+BEGIN
+proc1(number2);
+END;
+-- Define proc 1:
+PROCEDURE proc1(number1 NUMBER) IS
+BEGIN
+proc2 (number1);
+END;
+BEGIN
+NULL;
+END;
+/
+
+
+===================================
+PARAMETERS passed to SubPrograms
+===================================
+
+Using IN Mode
+An IN parameter lets you pass a value to the subprogram being invoked. Inside the
+subprogram, an IN parameter acts like a constant. It cannot be assigned a value.
+You can pass a constant, literal, initialized variable, or expression as an IN parameter.
+
+Using OUT Mode
+An OUT parameter returns a value to the caller of a subprogram. Inside the
+subprogram, an OUT parameter acts like a variable. You can change its value and
+reference the value after assigning it,
+
+Example 8–5 Using OUT Mode
+DECLARE
+emp_num NUMBER(6) := 120;
+bonus NUMBER(6) := 50;
+emp_last_name VARCHAR2(25);
+PROCEDURE raise_salary (emp_id IN NUMBER, amount IN NUMBER,
+emp_name OUT VARCHAR2) IS
+BEGIN
+UPDATE employees SET salary =
+salary + amount WHERE employee_id = emp_id;
+SELECT last_name INTO emp_name
+FROM employees
+WHERE employee_id = emp_id;
+END raise_salary;
+BEGIN
+raise_salary(emp_num, bonus, emp_last_name);
+DBMS_OUTPUT.PUT_LINE
+('Salary was updated for: ' || emp_last_name);
+END;
+
+Example 8–6 Procedure with Default Parameter Values
+DECLARE
+emp_num NUMBER(6) := 120;
+bonus NUMBER(6);
+merit NUMBER(4);
+PROCEDURE raise_salary (emp_id IN NUMBER,
+amount IN NUMBER DEFAULT 100,
+extra IN NUMBER DEFAULT 50) IS
+BEGIN
+UPDATE employees SET salary = salary + amount + extra
+WHERE employee_id = emp_id;
+END raise_salary;
+BEGIN
+-- Same as raise_salary(120, 100, 50)
+raise_salary(120);
+-- Same as raise_salary(120, 100, 25)
+raise_salary(emp_num, extra => 25);
+END;
+
+
+Example 8–7 Formal Parameter with Expression as Default Value
+DECLARE
+cnt pls_integer := 0;
+FUNCTION dflt RETURN pls_integer IS
+BEGIN
+cnt := cnt + 1;
+RETURN 42;
+END dflt;
+-- Default is expression
+PROCEDURE p(i IN pls_integer DEFAULT dflt()) IS
+BEGIN
+DBMS_Output.Put_Line(i);
+END p;
+BEGIN
+FOR j IN 1..5 LOOP
+p(j); -- Actual parameter is provided
+END loop;
+DBMS_Output.Put_Line('cnt: '||cnt);
+p(); -- Actual parameter is not provided
+DBMS_Output.Put_Line('cnt: '||cnt);
+END;
+The output of Example 8–7 is:
+1
+2
+3
+4
+5
+Cnt: 0
+42
+Cnt: 1
+
+
+Example 8–8 Subprogram Calls Using Positional, Named, and Mixed Notation
+SQL> DECLARE
+2 emp_num NUMBER(6) := 120;
+3 bonus NUMBER(6) := 50;
+4 PROCEDURE raise_salary (emp_id NUMBER, amount NUMBER) IS
+5 BEGIN
+6 UPDATE employees SET salary =
+7 salary + amount WHERE employee_id = emp_id;
+8 END raise_salary;
+9 BEGIN
+10 -- Positional notation:
+11 raise_salary(emp_num, bonus);
+12 -- Named notation (parameter order is insignificant):
+13 raise_salary(amount => bonus, emp_id => emp_num);
+14 raise_salary(emp_id => emp_num, amount => bonus);
+15 -- Mixed notation:
+16 raise_salary(emp_num, amount => bonus);
+17 END;
+
+
+//Using Invoker's Rights or Definer's Rights (AUTHID Clause)
+The AUTHID property of a stored PL/SQL unit affects the name resolution and
+privilege checking of SQL statements that the unit issues at run time.
+
+For stored PL/SQL units that you create or alter with the following statements, you
+can use the optional AUTHID clause to specify either CURRENT_USER or DEFINER. The
+default is DEFINER.
+
+A unit whose AUTHID value is CURRENT_USER is called an invoker’s rights unit, or
+IR unit. A unit whose AUTHID value is DEFINER is called a definer’s rights unit, or
+DR unit.
+
+Example 8–18 Invoking an External Procedure from PL/SQL
+CREATE OR REPLACE PROCEDURE raise_salary (empid NUMBER, pct NUMBER)
+AS LANGUAGE JAVA
+NAME 'Adjuster.raiseSalary(int, float)';
+/
+DECLARE
+emp_id NUMBER := 120;
+percent NUMBER := 10;
+BEGIN
+-- get values for emp_id and percent
+raise_salary(emp_id, percent); -- invoke external subprogram
+END;
+
+Example 8–19 Invoking a Java Function from PL/SQL
+-- the following invalid nested Java call spec throws PLS-00999
+-- CREATE PROCEDURE sleep (milli_seconds in number) IS
+-- PROCEDURE java_sleep (milli_seconds IN NUMBER) AS ...
+-- Create Java call spec, then call from PL/SQL procedure
+CREATE PROCEDURE java_sleep (milli_seconds IN NUMBER)
+AS LANGUAGE JAVA NAME 'java.lang.Thread.sleep(long)';
+/
+CREATE PROCEDURE sleep (milli_seconds in number) IS
+-- the following nested PROCEDURE spec is not legal
+-- PROCEDURE java_sleep (milli_seconds IN NUMBER)
+-- AS LANGUAGE JAVA NAME 'java.lang.Thread.sleep(long)';
+BEGIN
+DBMS_OUTPUT.PUT_LINE(DBMS_UTILITY.get_time());
+java_sleep (milli_seconds);
+DBMS_OUTPUT.PUT_LINE(DBMS_UTILITY.get_time());
+END;
+
+//Using the PL/SQL Function Result Cache
+The PL/SQL function result caching mechanism provides a language-supported and
+system-managed means for caching the results of PL/SQL functions in a shared global
+area (SGA), which is available to every session that runs your application. The caching
+mechanism is both efficient and easy to use, and it relieves you of the burden of
+designing and developing your own caches and cache-management policies.
+
+Example 8–24 Declaration and Definition of Result-Cached Function
+-- Package specification
+CREATE OR REPLACE PACKAGE department_pks IS
+TYPE dept_info_record IS RECORD (average_salary NUMBER,
+number_of_employees NUMBER);
+-- Function declaration
+FUNCTION get_dept_info (dept_id NUMBER) RETURN dept_info_record
+RESULT_CACHE;
+END department_pks;
+/
+CREATE OR REPLACE PACKAGE BODY department_pks AS
+-- Function definition
+FUNCTION get_dept_info (dept_id NUMBER) RETURN dept_info_record
+RESULT_CACHE RELIES_ON (EMPLOYEES)
+IS
+rec dept_info_record;
+BEGIN
+SELECT AVG(SALARY), COUNT(*) INTO rec
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID = dept_id;
+RETURN rec;
+END get_dept_info;
+END department_pks;
+/
+DECLARE
+dept_id NUMBER := 50;
+avg_sal NUMBER;
+no_of_emp NUMBER;
+BEGIN
+avg_sal := department_pks.get_dept_info(50).average_salary;
+no_of_emp := department_pks.get_dept_info(50).number_of_employees;
+DBMS_OUTPUT.PUT_LINE('dept_id = ' ||dept_id);
+DBMS_OUTPUT.PUT_LINE('average_salary = '|| avg_sal);
+DBMS_OUTPUT.PUT_LINE('number_of_employees = ' ||no_of_emp);
+END;
+
+
+=========================================================================================================================
+TRIGGERS
+=========================================================================================================================
+
+types:
+
+A DML trigger is fired by a DML statement, a DDL trigger is fired by a DDL
+statement, a DELETE trigger is fired by a DELETE statement, and so on.
+An INSTEAD OF trigger is a DML trigger that is defined on a view (not a table). The
+database fires the INSTEAD OF trigger instead of executing the triggering DML
+statement.
+A system trigger is defined on a schema or the database. A trigger defined on a
+schema fires for each event associated with the owner of the schema (the current user).
+
+Trigger states:
+
+trigger can be in either of two states:
+Enabled. An enabled trigger executes its trigger body if a triggering statement is
+entered and the trigger restriction (if any) evaluates to TRUE.
+Disabled. A disabled trigger does not execute its trigger body, even if a triggering
+statement is entered and the trigger restriction (if any) evaluates to TRUE.
+
+Example 9–1 CREATE TRIGGER Statement
+CREATE OR REPLACE TRIGGER Print_salary_changes
+BEFORE DELETE OR INSERT OR UPDATE ON emp
+FOR EACH ROW
+WHEN (NEW.EMPNO > 0)
+DECLARE
+sal_diff number;
+BEGIN
+sal_diff := :NEW.SAL - :OLD.SAL;
+dbms_output.put('Old salary: ' || :OLD.sal);
+dbms_output.put(' New salary: ' || :NEW.sal);
+dbms_output.put_line(' Difference ' || sal_diff);
+END;
+
+// Do Import and SQL*Loader Fire Triggers?
+
+INSERT triggers fire during SQL*Loader conventional loads. (For direct loads, triggers
+are disabled before the load.)
+The IGNORE parameter of the IMP statement determines whether triggers fire during
+import operations:
+If IGNORE=N (default) and the table already exists, then import does not change
+the table and no existing triggers fire.
+If the table does not exist, then import creates and loads it before any triggers are
+defined, so again no triggers fire.
+If IGNORE=Y, then import loads rows into existing tables. Any existing triggers
+fire, and indexes are updated to account for the imported data.
+
+
+The BEFORE or AFTER option in the CREATE TRIGGER statement specifies exactly
+when to fire the trigger body in relation to the triggering statement that is being run. In
+a CREATE TRIGGER statement, the BEFORE or AFTER option is specified just before the
+triggering statement. For example, the PRINT_SALARY_CHANGES trigger in the
+previous example is a BEFORE trigger.
+
+In general, you use BEFORE or AFTER triggers to achieve the following results:
+Use BEFORE row triggers to modify the row before the row data is written to disk.
+Use AFTER row triggers to obtain, and perform operations, using the row ID.
+An AFTER row trigger fires when the triggering statement results in ORA-2292.
+
+
+
+Instead of Trigger :
+
+
+CREATE OR REPLACE VIEW manager_info AS
+SELECT e.ename, e.empno, d.dept_type, d.deptno, p.prj_level, p.projno
+FROM emp e, dept d, Project_tab p
+WHERE e.empno = d.mgr_no
+AND d.deptno = p.resp_dept;
+CREATE OR REPLACE TRIGGER manager_info_insert
+INSTEAD OF INSERT ON manager_info
+REFERENCING NEW AS n -- new manager information
+FOR EACH ROW
+DECLARE
+rowcnt number;
+BEGIN
+SELECT COUNT(*) INTO rowcnt FROM emp WHERE empno = :n.empno;
+IF rowcnt = 0 THEN
+INSERT INTO emp (empno,ename) VALUES (:n.empno, :n.ename);
+ELSE
+UPDATE emp SET emp.ename = :n.ename WHERE emp.empno = :n.empno;
+END IF;
+SELECT COUNT(*) INTO rowcnt FROM dept WHERE deptno = :n.deptno;
+IF rowcnt = 0 THEN
+INSERT INTO dept (deptno, dept_type)
+VALUES(:n.deptno, :n.dept_type);
+ELSE
+UPDATE dept SET dept.dept_type = :n.dept_type
+WHERE dept.deptno = :n.deptno;
+END IF;
+SELECT COUNT(*) INTO rowcnt FROM Project_tab
+WHERE Project_tab.projno = :n.projno;
+IF rowcnt = 0 THEN
+INSERT INTO Project_tab (projno, prj_level)
+VALUES(:n.projno, :n.prj_level);
+ELSE
+UPDATE Project_tab SET Project_tab.prj_level = :n.prj_level
+WHERE Project_tab.projno = :n.projno;
+END IF;
+END;
+
+
+==========================================
+Compound Triggers
+==========================================
+
+Example 9–2 Compound Trigger
+SQL> CREATE OR REPLACE TRIGGER compound_trigger
+2 FOR UPDATE OF salary ON employees
+3 COMPOUND TRIGGER
+4
+5 -- Declarative part (optional)
+6 -- Variables declared here have firing-statement duration.
+7 threshold CONSTANT SIMPLE_INTEGER := 200;
+8
+9 BEFORE STATEMENT IS
+10 BEGIN
+11 NULL;
+12 END BEFORE STATEMENT;
+13
+14 BEFORE EACH ROW IS
+15 BEGIN
+16 NULL;
+17 END BEFORE EACH ROW;
+18
+19 AFTER EACH ROW IS
+20 BEGIN
+21 NULL;
+22 END AFTER EACH ROW;
+23
+24 AFTER STATEMENT IS
+25 BEGIN
+26 NULL;
+27 END AFTER STATEMENT;
+28 END compound_trigger;
+29 /
+
+Example 9–3 Compound Trigger Records Changes to One Table in Another Table
+CREATE TABLE employee_salaries (
+employee_id NUMBER NOT NULL,
+change_date DATE NOT NULL,
+salary NUMBER(8,2) NOT NULL,
+CONSTRAINT pk_employee_salaries PRIMARY KEY (employee_id, change_date),
+CONSTRAINT fk_employee_salaries FOREIGN KEY (employee_id)
+REFERENCES employees (employee_id)
+ON DELETE CASCADE)
+/
+CREATE OR REPLACE TRIGGER maintain_employee_salaries
+FOR UPDATE OF salary ON employees
+COMPOUND TRIGGER
+-- Declarative Part:
+-- Choose small threshhold value to show how example works:
+threshhold CONSTANT SIMPLE_INTEGER := 7;
+TYPE salaries_t IS TABLE OF employee_salaries%ROWTYPE INDEX BY SIMPLE_INTEGER;
+salaries salaries_t;
+idx SIMPLE_INTEGER := 0;
+PROCEDURE flush_array IS
+n CONSTANT SIMPLE_INTEGER := salaries.count();
+BEGIN
+FORALL j IN 1..n
+INSERT INTO employee_salaries VALUES salaries(j);
+salaries.delete();
+idx := 0;
+DBMS_OUTPUT.PUT_LINE('Flushed ' || n || ' rows');
+END flush_array;
+-- AFTER EACH ROW Section:
+AFTER EACH ROW IS
+BEGIN
+idx := idx + 1;
+salaries(idx).employee_id := :NEW.employee_id;
+salaries(idx).change_date := SYSDATE();
+salaries(idx).salary := :NEW.salary;
+IF idx >= threshhold THEN
+flush_array();
+END IF;
+END AFTER EACH ROW;
+-- AFTER STATEMENT Section:
+AFTER STATEMENT IS
+BEGIN
+flush_array();
+END AFTER STATEMENT;
+END maintain_employee_salaries;
+/
+/* Increase salary of every employee in department 50 by 10%: */
+UPDATE employees
+SET salary = salary * 1.1
+WHERE department_id = 50
+/
+/* Wait two seconds: */
+BEGIN
+DBMS_LOCK.SLEEP(2);
+END;
+/
+/* Increase salary of every employee in department 50 by 5%: */
+UPDATE employees
+SET salary = salary * 1.05
+WHERE department_id = 50
+/
+
+//Detecting the DML Operation that Fired a Trigger :
+
+
+If more than one type of DML operation can fire a trigger (for example, ON INSERT OR
+DELETE OR UPDATE OF emp), the trigger body can use the conditional predicates
+INSERTING, DELETING, and UPDATING to check which type of statement fire the
+trigger.
+
+Within the code of the trigger body, you can execute blocks of code depending on the
+kind of DML operation that fired the trigger:
+IF INSERTING THEN ... END IF;
+IF UPDATING THEN ... END IF;
+The first condition evaluates to TRUE only if the statement that fired the trigger is an
+INSERT statement; the second condition evaluates to TRUE only if the statement that
+fired the trigger is an UPDATE statement.
+In an UPDATE trigger, a column name can be specified with an UPDATING conditional
+predicate to determine if the named column is being updated. For example, assume a
+trigger is defined as the following:
+CREATE OR REPLACE TRIGGER ...
+... UPDATE OF Sal, Comm ON emp ...
+BEGIN
+... IF UPDATING ('SAL') THEN ... END IF;
+END;
+The code in the THEN clause runs only if the triggering UPDATE statement updates the
+SAL column. This way, the trigger can minimize its overhead when the column of
+interest is not being changed.
+
+
+// SQL Statements Allowed in Trigger Bodies:
+
+A trigger body can contain SELECT INTO statements, SELECT statements in cursor
+definitions, and all other DML statements.
+A system trigger body can contain the DDL statements CREATETABLE, ALTERTABLE,
+DROP TABLE and ALTER COMPILE. A nonsystem trigger body cannot contain DDL or
+transaction control statements.
+
+//Checking Dependencies :
+
+You can examine the ALL_DEPENDENCIES view to see the dependencies for a trigger.
+For example, the following statement shows the dependencies for the triggers in the
+HR schema:
+SELECT NAME, REFERENCED_OWNER, REFERENCED_NAME,REFERENCED_TYPE
+FROM ALL_DEPENDENCIES
+WHERE OWNER = 'HR' and TYPE = 'TRIGGER';
+
+// Recompiling trigger :
+
+Use the ALTER TRIGGER statement to recompile a trigger manually. For example, the
+following statement recompiles the PRINT_SALARY_CHANGES trigger:
+ALTER TRIGGER Print_salary_changes COMPILE;
+To recompile a trigger, you must own the trigger or have the ALTER ANY TRIGGER
+system privilege.
+
+When replacing a trigger, you must include the OR REPLACE option in the CREATE
+TRIGGER statement. The OR REPLACE option is provided to allow a new version of an
+existing trigger to replace the older version, without affecting any grants made for the
+original version of the trigger.
+Alternatively, the trigger can be dropped using the DROP TRIGGER statement, and you
+can rerun the CREATE TRIGGER statement.
+To drop a trigger, the trigger must be in your schema, or you must have the DROP ANY
+TRIGGER system privilege.
+
+
+//Enabling Triggers :
+
+To enable a disabled trigger, use the ALTER TRIGGER statement with the ENABLE
+clause. For example, to enable the disabled trigger named Reorder, enter the
+following statement:
+ALTER TRIGGER Reorder ENABLE;
+To enable all triggers defined for a specific table, use the ALTER TABLE statement with
+the ENABLE clause and the ALL TRIGGERS option. For example, to enable all triggers
+defined for the Inventory table, enter the following statement:
+ALTER TABLE Inventory ENABLE ALL TRIGGERS;
+
+//Disabling :
+
+To disable a trigger, use the ALTER TRIGGER statement with the DISABLE option. For
+example, to disable the trigger named Reorder, enter the following statement:
+ALTER TRIGGER Reorder DISABLE;
+To disable all triggers defined for a specific table, use the ALTER TABLE statement with
+the DISABLE clause and the ALL TRIGGERS option. For example, to disable all triggers
+defined for the Inventory table, enter the following statement:
+ALTER TABLE Inventory DISABLE ALL TRIGGERS;
+
+
+========================================================================================================================
+PL/SQL Packages
+=========================================================================================================================
+
+Example 10–1 A Simple Package Specification Without a Body
+CREATE PACKAGE trans_data AS -- bodiless package
+TYPE TimeRec IS RECORD (
+minutes SMALLINT,
+hours SMALLINT);
+TYPE TransRec IS RECORD (
+category VARCHAR2(10),
+account INT,
+amount REAL,
+time_of TimeRec);
+minimum_balance CONSTANT REAL := 10.00;
+number_processed INT;
+insufficient_funds EXCEPTION;
+END trans_data;
+
+//Referencing package contents :
+
+To reference the types, items, subprograms, and call specifications declared within a
+package spec, use dot notation:
+package_name.type_name
+package_name.item_name
+package_name.subprogram_name
+package_name.call_spec_name
+
+
+Example 10–2 Matching Package Specifications and Bodies
+CREATE PACKAGE emp_bonus AS
+PROCEDURE calc_bonus (date_hired employees.hire_date%TYPE);
+END emp_bonus;
+/
+CREATE PACKAGE BODY emp_bonus AS
+-- the following parameter declaration raises an exception
+-- because 'DATE' does not match employees.hire_date%TYPE
+-- PROCEDURE calc_bonus (date_hired DATE) IS
+-- the following is correct because there is an exact match
+PROCEDURE calc_bonus
+(date_hired employees.hire_date%TYPE) IS
+BEGIN
+DBMS_OUTPUT.PUT_LINE
+('Employees hired on ' || date_hired || ' get bonus.');
+END;
+END emp_bonus;
+
+//ACCESS SPECIFIERS :
+
+In the package emp_admin, the package body declares a variable named number_
+hired, which is initialized to zero. Items declared in the body are restricted to use
+within the package. PL/SQL code outside the package cannot reference the variable
+number_hired. Such items are called private.
+Items declared in the spec of emp_admin, such as the exception invalid_salary,
+are visible outside the package. Any PL/SQL code can reference the exception
+invalid_salary. Such items are called public.
+To maintain items throughout a session or across transactions, place them in the
+declarative part of the package body. For example, the value of number_hired is kept
+between calls to hire_employee within the same session. The value is lost when the
+session ends.
+To make the items public, place them in the package specification. For example, emp_
+rec declared in the spec of the package is available for general use.
+
+=========================================================================================================================
+PL/SQL Error Handling
+=========================================================================================================================
+
+Example 11–1 Run-Time Error Handling
+DECLARE
+stock_price NUMBER := 9.73;
+net_earnings NUMBER := 0;
+pe_ratio NUMBER;
+BEGIN
+-- Calculation might cause division-by-zero error.
+pe_ratio := stock_price / net_earnings;
+DBMS_OUTPUT.PUT_LINE('Price/earnings ratio = ' || pe_ratio);
+EXCEPTION -- exception handlers begin
+-- Only one of the WHEN blocks is executed.
+WHEN ZERO_DIVIDE THEN -- handles 'division by zero' error
+DBMS_OUTPUT.PUT_LINE('Company must have had zero earnings.');
+pe_ratio := NULL;
+WHEN OTHERS THEN -- handles all other errors
+DBMS_OUTPUT.PUT_LINE('Some other kind of error occurred.');
+pe_ratio := NULL;
+END; -- exception handlers and block end here
+
+Example 11–2 Managing Multiple Errors with a Single Exception Handler
+DECLARE
+emp_column VARCHAR2(30) := 'last_name';
+table_name VARCHAR2(30) := 'emp';
+temp_var VARCHAR2(30);
+BEGIN
+temp_var := emp_column;
+SELECT COLUMN_NAME INTO temp_var FROM USER_TAB_COLS
+WHERE TABLE_NAME = 'EMPLOYEES'
+AND COLUMN_NAME = UPPER(emp_column);
+-- processing here
+temp_var := table_name;
+SELECT OBJECT_NAME INTO temp_var FROM USER_OBJECTS
+WHERE OBJECT_NAME = UPPER(table_name)
+AND OBJECT_TYPE = 'TABLE';
+-- processing here
+EXCEPTION
+-- Catches all 'no data found' errors
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE
+('No Data found for SELECT on ' || temp_var);
+END;
+
+
+//SCOPE of PL/SQL Exceptions 
+
+Example 11–3 Scope of PL/SQL Exceptions
+DECLARE
+past_due EXCEPTION;
+acct_num NUMBER;
+BEGIN
+DECLARE ---------- sub-block begins
+past_due EXCEPTION; -- this declaration prevails
+acct_num NUMBER;
+due_date DATE := SYSDATE - 1;
+todays_date DATE := SYSDATE;
+BEGIN
+IF due_date < todays_date THEN
+RAISE past_due; -- this is not handled
+END IF;
+END; ------------- sub-block ends
+EXCEPTION
+-- Does not handle raised exception
+WHEN past_due THEN
+DBMS_OUTPUT.PUT_LINE
+('Handling PAST_DUE exception.');
+WHEN OTHERS THEN
+DBMS_OUTPUT.PUT_LINE
+('Could not recognize PAST_DUE_EXCEPTION in this scope.');
+END;
+
+
+======================================
+Associating a PL/SQL Exception with a Number (EXCEPTION_INIT Pragma)
+======================================
+
+In PL/SQL, the pragma EXCEPTION_INIT tells the compiler to associate an exception
+name with an Oracle Database error number. That lets you refer to any internal
+exception by name and to write a specific handler for it. When you see an error stack,
+or sequence of error messages, the one on top is the one that you can trap and handle.
+You code the pragma EXCEPTION_INIT in the declarative part of a PL/SQL block,
+subprogram, or package using the following syntax:
+
+PRAGMA EXCEPTION_INIT(exception_name, -Oracle_error_number);
+
+where exception_name is the name of a previously declared exception and the
+number is a negative value corresponding to an ORA-n error. The pragma must
+appear somewhere after the exception declaration in the same declarative section
+
+Example 11–4 Using PRAGMA EXCEPTION_INIT
+DECLARE
+deadlock_detected EXCEPTION;
+PRAGMA EXCEPTION_INIT(deadlock_detected, -60);
+BEGIN
+NULL; -- Some operation that causes an ORA-00060 error
+EXCEPTION
+WHEN deadlock_detected THEN
+NULL; -- handle the error
+END;
+
+//Defining Your Own Error Messages (RAISE_APPLICATION_ERROR Procedure) :
+
+To invoke RAISE_APPLICATION_ERROR, use the following syntax:
+raise_application_error(
+error_number, message[, {TRUE | FALSE}]);
+
+where error_number is a negative integer in the range -20000..-20999 and message
+is a character string up to 2048 bytes long. If the optional third parameter is TRUE, the
+error is placed on the stack of previous errors. If the parameter is FALSE (the default),
+the error replaces all previous errors. RAISE_APPLICATION_ERROR is part of package
+DBMS_STANDARD, and as with package STANDARD, you need not qualify references to
+it.
+
+Example 11–5 Raising an Application Error with RAISE_APPLICATION_ERROR
+DECLARE
+num_tables NUMBER;
+BEGIN
+SELECT COUNT(*) INTO num_tables FROM USER_TABLES;
+IF num_tables < 1000 THEN
+/* Issue your own error code (ORA-20101)
+with your own error message. You need not
+qualify RAISE_APPLICATION_ERROR with
+DBMS_STANDARD */
+RAISE_APPLICATION_ERROR
+(-20101, 'Expecting at least 1000 tables');
+ELSE
+-- Do rest of processing (for nonerror case)
+NULL;
+END IF;
+END;
+
+
+// RAISE 
+
+Example 11–6 Using RAISE to Raise a User-Defined Exception
+DECLARE
+out_of_stock EXCEPTION;
+number_on_hand NUMBER := 0;
+BEGIN
+IF number_on_hand < 1 THEN
+RAISE out_of_stock; -- raise an exception that you defined
+END IF;
+EXCEPTION
+WHEN out_of_stock THEN
+-- handle the error
+DBMS_OUTPUT.PUT_LINE('Encountered out-of-stock error.');
+END;
+
+Example 11–7 Using RAISE to Raise a Predefined Exception
+DECLARE
+acct_type INTEGER := 7;
+BEGIN
+IF acct_type NOT IN (1, 2, 3) THEN
+RAISE INVALID_NUMBER; -- raise predefined exception
+END IF;
+EXCEPTION
+WHEN INVALID_NUMBER THEN
+DBMS_OUTPUT.PUT_LINE
+('HANDLING INVALID INPUT BY ROLLING BACK.');
+ROLLBACK;
+END;
+
+
+// Handling PL/SQL Exceptions
+
+EXCEPTION
+WHEN exception1 THEN -- handler for exception1
+sequence_of_statements1
+WHEN exception2 THEN -- another handler for exception2
+sequence_of_statements2
+...
+WHEN OTHERS THEN -- optional handler for all other errors
+sequence_of_statements3
+END;
+
+Also,
+
+EXCEPTION
+WHEN over_limit OR under_limit OR VALUE_ERROR THEN
+-- handle the error
+
+
+Example 11–10 Raising an Exception in a Declaration
+DECLARE
+-- Raises an error:
+credit_limit CONSTANT NUMBER(3) := 5000;
+BEGIN
+NULL;
+EXCEPTION
+WHEN OTHERS THEN
+-- Cannot catch exception. This handler is never invoked.
+DBMS_OUTPUT.PUT_LINE
+('Can''t handle an exception in a declaration.');
+END;
+
+// Handling exceptions in Exception Handler
+
+EXCEPTION
+WHEN INVALID_NUMBER THEN
+INSERT INTO ... -- might raise DUP_VAL_ON_INDEX
+WHEN DUP_VAL_ON_INDEX THEN -- cannot catch exception
+END;
+
+Example 11–11 Displaying SQLCODE and SQLERRM
+SQL> CREATE TABLE errors (
+2 code NUMBER,
+3 message VARCHAR2(64),
+4 happened TIMESTAMP);
+Table created.
+SQL>
+SQL> DECLARE
+2 name EMPLOYEES.LAST_NAME%TYPE;
+3 v_code NUMBER;
+4 v_errm VARCHAR2(64);
+5 BEGIN
+6 SELECT last_name INTO name
+7 FROM EMPLOYEES
+8 WHERE EMPLOYEE_ID = -1;
+9 EXCEPTION
+10 WHEN OTHERS THEN
+11 v_code := SQLCODE;
+12 v_errm := SUBSTR(SQLERRM, 1, 64);
+13 DBMS_OUTPUT.PUT_LINE
+14 ('Error code ' || v_code || ': ' || v_errm);
+15
+16 /* Invoke another procedure,
+17 declared with PRAGMA AUTONOMOUS_TRANSACTION,
+18 to insert information about errors. */
+19
+20 INSERT INTO errors
+21 VALUES (v_code, v_errm, SYSTIMESTAMP);
+22 END;
+23 /
+Error code 100: ORA-01403: no data found
+
+
+Example 11–12 Continuing After an Exception
+DECLARE
+sal_calc NUMBER(8,2);
+BEGIN
+INSERT INTO employees_temp VALUES (303, 2500, 0);
+BEGIN -- sub-block begins
+SELECT salary / commission_pct INTO sal_calc
+FROM employees_temp
+WHERE employee_id = 301;
+EXCEPTION
+WHEN ZERO_DIVIDE THEN
+sal_calc := 2500;
+END; -- sub-block ends
+INSERT INTO employees_temp VALUES (304, sal_calc/100, .1);
+EXCEPTION
+WHEN ZERO_DIVIDE THEN
+NULL;
+END;
+
+Example 11–14 Using a Locator Variable to Identify the Location of an Exception
+CREATE OR REPLACE PROCEDURE loc_var AS
+stmt_no NUMBER;
+name VARCHAR2(100);
+BEGIN
+stmt_no := 1; -- designates 1st SELECT statement
+SELECT table_name INTO name
+FROM user_tables
+WHERE table_name LIKE 'ABC%';
+stmt_no := 2; -- designates 2nd SELECT statement
+SELECT table_name INTO name
+FROM user_tables
+WHERE table_name LIKE 'XYZ%';
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE
+('Table name not found in query ' || stmt_no);
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
