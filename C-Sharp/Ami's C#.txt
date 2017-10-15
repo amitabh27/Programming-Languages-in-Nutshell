@@ -1,0 +1,2919 @@
+
+========================================================================================================================
+Basics of C#
+========================================================================================================================
+
+using System; // Importing namespace
+class Test // Class declaration
+{
+static void Main() // Method declaration
+{
+int x = 12 * 30; // Statement 1
+Console.WriteLine (x); // Statement 2
+} // End of method
+}
+
+using System;
+class Test
+{
+static void Main()
+{
+Console.WriteLine (FeetToInches (30)); // 360
+Console.WriteLine (FeetToInches (100)); // 1200
+}
+static int FeetToInches (int feet)
+{
+int inches = feet * 12;
+return inches;
+}
+}
+
+
+The Main method in our example has empty parentheses because it has no parameters,
+and is void because it doesn’t return any value to its caller:
+static void Main()
+C# recognizes a method called Main as signaling the default entry point of execution.
+The Main method may optionally return an integer (rather than void) in order to
+return a value to the execution environment.
+The Main method can also optionally accept an array of strings as a
+parameter.
+
+For example:
+static int Main (string[] args) {...}
+
+The name of the C# compiler is csc.exe. You can either use an IDE such as Visual
+Studio to compile, or call csc manually from the command line. To compile
+manually, first save a program to a file such as MyFirstProgram.cs, and then go to
+the command line and invoke csc as follows:
+
+csc MyFirstProgram.cs
+This produces an application named MyFirstProgram.exe.
+To produce a library (.dll), do the following:
+csc /target:library MyFirstProgram.cs
+
+
+// Avoiding conflicts
+
+If you really want to use an identifier that clashes with a keyword, you can do so by
+qualifying it with the @ prefix. For instance:
+class class {...} // Illegal
+class @class {...} // Legal
+The @ symbol doesn’t form part of the identifier itself. So @myVariable is the same as
+myVariable.
+
+// Contextual keywords
+
+Some keywords are contextual, meaning they can also be used as identifiers—
+without an @ symbol. These are:
+add,ascending,async,dynamic,equals,from,in,into,join,partial,remove,select,where,await,by,descending,get,global,group,let,on,orderby,set,value,var,yield.
+
+
+//Comments 
+
+int x = 3; // Comment about assigning 3 to x
+A multiline comment begins with /* and ends with */. For example:
+int x = 3; /* This is a comment that
+spans two lines */
+
+
+// Pred-Defined Types :
+
+int x = 12 * 30;
+const int y = 360;
+string message = "Hello world";
+bool simpleVar = false;
+bool lessThanAMile = x < 5280;
+
+// Custom Tpes :
+
+using System;
+public class UnitConverter
+{
+int ratio; // Field
+public UnitConverter (int unitRatio) {ratio = unitRatio; } // Constructor
+public int Convert (int unit) {return unit * ratio; } // Method
+}
+class Test
+{
+static void Main()
+{
+UnitConverter feetToInchesConverter = new UnitConverter (12);
+UnitConverter milesToFeetConverter = new UnitConverter (5280);
+Console.WriteLine (feetToInchesConverter.Convert(30)); // 360
+Console.WriteLine (feetToInchesConverter.Convert(100)); // 1200
+Console.WriteLine (feetToInchesConverter.Convert(
+milesToFeetConverter.Convert(1))); // 63360
+}
+}
+
+
+//Instance v/s static fields
+
+public class Panda
+{
+public string Name; // Instance field
+public static int Population; // Static field
+public Panda (string n) // Constructor
+{
+Name = n; // Assign the instance field
+Population = Population + 1; // Increment the static Population field
+}
+}
+
+using System;
+class Test
+{
+static void Main()
+{
+Panda p1 = new Panda ("Pan Dee");
+Panda p2 = new Panda ("Pan Dah");
+Console.WriteLine (p1.Name); // Pan Dee
+Console.WriteLine (p2.Name); // Pan Dah
+Console.WriteLine (Panda.Population); // 2
+}
+}
+
+
+// The public keyword
+The public keyword exposes members to other classes.
+
+//Type Conversions :
+
+int x = 12345; // int is a 32-bit integer
+long y = x; // Implicit conversion to 64-bit integer
+short z = (short)x; // Explicit conversion to 16-bit integer
+Implicit conversions are allowed when both of the following are true:
+• The compiler can guarantee they will always succeed.
+• No information is lost in conversion.1
+Conversely, explicit conversions are required when one of the following is true:
+• The compiler cannot guarantee they will always succeed.
+• Information may be lost during conversion.
+
+// Value types v/s Reference Types
+
+-----Value types
+
+You can define a custom value type with the struct keyword:
+public struct Point { public int X, Y; }
+
+For example:
+static void Main()
+{
+Point p1 = new Point();
+p1.X = 7;
+Point p2 = p1; // Assignment causes copy
+Console.WriteLine (p1.X); // 7
+Console.WriteLine (p2.X); // 7
+p1.X = 9; // Change p1.X
+Console.WriteLine (p1.X); // 9
+Console.WriteLine (p2.X); // 7
+}
+
+-----Reference types
+
+A reference type is more complex than a value type, having two parts: an object and
+the reference to that object. The content of a reference-type variable or constant is
+a reference to an object that contains the value
+
+public class Point { public int X, Y; }
+
+static void Main()
+{
+Point p1 = new Point();
+p1.X = 7;
+Point p2 = p1; // Copies p1 reference
+Console.WriteLine (p1.X); // 7
+Console.WriteLine (p2.X); // 7
+p1.X = 9; // Change p1.X
+Console.WriteLine (p1.X); // 9
+Console.WriteLine (p2.X); // 9
+}
+
+
+// Null
+
+A reference can be assigned the literal null, indicating that the reference points to
+no object:
+class Point {...}
+...
+Point p = null;
+Console.WriteLine (p == null); // True
+// The following line generates a runtime error
+// (a NullReferenceException is thrown):
+Console.WriteLine (p.X);
+In contrast, a value type cannot ordinarily have a null value:
+struct Point {...}
+...
+Point p = null; // Compile-time error
+int x = null; // Compile-time error
+
+//Storage metrics
+
+Value-type instances occupy precisely the memory required to store their fields. In
+this example, Point takes eight bytes of memory:
+struct Point
+{
+int x; // 4 bytes
+int y; // 4 bytes
+}
+
+Technically, the CLR positions fields within the type at an address
+that’s a multiple of the fields’ size (up to a maximum of
+eight bytes). Thus, the following actually consumes 16 bytes of
+memory (with the seven bytes following the first field “wasted”):
+struct A { byte b; long l; }
+
+
+=========================================================================================================================
+Data types in C#
+=========================================================================================================================
+
+
+// Type Taxanomy
+
+Value types
+• Numeric
+• Signed integer (sbyte, short, int, long)
+• Unsigned integer (byte, ushort, uint, ulong)
+• Real number (float, double, decimal)
+• Logical (bool)
+• Character (char)
+Reference types
+• String (string)
+• Object (object)
+
+
+Predefined types in C# alias Framework types in the System namespace. There is
+only a syntactic difference between these two statements:
+int i = 5;
+System.Int32 i = 5;
+The set of predefined value types excluding decimal are known as primitive types in
+the CLR. Primitive types are so called because they are supported directly via instructions
+in compiled code, and this usually translates to direct support on the
+underlying processor. For example:
+// Underlying hexadecimal representation
+int i = 7; // 0x7
+bool b = true; // 0x1
+char c = 'A'; // 0x41
+float f = 0.5f; // uses IEEE floating-point encoding
+
+
+===================
+Numeric types
+===================
+
+Integral—signed
+sbyte 	SByte 8 bits -27 to 27-1
+short	 Int16 16 bits -215 to 215-1
+int 	Int32 32 bits -231 to 231-1
+long	 Int64 L 64 bits -263 to 263-1
+
+Integral—unsigned
+byte 	Byte 8 bits 0 to 28-1
+ushort 	UInt16 16 bits 0 to 216-1
+uint 	UInt32 U 32 bits 0 to 232-1
+ulong 	UInt64 UL 64 bits 0 to 264-1
+
+Real
+float 	Single F 32 bits ± (~10-45 to 1038)
+double 	Double D 64 bits ± (~10-324 to 10308)
+decimal	 Decimal M 128 bits ± (~10-28 to 1028)
+
+// Numeric Literals
+
+with the 0x prefix. For example:
+int x = 127;
+long y = 0x7F;
+Real literals can use decimal and/or exponential notation. For example:
+double d = 1.5;
+double million = 1E06;
+
+Console.WriteLine ( 1.0.GetType()); // Double (double)
+Console.WriteLine ( 1E06.GetType()); // Double (double)
+Console.WriteLine ( 1.GetType()); // Int32 (int)
+Console.WriteLine ( 0xF0000000.GetType()); // UInt32 (uint)
+
+//Numeric suffixes
+
+F float float f = 1.0F;
+D double double d = 1D;
+M decimal decimal d = 1.0M;
+U uint uint i = 1U;
+L long long i = 1L;
+UL ulong ulong i = 1UL;
+
+The suffixes U and L are rarely necessary, because the uint, long, and ulong types can
+nearly always be either inferred or implicitly converted from int:
+long i = 5; // Implicit lossless conversion from int literal to long
+The D suffix is technically redundant, in that all literals with a decimal point are
+inferred to be double. And you can always add a decimal point to a numeric literal:
+double x = 4.0;
+The F and M suffixes are the most useful and should always be applied when specifying
+float or decimal literals. Without the F suffix, the following line would not
+compile, because 4.5 would be inferred to be of type double, which has no implicit
+conversion to float:
+float f = 4.5F;
+The same principle is true for a decimal literal:
+decimal d = -1.23M; // Will not compile without the M suffix.
+
+
+//Type Conversions
+
+--Integral to Integral
+
+int x = 12345; // int is a 32-bit integral
+long y = x; // Implicit conversion to 64-bit integral
+short z = (short)x; // Explicit conversion to 16-bit integral
+
+Floating-point to floating-point conversions
+A float can be implicitly converted to a double, since a double can represent every
+possible value of a float. The reverse conversion must be explicit.
+
+---Floating-point to integral conversions
+
+All integral types may be implicitly converted to all floating-point types:
+int i = 1;
+float f = i;
+The reverse conversion must be explicit:
+int i2 = (int)f;
+
+int i1 = 100000001;
+float f = i1; // Magnitude preserved, precision lost
+int i2 = (int)f; // 100000000
+
+---Decimal conversions
+
+All integral types can be implicitly converted to the decimal type, since a decimal
+can represent every possible C# integral value. All other numeric conversions to and
+from a decimal type must be explicit.
+
+
+// Integral Overflow
+
+decrementing the minimum possible int
+value results in the maximum possible int value:
+int a = int.MinValue;
+a--;
+Console.WriteLine (a == int.MaxValue); // True
+
+// Overflow check Operators
+
+The checked operator tells the runtime to generate an OverflowException rather than
+overflowing silently when an integral expression or statement exceeds the arithmetic
+limits of that type.
+
+checked can be used around either an expression or a statement block. For example:
+int a = 1000000;
+int b = 1000000;
+int c = checked (a * b); // Checks just the expression.
+checked // Checks all expressions
+{ // in statement block.
+...
+c = a * b;
+...
+}
+
+You can make arithmetic overflow checking the default for all expressions in a
+program by compiling with the /checked+ command-line switch (in Visual Studio,
+go to Advanced Build Settings). If you then need to disable overflow checking just
+for specific expressions or statements, you can do so with the unchecked operator.
+For example, the following code will not throw exceptions—even if compiled
+with /checked+:
+int x = int.MaxValue;
+int y = unchecked (x + 1);
+unchecked { int z = x + 1; }
+
+// Overflow checking for constant expressions :
+
+Regardless of the /checked compiler switch, expressions evaluated at compile time
+are always overflow-checked—unless you apply the unchecked operator:
+int x = int.MaxValue + 1; // Compile-time error
+int y = unchecked (int.MaxValue + 1); // No errors
+
+
+// BitWise Operators
+
+The 8- and 16-bit integral types are byte, sbyte, short, and ushort. These types lack
+their own arithmetic operators, so C# implicitly converts them to larger types as
+required. This can cause a compile-time error when trying to assign the result back
+to a small integral type:
+short x = 1, y = 1;
+short z = x + y; // Compile-time error
+In this case, x and y are implicitly converted to int so that the addition can be performed.
+This means the result is also an int, which cannot be implicitly cast back
+to a short (because it could cause loss of data). To make this compile, we must add
+an explicit cast:
+short z = (short) (x + y); // OK
+
+Unlike integral types, floating-point types have values that certain operations treat
+specially. These special values are NaN (Not a Number), +8, -8, and -0. The
+float and double classes have constants for NaN, +8, and -8, as well as other values
+(MaxValue, MinValue, and Epsilon). For example:
+Console.WriteLine (double.NegativeInfinity); // -Infinity
+
+Value	Constantfor double		Constant for float
+NaN 	double.NaN 		float.NaN
++8 	double.PositiveInfinity	 float.PositiveInfinity
+-8 	double.NegativeInfinity 	float.NegativeInfinity
+-0 	-0.0			 -0.0f
+
+Dividing a nonzero number by zero results in an infinite value. For example:
+Console.WriteLine ( 1.0 / 0.0); // Infinity
+Console.WriteLine (-1.0 / 0.0); // -Infinity
+Console.WriteLine ( 1.0 / -0.0); // -Infinity
+Console.WriteLine (-1.0 / -0.0); // Infinity
+Dividing zero by zero, or subtracting infinity from infinity, results in a NaN. For
+example:
+Console.WriteLine ( 0.0 / 0.0); // NaN
+Console.WriteLine ((1.0 / 0.0) - (1.0 / 0.0)); // NaN
+When using ==, a NaN value is never equal to another value, even another NaN
+value:
+Console.WriteLine (0.0 / 0.0 == double.NaN); // False
+To test whether a value is NaN, you must use the float.IsNaN or double.IsNaN
+method:
+Console.WriteLine (double.IsNaN (0.0 / 0.0)); // True
+When using object.Equals, however, two NaN values are equal:
+Console.WriteLine (object.Equals (0.0 / 0.0, double.NaN)); // True
+
+
+// Real Number Rounding errors
+
+Eg:
+float tenth = 0.1f; // Not quite 0.1
+float one = 1f;
+Console.WriteLine (one - tenth * 10f); // -1.490116E-08 not 0
+
+Eg:
+decimal m = 1M / 6M; // 0.1666666666666666666666666667M
+double d = 1.0 / 6.0; // 0.16666666666666666
+This leads to accumulated rounding errors:
+decimal notQuiteWholeM = m+m+m+m+m+m; // 1.0000000000000000000000000002M
+double notQuiteWholeD = d+d+d+d+d+d; // 0.99999999999999989
+which breaks equality and comparison operations:
+Console.WriteLine (notQuiteWholeM == 1M); // False
+Console.WriteLine (notQuiteWholeD < 1.0); // True
+
+
+// Bool Conversions
+
+int y = 2;
+int z = 1;
+Console.WriteLine (x == y); // False
+Console.WriteLine (x == z); // True
+
+public class Dude
+{
+public string Name;
+public Dude (string n) { Name = n; }
+}
+...
+Dude d1 = new Dude ("John");
+Dude d2 = new Dude ("John");
+Console.WriteLine (d1 == d2); // False
+Dude d3 = d1;
+Console.WriteLine (d1 == d3); // True
+
+static bool UseUmbrella (bool rainy, bool sunny, bool windy)
+{
+return !windy && (rainy || sunny);
+}
+
+// Characters
+
+char c = 'A'; // Simple character
+char newLine = '\n';
+char backSlash = '\\';
+
+The \u (or \x) escape sequence lets you specify any Unicode character via its fourdigit
+hexadecimal code:
+char copyrightSymbol = '\u00A9';
+char omegaSymbol = '\u03A9';
+char newLine = '\u000A';
+
+An implicit conversion from a char to a numeric type works for the numeric types
+that can accommodate an unsigned short. For other numeric types, an explicit conversion
+is required
+
+// Strings
+
+string a = "test";
+string b = "test";
+Console.Write (a == b); // True
+
+The escape sequences that are valid for char literals also work inside strings:
+string a = "Here's a tab:\t";
+The cost of this is that whenever you need a literal backslash, you must write it twice:
+string a1 = "\\\\server\\fileshare\\helloworld.cs";
+
+To avoid this problem, C# allows verbatim string literals. A verbatim string literal
+is prefixed with @ and does not support escape sequences :
+
+The following verbatim string is identical to the preceding one:
+string a2 = @ "\\server\fileshare\helloworld.cs";
+A verbatim string literal can also span multiple lines:
+string escaped = "First Line\r\nSecond Line";
+string verbatim = @"First Line
+Second Line";
+// Assuming your IDE uses CR-LF line separators:
+Console.WriteLine (escaped == verbatim); // True
+You can include the double-quote character in a verbatim literal by writing it twice:
+string xml = @"<customer id=""123""></customer>";
+
+// Arrays
+
+An array is denoted with square brackets after the element type. For example:
+char[] vowels = new char[5]; // Declare an array of 5 characters
+Square brackets also index the array, accessing a particular element by position:
+vowels[0] = 'a';
+vowels[1] = 'e';
+vowels[2] = 'i';
+vowels[3] = 'o';
+vowels[4] = 'u';
+Console.WriteLine (vowels[1]); // e
+
+The for loop in this example cycles the integer i from 0 to 4:
+for (int i = 0; i < vowels.Length; i++)
+Console.Write (vowels[i]); // aeiou
+
+An array initialization expression lets you declare and populate an array in a single
+step:
+char[] vowels = new char[] {'a','e','i','o','u'};
+or simply:
+char[] vowels = {'a','e','i','o','u'};
+
+--default initialization
+
+int[] a = new int[1000];
+Console.Write (a[123]); // 0
+
+
+--value v/s reference types
+
+public struct Point { public int X, Y; }
+...
+Point[] a = new Point[1000];
+int x = a[500].X; // 0
+Had Point been a class, creating the array would have merely allocated 1,000 null
+references:
+public class Point { public int X, Y; }
+...
+Point[] a = new Point[1000];
+int x = a[500].X; // Runtime error, NullReferenceException
+
+To avoid this error, we must explicitly instantiate 1,000 Points after instantiating
+the array:
+Point[] a = new Point[1000];
+for (int i = 0; i < a.Length; i++) // Iterate i from 0 to 999
+a[i] = new Point(); // Set array element i with new point
+An array itself is always a reference type object, regardless of the element type. For
+instance, the following is legal:
+int[] a = null;
+
+--------Multidimensional arrays
+
+int[,] matrix = new int[3,3];
+The GetLength method of an array returns the length for a given dimension (starting
+at 0):
+for (int i = 0; i < matrix.GetLength(0); i++)
+for (int j = 0; j < matrix.GetLength(1); j++)
+matrix[i,j] = i * 3 + j;
+A rectangular array can be initialized as follows (to create an array identical to the
+previous example):
+int[,] matrix = new int[,]
+{
+{0,1,2},
+{3,4,5},
+{6,7,8}
+};
+
+-----Jagged arrays
+Jagged arrays are declared using successive square brackets to represent each dimension.
+Here is an example of declaring a jagged two-dimensional array, where
+the outermost dimension is 3:
+int[][] matrix = new int[3][];
+
+The inner dimensions aren’t specified in the declaration because, unlike a rectangular
+array, each inner array can be an arbitrary length. Each inner array is implicitly
+initialized to null rather than an empty array. Each inner array must be created
+manually:
+for (int i = 0; i < matrix.Length; i++)
+{
+matrix[i] = new int[3]; // Create inner array
+for (int j = 0; j < matrix[i].Length; j++)
+matrix[i][j] = i * 3 + j;
+}
+A jagged array can be initialized as follows (to create an array identical to the previous
+example with an additional element at the end):
+int[][] matrix = new int[][]
+{
+new int[] {0,1,2},
+new int[] {3,4,5},
+new int[] {6,7,8,9}
+};
+
+
+-----------simplified initialization expressions
+
+There are two ways to shorten array initialization expressions. The first is to omit
+the new operator and type qualifications:
+char[] vowels = {'a','e','i','o','u'};
+int[,] rectangularMatrix =
+{
+{0,1,2},
+{3,4,5},
+{6,7,8}
+};
+int[][] jaggedMatrix =
+{
+new int[] {0,1,2},
+new int[] {3,4,5},
+new int[] {6,7,8}
+};
+The second approach is to use the var keyword, which tells the compiler to implicitly
+type a local variable:
+var i = 3; // i is implicitly of type int
+var s = "sausage"; // s is implicitly of type string
+// Therefore:
+var rectMatrix = new int[,] // rectMatrix is implicitly of type int[,]
+{
+{0,1,2},
+{3,4,5},
+{6,7,8}
+};
+var jaggedMat = new int[][] // jaggedMat is implicitly of type int[][]
+{
+new int[] {0,1,2},
+new int[] {3,4,5},
+new int[] {6,7,8}
+};
+Implicit typing can be taken one stage further with arrays: you can omit the type
+qualifier after the new keyword and have the compiler infer the array type:
+var vowels = new[] {'a','e','i','o','u'}; // Compiler infers char[]
+For this to work, the elements must all be implicitly convertible to a single type (and
+at least one of the elements must be of that type, and there must be exactly one best
+type). For example:
+var x = new[] {1,10000000000}; // all convertible to long
+
+
+
+// Stack v/s Heap Memory
+
+----Stack
+
+The stack is a block of memory for storing local variables and parameters. The stack
+logically grows and shrinks as a function is entered and exited. Consider the following
+method (to avoid distraction, input argument checking is ignored):
+static int Factorial (int x)
+{
+if (x == 0) return 1;
+return x * Factorial (x-1);
+}
+
+------Heap
+
+Heap
+The heap is a block of memory in which objects (i.e., reference-type instances) reside.
+Whenever a new object is created, it is allocated on the heap, and a reference to that
+object is returned. During a program’s execution, the heap starts filling up as new
+objects are created
+
+
+// Definite assignments
+
+static void Main()
+{
+int x;
+Console.WriteLine (x); // Compile-time error
+}
+
+static void Main()
+{
+int[] ints = new int[2];
+Console.WriteLine (ints[0]); // 0
+}
+
+The following code outputs 0, because fields are implicitly assigned a default value:
+class Test
+{
+static int x;
+static void Main() { Console.WriteLine (x); } // 0
+}
+
+
+// Default Vaues:
+
+All reference types 			null
+All numeric and enum types		 0
+char type				 '\0'
+bool type				 false
+
+
+
+// Passing Parameters
+
+-----Pass By Value
+
+static void Foo (int p)
+{
+p = p + 1; // Increment p by 1
+Console.WriteLine(p); // Write p to screen
+}
+static void Main() { Foo (8); }
+
+-----Pass By Reference
+
+class Test
+{
+static void Foo (StringBuilder fooSB)
+{
+fooSB.Append ("test");
+fooSB = null;
+}
+static void Main()
+{
+StringBuilder sb = new StringBuilder();
+Foo (sb);
+Console.WriteLine (sb.ToString()); // test
+}
+}
+Because fooSB is a copy of a reference, setting it to null doesn’t make sb null. (If,
+however, fooSB was declared and called with the ref modifier, sb would become
+null.)
+
+
+------ref modifier
+
+The ref modifier
+To pass by reference, C# provides the ref parameter modifier. In the following
+example, p and x refer to the same memory locations:
+class Test
+{
+static void Foo (ref int p)
+{
+p = p + 1; // Increment p by 1
+Console.WriteLine (p); // Write p to screen
+}
+static void Main()
+{
+int x = 8;
+Foo (ref x); // Ask Foo to deal directly with x
+Console.WriteLine (x); // x is now 9
+}
+}
+
+Eg: Swapping using ref
+
+class Test
+{
+static void Swap (ref string a, ref string b)
+{
+string temp = a;
+a = b;
+b = temp;
+}
+static void Main()
+{
+string x = "Penn";
+string y = "Teller";
+Swap (ref x, ref y);
+Console.WriteLine (x); // Teller
+Console.WriteLine (y); // Penn
+}
+}
+
+
+--- out modifier
+
+An out argument is like a ref argument, except it:
+• Need not be assigned before going into the function
+• Must be assigned before it comes out of the function
+The out modifier is most commonly used to get multiple return values back from a
+method. For example:
+class Test
+{
+static void Split (string name, out string firstNames,
+out string lastName)
+{
+int i = name.LastIndexOf (' ');
+firstNames = name.Substring (0, i);
+lastName = name.Substring (i + 1);
+}
+static void Main()
+{
+string a, b;
+Split ("Stevie Ray Vaughan", out a, out b);
+Console.WriteLine (a); // Stevie Ray
+Console.WriteLine (b); // Vaughan
+}
+}
+Like a ref parameter, an out parameter is passed by reference
+
+
+----Implications of pass by reference
+
+class Test
+{
+static int x;
+static void Main() { Foo (out x); }
+static void Foo (out int y)
+{
+Console.WriteLine (x); // x is 0
+y = 1; // Mutate y
+Console.WriteLine (x); // x is 1
+}
+}
+
+----- The params modifier
+The params parameter modifier may be specified on the last parameter of a method
+so that the method accepts any number of parameters of a particular type. The
+parameter type must be declared as an array. For example:
+class Test
+{
+static int Sum (params int[] ints)
+{
+int sum = 0;
+for (int i = 0; i < ints.Length; i++)
+sum += ints[i]; // Increase sum by ints[i]
+return sum;
+}
+static void Main()
+{
+int total = Sum (1, 2, 3, 4);
+Console.WriteLine (total); // 10
+}
+}
+
+
+int total = Sum (new int[] { 1, 2, 3, 4 } );
+
+
+------ Optional parameters
+From C# 4.0, methods, constructors, and indexers (Chapter 3) can declare optional
+parameters. A parameter is optional if it specifies a default value in its declaration:
+void Foo (int x = 23) { Console.WriteLine (x); }
+Optional parameters may be omitted when calling the method:
+Foo(); // 23
+The default argument of 23 is actually passed to the optional parameter x—the compiler
+bakes the value 23 into the compiled code at the calling side. The preceding
+call to Foo is semantically identical to:
+Foo (23);
+because the compiler simply substitutes the default value of an optional parameter
+wherever it is used.
+
+
+Mandatory parameters must occur before optional parameters in both the method
+declaration and the method call (the exception is with params arguments, which still
+always come last). In the following example, the explicit value of 1 is passed to x,
+and the default value of 0 is passed to y:
+void Foo (int x = 0, int y = 0) { Console.WriteLine (x + ", " + y); }
+void Test()
+{
+Foo(1); // 1, 0
+}
+To do the converse (pass a default value to x and an explicit value to y) you must
+combine optional parameters with named arguments
+
+
+--- Named arguments
+Rather than identifying an argument by position, you can identify an argument by
+name. For example:
+void Foo (int x, int y) { Console.WriteLine (x + ", " + y); }
+void Test()
+
+{
+Foo (x:1, y:2); // 1, 2
+}
+Named arguments can occur in any order. The following calls to Foo are semantically
+identical:
+Foo (x:1, y:2);
+Foo (y:2, x:1);
+
+You can mix named and positional parameters:
+Foo (1, y:2);
+However, there is a restriction: positional parameters must come before named
+arguments. So we couldn’t call Foo like this:
+Foo (x:1, 2); // Compile-time error
+Named arguments are particularly useful in conjunction with optional parameters.
+For instance, consider the following method:
+void Bar (int a = 0, int b = 0, int c = 0, int d = 0) { ... }
+We can call this supplying only a value for d as follows:
+Bar (d:3);
+
+
+// Using var 
+
+It is often the case that you declare and initialize a variable in one step. If the compiler
+is able to infer the type from the initialization expression, you can use the keyword
+var (introduced in C# 3.0) in place of the type declaration. For example:
+var x = "hello";
+var y = new System.Text.StringBuilder();
+var z = (float)Math.PI;
+This is precisely equivalent to:
+string x = "hello";
+System.Text.StringBuilder y = new System.Text.StringBuilder();
+float z = (float)Math.PI;
+
+
+// IF-Else Blocks
+
+if (5 < 2 * 3)
+......
+
+
+if (2 + 2 == 5)
+Console.WriteLine ("Does not compute");
+else
+Console.WriteLine ("False"); // False
+
+Within an else clause, you can nest another if statement:
+if (2 + 2 == 5)
+Console.WriteLine ("Does not compute");
+else
+if (2 + 2 == 4)
+Console.WriteLine ("Computes"); // Computes
+
+
+An else clause always applies to the immediately preceding if statement in the
+statement block. For example:
+if (true)
+if (false)
+Console.WriteLine();
+else
+Console.WriteLine ("executes");
+This is semantically identical to:
+if (true)
+{
+if (false)
+Console.WriteLine();
+else
+Console.WriteLine ("executes");
+}
+
+
+if (age >= 35)
+Console.WriteLine ("You can be president!");
+else if (age >= 21)
+Console.WriteLine ("You can drink!");
+else if (age >= 18)
+Console.WriteLine ("You can vote!");
+else
+Console.WriteLine ("You can wait!");
+
+// SWITCH
+
+switch (cardNumber)
+{
+case 13:
+Console.WriteLine ("King");
+break;
+case 12:
+Console.WriteLine ("Queen");
+break;
+case 11:
+Console.WriteLine ("Jack");
+break;
+case -1: // Joker is -1
+goto case 12; // In this game joker counts as queen
+default: // Executes for any other cardNumber
+Console.WriteLine (cardNumber);
+}
+
+
+//LOOPS
+
+int i = 0;
+while (i < 3)
+{
+Console.WriteLine (i);
+i++;
+}
+
+
+do
+{
+Console.WriteLine (i);
+i++;
+}
+while (i < 3);
+
+for (int i = 0; i < 3; i++)
+Console.WriteLine (i);
+
+Any of the three parts of the for statement may be omitted. One can implement an
+infinite loop such as the following (though while(true) may be used instead):
+for (;;)
+Console.WriteLine ("interrupt me");
+
+
+foreach (char c in "beer") // c is the iteration variable
+Console.WriteLine (c);
+
+
+// Jump statements
+
+while (true)
+{
+if (x++ > 5)
+break ; // break from the loop
+}
+// execution continues here after break
+
+for (int i = 0; i < 10; i++)
+{
+if ((i % 2) == 0) // If i is even,
+continue; // continue with next iteration
+Console.Write (i + " ");
+}
+
+
+The goto statement transfers execution to another label within a statement block.
+The form is as follows:
+goto statement-label;
+Or, when used within a switch statement:
+goto case case-constant;
+A label is a placeholder in a code block that precedes a statement, denoted with a
+colon suffix. The following iterates the numbers 1 through 5, mimicking a for loop:
+int i = 1;
+startLoop:
+if (i <= 5)
+{
+Console.Write (i + " ");
+i++;
+goto startLoop;
+}
+OUTPUT: 1 2 3 4 5
+
+
+// RETURN Statement
+static decimal AsPercentage (decimal d)
+{
+decimal p = d * 100m;
+return p; // Return to the calling method with value
+}
+
+
+//THROW Statement
+
+if (w == null)
+throw new ArgumentNullException (...);
+
+
+// The using Directive
+The using directive imports a namespace, allowing you to refer to types without their
+fully qualified names. The following imports the previous example’s Outer.Mid
+dle.Inner namespace:
+using Outer.Middle.Inner;
+class Test
+{
+static void Main()
+{
+Class1 c; // Don't need fully qualified name
+}
+}
+
+
+
+// Namespaces
+
+----Name Hiding
+
+If the same type name appears in both an inner and an outer namespace, the inner
+name wins. To refer to the type in the outer namespace, you must qualify its name.
+For example:
+
+
+namespace Outer
+{
+class Foo { }
+namespace Inner
+{
+class Foo { }
+class Test
+{
+Foo f1; // = Outer.Inner.Foo
+Outer.Foo f2; // = Outer.Foo
+}
+}
+}
+
+
+----Nested using directive
+
+Nested using directive
+You can nest a using directive within a namespace. This allows you to scope the
+using directive within a namespace declaration. In the following example, Class1 is
+visible in one scope, but not in another:
+namespace N1
+{
+class Class1 {}
+}
+namespace N2
+{
+using N1;
+class Class2 : Class1 {}
+}
+namespace N2
+{
+class Class3 : Class1 {} // Compile-time error
+}
+
+
+------Namespace alias qualifiers
+
+namespace N
+{
+class A
+{
+public class B {} // Nested type
+static void Main() { new A.B(); } // Instantiate class B
+}
+}
+namespace A
+{
+class B {}
+}
+The Main method could be instantiating either the nested class B, or the class B within
+the namespace A. The compiler always gives higher precedence to identifiers in the
+current namespace; in this case, the nested B class.
+To resolve such conflicts, a namespace name can be qualified, relative to one of the
+following:
+• The global namespace—the root of all namespaces (identified with the contextual
+keyword global)
+• The set of extern aliases
+The :: token is used for namespace alias qualification. In this example, we qualify
+using the global namespace (this is most commonly seen in auto-generated code to
+avoid name conflicts).
+
+namespace N
+{
+class A
+{
+static void Main()
+{
+System.Console.WriteLine (new A.B());
+System.Console.WriteLine (new global::A.B());
+}
+public class B {}
+}
+}
+namespace A
+{
+class B {}
+}
+
+
+=========================================================================================================================
+OOPS in C#
+=========================================================================================================================
+
+// Class
+
+A class is the most common kind of reference type. The simplest possible class declaration
+is as follows:
+class YourClassName
+{
+}
+
+
+// The readonly modifier
+The readonly modifier prevents a field from being modified after construction. A
+read-only field can be assigned only in its declaration or within the enclosing type’s
+constructor.
+
+//Declaring multiple fields together
+
+For convenience, you may declare multiple fields of the same type in a commaseparated
+list.
+static readonly int legs = 8,
+	           eyes = 2;
+
+// Overloading methods
+
+A type may overload methods (have multiple methods with the same name), as long
+as the signatures are different. For example, the following methods can all coexist
+in the same type:
+void Foo (int x) {...}
+void Foo (double x) {...}
+void Foo (int x, float y) {...}
+void Foo (float x, int y) {...}
+However, the following pairs of methods cannot coexist in the same type, since the
+return type and the params modifier are not part of a method’s signature:
+void Foo (int x) {...}
+float Foo (int x) {...} // Compile-time error
+void Goo (int[] x) {...}
+void Goo (params int[] x) {...} // Compile-time error
+
+// Pass-by-value versus pass-by-reference
+Whether a parameter is pass-by-value or pass-by-reference is also part of the signature.
+For example, Foo(int) can coexist with either Foo(ref int) or Foo(out int).
+However, Foo(ref int) and Foo(out int) cannot coexist:
+void Foo (int x) {...}
+void Foo (ref int x) {...} // OK so far
+void Foo (out int x) {...} // Compile-time error
+
+
+// Instance Constructors
+
+public class Panda
+{
+string name; // Define field
+public Panda (string n) // Define constructor
+{
+name = n; // Initialization code (set up field)
+}
+}
+...
+Panda p = new Panda ("Petey"); // Call constructor
+
+//Constructor Overloading
+
+using System;
+public class Wine
+{
+public decimal Price;
+public int Year;
+public Wine (decimal price) { Price = price; }
+public Wine (decimal price, int year) : this (price) { Year = year; }
+}
+When one constructor calls another, the called constructor executes first.
+You can pass an expression into another constructor as follows:
+public Wine (decimal price, DateTime year) : this (price, year.Year) { }
+
+// Non-Public Constructors
+
+Constructors do not need to be public. A common reason to have a nonpublic constructor
+is to control instance creation via a static method call.
+
+public class Class1
+{
+Class1() {} // Private constructor
+public static Class1 Create (...)
+{
+// Perform custom logic here to return an instance of Class1
+...
+}
+}
+
+
+// Object Initializers
+
+public class Bunny
+{
+public string Name;
+public bool LikesCarrots;
+public bool LikesHumans;
+public Bunny () {}
+public Bunny (string n) { Name = n; }
+}
+Using object initializers, you can instantiate Bunny objects as follows:
+// Note parameterless constructors can omit empty parentheses
+Bunny b1 = new Bunny { Name="Bo", LikesCarrots=true, LikesHumans=false };
+Bunny b2 = new Bunny ("Bo") { LikesCarrots=true, LikesHumans=false };
+The code to construct b1 and b2 is precisely equivalent to:
+Bunny temp1 = new Bunny(); // temp1 is a compiler-generated name
+temp1.Name = "Bo";
+temp1.LikesCarrots = true;
+temp1.LikesHumans = false;
+Bunny b1 = temp1;
+Bunny temp2 = new Bunny ("Bo");
+temp2.LikesCarrots = true;
+temp2.LikesHumans = false;
+Bunny b2 = temp2;
+The temporary variables are to ensure that if an exception is thrown during initialization,
+you can’t end up with a half-initialized object.
+
+
+
+// this Reference
+
+The this reference refers to the instance itself. In the following example, the Marry
+method uses this to set the partner’s mate field:
+public class Panda
+{
+public Panda Mate;
+public void Marry (Panda partner)
+{
+Mate = partner;
+partner.Mate = this;
+}
+}
+
+The this reference also disambiguates a local variable or parameter from a field. For
+example:
+public class Test
+{
+string name;
+public Test (string name) { this.name = name; }
+}
+The this reference is valid only within nonstatic members of a class or struct.
+
+
+// Properties
+Properties look like fields from the outside, but internally they contain logic, like
+methods do.
+
+A property is declared like a field, but with a get/set block added. Here’s how to
+implement CurrentPrice as a property:
+public class Stock
+{
+decimal currentPrice; // The private "backing" field
+public decimal CurrentPrice // The public property
+{
+get { return currentPrice; } set { currentPrice = value; }
+}
+}
+
+get and set denote property accessors. The get accessor runs when the property is
+read. It must return a value of the property’s type. The set accessor runs when the
+property is assigned. It has an implicit parameter named value of the property’s type
+that you typically assign to a private field (in this case, currentPrice).
+
+Although properties are accessed in the same way as fields, they differ in that they
+give the implementer complete control over getting and setting its value. This control
+enables the implementer to choose whatever internal representation is needed,
+without exposing the internal details to the user of the property. In this example,
+the set method could throw an exception if value was outside a valid range of values.
+
+----Read only and calculated properties
+
+A property is read-only if it specifies only a get accessor, and it is write-only if it
+specifies only a set accessor. Write-only properties are rarely used.
+A property typically has a dedicated backing field to store the underlying data.
+However, a property can also be computed from other data. For example:
+decimal currentPrice, sharesOwned;
+public decimal Worth
+{
+get { return currentPrice * sharesOwned; }
+}
+
+
+---------Automatic properties
+
+The most common implementation for a property is a getter and/or setter that simply
+reads and writes to a private field of the same type as the property. An automatic
+property declaration instructs the compiler to provide this implementation. We can
+redeclare the first example in this section as follows:
+public class Stock
+{
+...
+public decimal CurrentPrice { get; set; }
+}
+The compiler automatically generates a private backing field of a compiler-generated
+name that cannot be referred to. The set accessor can be marked private if you want
+to expose the property as read-only to other types.
+
+----aceesibility
+
+The get and set accessors can have different access levels. The typical use case for
+this is to have a public property with an internal or private access modifier on the
+setter:
+public class Foo
+{
+private decimal x;
+public decimal X
+{
+get { return x; }
+private set { x = Math.Round (value, 2); }
+}}
+
+// Constants
+
+A constant is declared with the const keyword and must be initialized with a value.
+For example:
+public class Test
+{
+public const string Message = "Hello World";
+}
+
+// Static Constructors
+A static constructor executes once per type, rather than once per instance. A type
+can define only one static constructor, and it must be parameterless and have the
+same name as the type:
+class Test
+{
+static Test() { Console.WriteLine ("Type Initialized"); }
+}
+The runtime automatically invokes a static constructor just prior to the type being
+used. Two things trigger this:
+• Instantiating the type
+• Accessing a static member in the type
+The only modifiers allowed by static constructors are unsafe and extern.
+
+
+// Static field Initializers
+
+Static field initializers run in the order in which the fields are declared. The following
+example illustrates this: X is initialized to 0 and Y is initialized to 3.
+class Foo
+{
+public static int X = Y; // 0
+public static int Y = 3; // 3
+}
+If we swap the two field initializers around, both fields are initialized to 3. The next
+example prints 0 followed by 3 because the field initializer that instantiates a Foo
+executes before X is initialized to 3:
+class Program
+{
+static void Main() { Console.WriteLine (Foo.X); } // 3
+}
+class Foo
+{
+public static Foo Instance = new Foo();
+public static int X = 3;
+Foo() { Console.WriteLine (X); } // 0
+}
+
+
+// Static Classes
+A class can be marked static, indicating that it must be composed solely of static
+members and cannot be subclassed
+
+// Finalizers
+Finalizers are class-only methods that execute before the garbage collector reclaims
+the memory for an unreferenced object. The syntax for a finalizer is the name of the
+class prefixed with the ~ symbol:
+class Class1
+{
+~Class1()
+{
+...
+}
+}
+This is actually C# syntax for overriding Object’s Finalize method, and the compiler
+expands it into the following method declaration:
+protected override void Finalize()
+{
+...
+base.Finalize();
+}
+
+
+
+// Inheritance
+
+A class can inherit from another class to extend or customize the original class.
+Inheriting from a class lets you reuse the functionality in that class instead of building
+it from scratch. A class can inherit from only a single class, but can itself be inherited
+by many classes, thus forming a class hierarchy
+
+
+public class Asset
+{
+public string Name;
+}
+
+public class Stock : Asset // inherits from Asset
+{
+public long SharesOwned;
+}
+public class House : Asset // inherits from Asset
+{
+public decimal Mortgage;
+}
+
+public static void Display (Asset asset)
+{
+System.Console.WriteLine (asset.Name);
+}
+
+//Polymorphism
+
+This method can display both a Stock and a House, since they are both Assets:
+Stock msft = new Stock ... ;
+House mansion = new House ... ;
+Display (msft);
+Display (mansion);
+
+
+//Casting and Reference Conversions
+
+An object reference can be:
+• Implicitly upcast to a base class reference
+• Explicitly downcast to a subclass reference
+
+---------Upcasting
+An upcast operation creates a base class reference from a subclass reference. For
+example:
+Stock msft = new Stock();
+Asset a = msft; // Upcast
+After the upcast, variable a still references the same Stock object as variable msft.
+The object being referenced is not itself altered or converted:
+Console.WriteLine (a == msft); // True
+Although a and msft refer to the identical object, a has a more restrictive view on
+that object:
+Console.WriteLine (a.Name); // OK
+Console.WriteLine (a.SharesOwned); // Error: SharesOwned undefined
+
+-----------Downcasting
+A downcast operation creates a subclass reference from a base class reference. For
+example:
+Stock msft = new Stock();
+Asset a = msft; // Upcast
+Stock s = (Stock)a; // Downcast
+Console.WriteLine (s.SharesOwned); // <No error>
+Console.WriteLine (s == a); // True
+Console.WriteLine (s == msft); // True
+As with an upcast, only references are affected—not the underlying object. A downcast
+requires an explicit cast because it can potentially fail at runtime:
+House h = new House();
+Asset a = h; // Upcast always succeeds
+Stock s = (Stock)a; // Downcast fails: a is not a Stock
+
+If a downcast fails, an InvalidCastException is thrown.
+
+The as operator performs a downcast that evaluates to null (rather than throwing
+an exception) if the downcast fails:
+Asset a = new Asset();
+Stock s = a as Stock; // s is null; no exception thrown
+This is useful when you’re going to subsequently test whether the result is null:
+if (s != null) Console.WriteLine (s.SharesOwned);
+
+
+// is Operator
+
+The is operator tests whether a reference conversion would succeed; in other words,
+whether an object derives from a specified class (or implements an interface). It is
+often used to test before downcasting.
+if (a is Stock)
+Console.WriteLine (((Stock)a).SharesOwned);
+
+
+// Virtual Function Members
+A function marked as virtual can be overridden by subclasses wanting to provide a
+specialized implementation. Methods, properties, indexers, and events can all be
+declared virtual:
+public class Asset
+{
+public string Name;
+public virtual decimal Liability { get { return 0; } }
+}
+A subclass overrides a virtual method by applying the override modifier:
+public class Stock : Asset
+{
+public long SharesOwned;
+}
+public class House : Asset
+{
+public decimal Mortgage;
+public override decimal Liability { get { return Mortgage; } }
+}
+
+
+//Abstract Classes
+
+public abstract class Asset
+{
+// Note empty implementation
+public abstract decimal NetValue { get; }
+}
+public class Stock : Asset
+{
+public long SharesOwned;
+public decimal CurrentPrice;
+// Override like a virtual method.
+public override decimal NetValue
+{
+get { return CurrentPrice * SharesOwned; }
+}
+}
+
+
+// Hiding Inherited Members
+
+A base class and a subclass may define identical members. For example:
+public class A { public int Counter = 1; }
+public class B : A { public int Counter = 2; }
+The Counter field in class B is said to hide the Counter field in class A
+
+Occasionally, you want to hide a member deliberately, in which case you can apply
+the new modifier to the member in the subclass. The new modifier does nothing more
+than suppress the compiler warning that would otherwise result:
+public class A { public int Counter = 1; }
+public class B : A { public new int Counter = 2; }
+The new modifier communicates your intent to the compiler—and other
+programmers—that the duplicate member is not an accident.
+
+
+-------New v/s Override
+
+Consider the following class hierarchy:
+public class BaseClass
+{
+public virtual void Foo() { Console.WriteLine ("BaseClass.Foo"); }
+}
+public class Overrider : BaseClass
+{
+public override void Foo() { Console.WriteLine ("Overrider.Foo"); }
+}
+public class Hider : BaseClass
+{
+public new void Foo() { Console.WriteLine ("Hider.Foo"); }
+}
+The differences in behavior between Overrider and Hider are demonstrated in the
+following code:
+Overrider over = new Overrider();
+BaseClass b1 = over;
+over.Foo(); // Overrider.Foo
+b1.Foo(); // Overrider.Foo
+Hider h = new Hider();
+BaseClass b2 = h;
+h.Foo(); // Hider.Foo
+b2.Foo(); // BaseClass.Foo
+
+
+------------------sealed keyword
+
+An overridden function member may seal its implementation with the sealed keyword
+to prevent it from being overridden by further subclasses
+
+public sealed override decimal Liability { get { return Mortgage; } }
+
+-------------------base keyword
+
+The base keyword is similar to the this keyword. It serves two essential purposes:
+• Accessing an overridden function member from the subclass
+• Calling a base-class constructor
+
+*******1st point above
+
+In this example, House uses the base keyword to access Asset’s implementation of
+Liability:
+public class House : Asset
+{
+...
+public override decimal Liability
+{
+get { return base.Liability + Mortgage; }
+}
+}
+With the base keyword, we access Asset’s Liability property nonvirtually. This
+means we will always access Asset’s version of this property—regardless of the instance’s
+actual runtime type.
+
+
+*********2nd point above
+
+public class Subclass : Baseclass
+{
+public Subclass (int x) : base (x) { }
+}
+
+
+
+// Object Type
+
+object (System.Object) is the ultimate base class for all types. Any type can be upcast
+to object.
+
+public class Stack
+{
+int position;
+object[] data = new object[10];
+public void Push (object obj) { data[position++] = obj; }
+public object Pop() { return data[--position]; }
+}
+Because Stack works with the object type, we can Push and Pop instances of any
+type to and from the Stack:
+Stack stack = new Stack();
+stack.Push ("sausage");
+string s = (string) stack.Pop(); // Downcast, so explicit cast is needed
+Console.WriteLine (s); // sausage
+
+
+// Boxing and Unboxing
+
+Boxing is the act of converting a value-type instance to a reference-type instance.
+The reference type may be either the object class or an interface (which we will visit
+later in the chapter).1 In this example, we box an int into an object:
+int x = 9;
+object obj = x; // Box the int
+Unboxing reverses the operation, by casting the object back to the original value
+type:
+int y = (int)obj; // Unbox the int
+
+
+//gettype and typeof
+
+GetType is evaluated at runtime; typeof is evaluated statically at compile time
+
+using System;
+public class Point { public int X, Y; }
+class Test
+{
+static void Main()
+{
+Point p = new Point();
+Console.WriteLine (p.GetType().Name); // Point
+Console.WriteLine (typeof (Point).Name); // Point
+Console.WriteLine (p.GetType() == typeof(Point)); // True
+Console.WriteLine (p.X.GetType().Name); // Int32
+Console.WriteLine (p.Y.GetType().FullName); // System.Int32
+}
+}
+
+//toString
+
+int x = 1;
+string s = x.ToString(); // s is "1"
+You can override the ToString method on custom types as follows:
+public class Panda
+{
+public string Name;
+public override string ToString() { return Name; }
+}
+...
+Panda p = new Panda { Name = "Petey" };
+Console.WriteLine (p); // Petey
+
+
+// Structs
+
+A struct is similar to a class, with the following key differences:
+• A struct is a value type, whereas a class is a reference type.
+• A struct does not support inheritance (other than implicitly deriving from
+object, or more precisely, System.ValueType).
+A struct can have all the members a class can, except the following:
+• A parameterless constructor
+• A finalizer
+• Virtual members
+
+Here is an example of declaring and calling struct constructors:
+public struct Point
+{
+int x, y;
+public Point (int x, int y) { this.x = x; this.y = y; }
+}
+...
+Point p1 = new Point (); // p1.x and p1.y will be 0
+Point p2 = new Point (1, 1); // p1.x and p1.y will be 1
+The next example generates three compile-time errors:
+public struct Point
+{
+int x = 1; // Illegal: cannot initialize field
+int y;
+public Point() {} // Illegal: cannot have
+// parameterless constructor
+public Point (int x) {this.x = x;} // Illegal: must assign field y
+}
+
+
+// Access Modifiers
+
+public
+Fully accessible. This is the implicit accessibility for members of an enum or
+interface.
+internal
+Accessible only within containing assembly or friend assemblies. This is the
+default accessibility for non-nested types.
+private
+Accessible only within containing type. This is the default accessibility for
+members of a class or struct.
+protected
+Accessible only within containing type or subclasses.
+
+----Restrictions on access modifiers
+
+class BaseClass { protected virtual void Foo() {} }
+class Subclass1 : BaseClass { protected override void Foo() {} } // OK
+class Subclass2 : BaseClass { public override void Foo() {} } // Error
+(An exception is when overriding a protected internal method in another assembly,
+in which case the override must simply be protected.)
+
+
+// Interfaces
+
+public interface IEnumerator
+{
+bool MoveNext();
+object Current { get; }
+void Reset();
+}
+
+Interface members are always implicitly public and cannot declare an access modifier
+
+---extending interfaces
+
+Interfaces may derive from other interfaces. For instance:
+public interface IUndoable { void Undo(); }
+public interface IRedoable : IUndoable { void Redo(); }
+
+------implementing interfaces
+
+Consider the following example:
+interface I1 { void Foo(); }
+interface I2 { int Foo(); }
+public class Widget : I1, I2
+{
+public void Foo ()
+{
+Console.WriteLine ("Widget's implementation of I1.Foo");
+}
+int I2.Foo()
+{
+Console.WriteLine ("Widget's implementation of I2.Foo");
+return 42;
+}
+}
+
+---------Implementing Interface Members Virtually
+An implicitly implemented interface member is, by default, sealed. It must be
+marked virtual or abstract in the base class in order to be overridden. For example:
+public interface IUndoable { void Undo(); }
+public class TextBox : IUndoable
+{
+public virtual void Undo()
+{
+Console.WriteLine ("TextBox.Undo");
+}
+
+}
+public class RichTextBox : TextBox
+{
+public override void Undo()
+{
+Console.WriteLine ("RichTextBox.Undo");
+}
+}
+Calling the interface member through either the base class or the interface calls the
+subclass’s implementation:
+RichTextBox r = new RichTextBox();
+r.Undo(); // RichTextBox.Undo
+((IUndoable)r).Undo(); // RichTextBox.Undo
+((TextBox)r).Undo(); // RichTextBox.Undo
+
+
+------Reimplementing an Interface in subclass
+
+public interface IUndoable { void Undo(); }
+public class TextBox : IUndoable
+{
+void IUndoable.Undo() { Console.WriteLine ("TextBox.Undo"); }
+}
+public class RichTextBox : TextBox, IUndoable
+{
+public new void Undo() { Console.WriteLine ("RichTextBox.Undo"); }
+}
+Calling the reimplemented member through the interface calls the subclass’s
+implementation:
+RichTextBox r = new RichTextBox();
+r.Undo(); // RichTextBox.Undo Case 1
+((IUndoable)r).Undo(); // RichTextBox.Undo Case 2
+
+---------------Interfaces and boxing
+
+Converting a struct to an interface causes boxing. Calling an implicitly implemented
+member on a struct does not cause boxing:
+interface I { void Foo(); }
+struct S : I { public void Foo() {} }
+...
+S s = new S();
+s.Foo(); // No boxing.
+I i = s; // Box occurs when casting to interface.
+i.Foo();
+
+
+// Enums
+An enum is a special value type that lets you specify a group of named numeric
+constants. For example:
+public enum BorderSide { Left, Right, Top, Bottom }
+We can use this enum type as follows:
+BorderSide topSide = BorderSide.Top;
+bool isTop = (topSide == BorderSide.Top); // true
+Each enum member has an underlying integral value. By default:
+• Underlying values are of type int.
+• The constants 0, 1, 2... are automatically assigned, in the declaration order of
+the enum members.
+You may specify an alternative integral type, as follows:
+public enum BorderSide : byte { Left, Right, Top, Bottom }
+You may also specify an explicit underlying value for each enum member:
+public enum BorderSide : byte { Left=1, Right=2, Top=10, Bottom=11 }
+
+
+-----Enum conversions
+
+You can convert an enum instance to and from its underlying integral value with an
+explicit cast:
+int i = (int) BorderSide.Left;
+BorderSide side = (BorderSide) i;
+bool leftOrRight = (int) side <= 2;
+You can also explicitly cast one enum type to another. Suppose HorizontalAlign
+ment is defined as follows:
+public enum HorizontalAlignment
+{
+Left = BorderSide.Left,
+Right = BorderSide.Right,
+Center
+}
+
+A translation between the enum types uses the underlying integral values:
+HorizontalAlignment h = (HorizontalAlignment) BorderSide.Right;
+// same as:
+HorizontalAlignment h = (HorizontalAlignment) (int) BorderSide.Right;
+The numeric literal 0 is treated specially by the compiler in an enum expression and
+does not require an explicit cast:
+BorderSide b = 0; // No cast required
+if (b == 0) ...
+There are two reasons for the special treatment of 0:
+• The first member of an enum is often used as the “default” value.
+• For combined enum types, 0 means “no flags.”
+
+
+
+------------Flags Enums
+You can combine enum members. To prevent ambiguities, members of a combinable
+enum require explicitly assigned values, typically in powers of two. For
+example:
+[Flags]
+public enum BorderSides { None=0, Left=1, Right=2, Top=4, Bottom=8 }
+To work with combined enum values, you use bitwise operators, such as | and &.
+These operate on the underlying integral values:
+BorderSides leftRight = BorderSides.Left | BorderSides.Right;
+if ((leftRight & BorderSides.Left) != 0)
+Console.WriteLine ("Includes Left"); // Includes Left
+string formatted = leftRight.ToString(); // "Left, Right"
+BorderSides s = BorderSides.Left;
+s |= BorderSides.Right;
+Console.WriteLine (s == leftRight); // True
+s ^= BorderSides.Right; // Toggles BorderSides.Right
+Console.WriteLine (s); // Left
+By convention, the Flags attribute should always be applied to an enum type when
+its members are combinable. If you declare such an enum without the Flags attribute,
+you can still combine members, but calling ToString on an enum instance will emit
+a number rather than a series of names.
+By convention, a combinable enum type is given a plural rather than singular name.
+
+
+// Nested types
+
+A nested type is declared within the scope of another type. For example:
+public class TopLevel
+{
+public class Nested { } // Nested class
+public enum Color { Red, Blue, Tan } // Nested enum
+}
+A nested type has the following features:
+• It can access the enclosing type’s private members and everything else the
+enclosing type can access.
+• It can be declared with the full range of access modifiers, rather than just
+public and internal.
+• The default accessibility for a nested type is private rather than internal.
+• Accessing a nested type from outside the enclosing type requires qualification
+with the enclosing type’s name (like when accessing static members).
+
+
+// Generics
+
+generic type declares type parameters—placeholder types to be filled in by the
+consumer of the generic type, which supplies the type arguments. Here is a generic
+type Stack<T>, designed to stack instances of type T. Stack<T> declares a single type
+parameter T:
+public class Stack<T>
+{
+int position;
+T[] data = new T[100];
+public void Push (T obj) { data[position++] = obj; }
+public T Pop() { return data[--position]; }
+}
+We can use Stack<T> as follows:
+Stack<int> stack = new Stack<int>();
+stack.Push(5);
+stack.Push(10);
+int x = stack.Pop(); // x is 10
+int y = stack.Pop(); // y is 5
+
+------Need of generics?
+
+Suppose we
+needed a stack of integers, but we didn’t have generic types. One solution would be
+to hardcode a separate version of the class for every required element type (e.g.,
+IntStack, StringStack, etc.). Clearly, this would cause considerable code duplication.
+Another solution would be to write a stack that is generalized by using
+object as the element type
+
+------------Generic Methods
+
+A generic method declares type parameters within the signature of a method.
+With generic methods, many fundamental algorithms can be implemented in a
+general-purpose way only. Here is a generic method that swaps the contents of two
+variables of any type T:
+static void Swap<T> (ref T a, ref T b)
+{
+T temp = a;
+a = b;
+}
+Swap<T> can be used as follows:
+int x = 5;
+int y = 10;
+Swap (ref x, ref y);
+Generally, there is no need to supply type arguments to a generic method, because
+the compiler can implicitly infer the type. If there is ambiguity, generic methods can
+be called with the type arguments as follows:
+Swap<int> (ref x, ref y);
+
+
+/**********only basics of generics covered************/
+
+========================================================================================================================
+Advanced C#
+========================================================================================================================
+
+
+// Delegates
+A delegate is an object that knows how to call a method.
+A delegate type defines the kind of method that delegate instances can call. Specifically,
+it defines the method’s return type and its parameter types. The following
+defines a delegate type called Transformer:
+delegate int Transformer (int x);
+Transformer is compatible with any method with an int return type and a single
+int parameter, such as this:
+static int Square (int x) { return x * x; }
+Assigning a method to a delegate variable creates a delegate instance:
+Transformer t = Square;
+which can be invoked in the same way as a method:
+int answer = t(3); // answer is 9
+
+
+----Multicast delegates
+
+All delegate instances have multicast capability. This means that a delegate instance
+can reference not just a single target method, but also a list of target methods. The
++ and += operators combine delegate instances. For example:
+SomeDelegate d = SomeMethod1;
+d += SomeMethod2;
+The last line is functionally the same as:
+d = d + SomeMethod2;
+Invoking d will now call both SomeMethod1 and SomeMethod2. Delegates are invoked
+in the order they are added
+
+------Instance Versus Static Method Targets
+
+When an instance method is assigned to delegate object, the latter must maintain a
+reference not only to the method, but also to the instance to which the method
+belongs. The System.Delegate class’s Target property represents this instance (and
+will be null for a delegate referencing a static method). For example:
+public delegate void ProgressReporter (int percentComplete);
+class Test
+{
+static void Main()
+{
+X x = new X();
+ProgressReporter p = x.InstanceProgress;
+p(99); // 99
+Console.WriteLine (p.Target == x); // True
+Console.WriteLine (p.Method); // Void InstanceProgress(Int32)
+}
+}
+class X
+{
+public void InstanceProgress (int percentComplete)
+{
+Console.WriteLine (percentComplete);
+}
+}
+
+
+----------------Generic Delegate types
+
+Generic Delegate Types
+A delegate type may contain generic type parameters. For example:
+public delegate T Transformer<T> (T arg);
+With this definition, we can write a generalized Transform utility method that works
+on any type:
+public class Util
+{
+public static void Transform<T> (T[] values, Transformer<T> t)
+{
+for (int i = 0; i < values.Length; i++)
+values[i] = t (values[i]);
+}
+}
+class Test
+{
+static void Main()
+{
+int[] values = { 1, 2, 3 };
+Util.Transform (values, Square); // Hook in Square
+foreach (int i in values)
+Console.Write (i + " "); // 1 4 9
+}
+static int Square (int x) { return x * x; }
+}
+
+
+-----------The Func and Action Delegates
+With generic delegates, it becomes possible to write a small set of delegate types that
+are so general they can work for methods of any return type and any (reasonable)
+number of arguments. These delegates are the Func and Action delegates, defined in
+the System namespace (the in and out annotations indicate variance, which we will
+cover shortly):
+delegate TResult Func <out TResult> ();
+delegate TResult Func <in T, out TResult> (T arg);
+delegate TResult Func <in T1, in T2, out TResult> (T1 arg1, T2 arg2);
+... and so on, up to T16
+delegate void Action ();
+delegate void Action <in T> (T arg);
+delegate void Action <in T1, in T2> (T1 arg1, T2 arg2);
+... and so on, up to T16
+These delegates are extremely general. The Transformer delegate in our previous
+example can be replaced with a Func delegate that takes a single argument of type
+T and returns a same-typed value:
+public static void Transform<T> (T[] values, Func<T,T> transformer)
+{
+for (int i = 0; i < values.Length; i++)
+values[i] = transformer (values[i]);
+}
+The only practical scenarios not covered by these delegates are ref/out and pointer
+parameters.
+
+
+---------------Delegate Compatibility
+
+
+--Type compatibility
+Delegate types are all incompatible with each other, even if their signatures are the
+same:
+delegate void D1();
+delegate void D2();
+...
+D1 d1 = Method1;
+D2 d2 = d1; // Compile-time error
+
+Delegate instances are considered equal if they have the same method targets:
+delegate void D();
+...
+D d1 = Method1;
+D d2 = Method1;
+Console.WriteLine (d1 == d2); // True
+Multicast delegates are considered equal if they reference the same methods in the
+same order.
+
+--Parameter compatibility
+When you call a method, you can supply arguments that have more specific types
+than the parameters of that method. This is ordinary polymorphic behavior. For
+exactly the same reason, a delegate can have more specific parameter types than its
+method target. This is called contravariance.
+Here’s an example:
+delegate void StringAction (string s);
+class Test
+{
+static void Main()
+{
+StringAction sa = new StringAction (ActOnObject);
+sa ("hello");
+}
+static void ActOnObject (object o)
+{
+Console.WriteLine (o); // hello
+}
+}
+(As with type parameter variance, delegates are variant only for reference
+conversions.)
+A delegate merely calls a method on someone else’s behalf. In this case, the String
+Action is invoked with an argument of type string. When the argument is then
+relayed to the target method, the argument gets implicitly upcast to an object.
+
+
+--Return type compatibility
+If you call a method, you may get back a type that is more specific than what you
+asked for. This is ordinary polymorphic behavior. For exactly the same reason, a
+delegate target method may return a more specific type than described by the delegate.
+This is called covariance. For example:
+delegate object ObjectRetriever();
+class Test
+{
+static void Main()
+{
+ObjectRetriever o = new ObjectRetriever (RetriveString);
+object result = o();
+Console.WriteLine (result); // hello
+}
+static string RetriveString() { return "hello"; }
+}
+The ObjectRetriever expects to get back an object, but an object subclass will also
+do; delegate return types are covariant.
+
+
+--Generic delegate type parameter variance
+
+If you’re defining a generic delegate type, it’s good practice to:
+• Mark a type parameter used only on the return value as covariant (out).
+• Mark any type parameters used only on parameters as contravariant (in).
+Doing so allows conversions to work naturally by respecting inheritance relationships
+between types.
+
+The following delegate (defined in the System namespace) supports covariance:
+delegate TResult Func<out TResult>();
+allowing:
+Func<string> x = ...;
+Func<object> y = x;
+The following delegate (defined in the System namespace) supports contravariance:
+delegate void Action<in T> (T arg);
+allowing:
+Action<object> x = ...;
+Action<string> y = x;
+
+
+// Events
+
+When using delegates, two emergent roles commonly appear: broadcaster and
+subscriber.
+The broadcaster is a type that contains a delegate field. The broadcaster decides
+when to broadcast, by invoking the delegate.
+The subscribers are the method target recipients. A subscriber decides when to start
+and stop listening, by calling += and -= on the broadcaster’s delegate. A subscriber
+does not know about, or interfere with, other subscribers.
+Events are a language feature that formalizes this pattern. An event is a construct
+that exposes just the subset of delegate features required for the broadcaster/subscriber
+model. The main purpose of events is to prevent subscribers from interfering
+with each other.
+The easiest way to declare an event is to put the event keyword in front of a delegate
+member:
+// Delegate definition
+public delegate void PriceChangedHandler (decimal oldPrice,
+decimal newPrice);
+public class Broadcaster
+{
+// Event declaration
+public event PriceChangedHandler PriceChanged;
+}
+Code within the Broadcaster type has full access to PriceChanged and can treat it as
+a delegate. Code outside of Broadcaster can only perform += and -= operations on
+the PriceChanged event.
+
+
+Example:
+
+Consider the following example. The Stock class fires its PriceChanged event every
+time the Price of the Stock changes:
+public delegate void PriceChangedHandler (decimal oldPrice,
+decimal newPrice);
+public class Stock
+{
+string symbol;
+decimal price;
+public Stock (string symbol) { this.symbol = symbol; }
+public event PriceChangedHandler PriceChanged;
+public decimal Price
+{
+get { return price; }
+set
+{
+if (price == value) return; // Exit if nothing has changed
+decimal oldPrice = price;
+price = value;
+if (PriceChanged != null) // If invocation list not
+PriceChanged (oldPrice, price); // empty, fire event.
+}}}
+
+If we remove the event keyword from our example so that PriceChanged becomes an
+ordinary delegate field, our example would give the same results. However, Stock
+would be less robust, in that subscribers could do the following things to interfere
+with each other:
+• Replace other subscribers by reassigning PriceChanged (instead of using the +=
+operator).
+• Clear all subscribers (by setting PriceChanged to null).
+• Broadcast to other subscribers by invoking the delegate
+
+
+----using a system define event listener
+
+using System;
+public class PriceChangedEventArgs : EventArgs
+{
+public readonly decimal LastPrice;
+public readonly decimal NewPrice;
+public PriceChangedEventArgs (decimal lastPrice, decimal newPrice)
+{
+LastPrice = lastPrice; NewPrice = newPrice;
+}
+}
+public class Stock
+{
+string symbol;
+decimal price;
+public Stock (string symbol) {this.symbol = symbol;}
+public event EventHandler<PriceChangedEventArgs> PriceChanged;
+protected virtual void OnPriceChanged (PriceChangedEventArgs e)
+{
+if (PriceChanged != null) PriceChanged (this, e);
+}
+public decimal Price
+{
+get { return price; }
+set
+{
+if (price == value) return;
+decimal oldPrice = price;
+price = value;
+OnPriceChanged (new PriceChangedEventArgs (oldPrice, price));
+}
+}
+}
+class Test
+{
+static void Main()
+{
+Stock stock = new Stock ("THPW");
+stock.Price = 27.10M;
+// Register with the PriceChanged event
+stock.PriceChanged += stock_PriceChanged;
+stock.Price = 31.59M;
+}
+static void stock_PriceChanged (object sender, PriceChangedEventArgs e)
+{
+if ((e.NewPrice - e.LastPrice) / e.LastPrice > 0.1M)
+Console.WriteLine ("Alert, 10% stock price increase!");
+}
+}
+The predefined nongeneric EventHandler delegate can be used when an event doesn’t
+carry extra information. In this example, we rewrite Stock such that the Price
+Changed event is fired after the price changes, and no information about the event is
+necessary, other than it happened. We also make use of the EventArgs.Empty property,
+in order to avoid unnecessarily instantiating an instance of EventArgs.
+
+
+----Event Accessors
+An event’s accessors are the implementations of its += and -= functions. By default,
+accessors are implemented implicitly by the compiler. Consider this event
+declaration:
+public event EventHandler PriceChanged;
+
+The compiler converts this to the following:
+• A private delegate field
+• A public pair of event accessor functions (add_PriceChanged and remove_Price
+Changed), whose implementations forward the += and -= operations to the private
+delegate field
+You can take over this process by defining explicit event accessors. Here’s a manual
+implementation of the PriceChanged event from our previous example:
+private EventHandler _priceChanged; // Declare a private delegate
+public event EventHandler PriceChanged
+{
+add { _priceChanged += value; }
+remove { _priceChanged -= value; }
+}
+
+
+With explicit event accessors, you can apply more complex strategies to the storage
+and access of the underlying delegate. There are three scenarios where this is useful:
+• When the event accessors are merely relays for another class that is broadcasting
+the event.
+• When the class exposes a large number of events, where most of the time very
+few subscribers exist, such as a Windows control. In such cases, it is better to
+store the subscriber’s delegate instances in a dictionary, since a dictionary will
+contain less storage overhead than dozens of null delegate field references.
+• When explicitly implementing an interface that declares an event.
+Here is an example that illustrates the last point:
+public interface IFoo { event EventHandler Ev; }
+class Foo : IFoo
+{
+private EventHandler ev;
+event EventHandler IFoo.Ev
+{
+add { ev += value; }
+remove { ev -= value; }
+}
+}
+
+----Event modifiers
+
+
+Like methods, events can be virtual, overridden, abstract, or sealed. Events can also
+be static:
+public class Foo
+{
+public static event EventHandler<EventArgs> StaticEvent;
+public virtual event EventHandler<EventArgs> VirtualEvent;
+}
+
+
+// Lambda Expressions
+
+A lambda expression is an unnamed method written in place of a delegate instance.
+The compiler immediately converts the lambda expression to either:
+• A delegate instance.
+• An expression tree, of type Expression<TDelegate>, representing the code inside
+the lambda expression in a traversable object model. This allows the lambda
+expression to be interpreted later at runtime (see “Building Query Expressions”
+on page 368 in Chapter 8).
+Given the following delegate type:
+delegate int Transformer (int i);
+we could assign and invoke the lambda expression x => x * x as follows:
+Transformer sqr = x => x * x;
+Console.WriteLine (sqr(3)); // 9
+
+
+In our example, x corresponds to parameter i, and the expression x * x corresponds
+to the return type int, therefore being compatible with the Transformer delegate:
+delegate int Transformer (int i);
+A lambda expression’s code can be a statement block instead of an expression. We
+can rewrite our example as follows:
+x => { return x * x; };
+Lambda expressions are used most commonly with the Func and Action delegates,
+so you will most often see our earlier expression written as follows:
+Func<int,int> sqr = x => x * x;
+Here’s an example of an expression that accepts two parameters:
+Func<string,string,int> totalLength = (s1, s2) => s1.Length + s2.Length;
+int total = totalLength ("hello", "world"); // total is 10;
+
+
+---Explicitly Specifying Lambda Parameter Types
+The compiler can usually infer the type of lambda parameters contextually. When
+this is not the case, you must specify the type of each parameter explicitly. Consider
+the following expression:
+Func<int,int> sqr = x => x * x;
+The compiler uses type inference to infer that x is an int.
+We could explicitly specify x’s type as follows:
+Func<int,int> sqr = (int x) => x * x;
+
+
+----Capturing Outer Variables
+A lambda expression can reference the local variables and parameters of the method
+in which it’s defined (outer variables). For example:
+static void Main()
+{
+int factor = 2;
+Func<int, int> multiplier = n => n * factor;
+Console.WriteLine (multiplier (3)); // 6
+}
+Outer variables referenced by a lambda expression are called captured variables. A
+lambda expression that captures variables is called a closure.
+Captured variables are evaluated when the delegate is actually invoked, not when
+the variables were captured
+
+
+int factor = 2;
+Func<int, int> multiplier = n => n * factor;
+factor = 10;
+Console.WriteLine (multiplier (3)); // 30
+Lambda expressions can themselves update captured variables:
+int seed = 0;
+Func<int> natural = () => seed++;
+Console.WriteLine (natural()); // 0
+Console.WriteLine (natural()); // 1
+Console.WriteLine (seed); // 2
+
+
+-----local variables in lambda
+
+A local variable instantiated within a lambda expression is unique per invocation of
+the delegate instance. If we refactor our previous example to instantiate seed
+within the lambda expression, we get a different (in this case, undesirable) result:
+static Func<int> Natural()
+{
+return() => { int seed = 0; return seed++; };
+}
+static void Main()
+{
+Func<int> natural = Natural();
+Console.WriteLine (natural()); // 0
+Console.WriteLine (natural()); // 0
+}
+
+
+------capturing iteration variables
+
+Capturing iteration variables
+When you capture the iteration variable of a for loop, C# treats that variable as
+though it was declared outside the loop. This means that the same variable is captured
+in each iteration. The following program writes 333 instead of writing 012:
+Action[] actions = new Action[3];
+for (int i = 0; i < 3; i++)
+actions [i] = () => Console.Write (i);
+foreach (Action a in actions) a(); // 333
+Each closure (shown in boldface) captures the same variable, i. (This actually makes
+sense when you consider that i is a variable whose value persists between loop iterations;
+you can even explicitly change i within the loop body if you want.) The
+consequence is that when the delegates are later invoked, each delegate sees i’s value
+at the time of invocation—which is 3. We can illustrate this better by expanding the
+for loop as follows:
+Action[] actions = new Action[3];
+int i = 0;
+actions[0] = () => Console.Write (i);
+i = 1;
+actions[1] = () => Console.Write (i);
+i = 2;
+actions[2] = () => Console.Write (i);
+i = 3;
+foreach (Action a in actions) a(); // 333
+The solution, if we want to write 012, is to assign the iteration variable to a local
+variable that’s scoped inside the loop:
+Action[] actions = new Action[3];
+for (int i = 0; i < 3; i++)
+{
+int loopScopedi = i;
+actions [i] = () => Console.Write (loopScopedi);
+}
+foreach (Action a in actions) a(); // 012
+This causes the closure to capture a different variable on each iteration.
+
+
+
+// Anonymous methods
+
+To write an anonymous method, you include the delegate keyword followed (optionally)
+by a parameter declaration and then a method body. For example, given
+this delegate:
+delegate int Transformer (int i);
+we could write and call an anonymous method as follows:
+Transformer sqr = delegate (int x) {return x * x;};
+Console.WriteLine (sqr(3)); // 9
+The first line is semantically equivalent to the following lambda expression:
+Transformer sqr = (int x) => {return x * x;};
+Or simply:
+Transformer sqr = x => x * x;
+Anonymous methods capture outer variables in the same way lambda expressions
+do.
+
+
+// Try Statements and Exceptions
+
+A try statement looks like this:
+try
+{
+... // exception may get thrown within execution of this block
+}
+catch (ExceptionA ex)
+{
+... // handle exception of type ExceptionA
+}
+catch (ExceptionB ex)
+{
+... // handle exception of type ExceptionB
+}
+finally
+{
+... // cleanup code
+}
+
+
+
+--using statement
+
+The using statement
+Many classes encapsulate unmanaged resources, such as file handles, graphics handles,
+or database connections. These classes implement System.IDisposable, which
+defines a single parameterless method named Dispose to clean up these resources.
+The using statement provides an elegant syntax for calling Dispose on an IDisposa
+ble object within a finally block.
+The following:
+using (StreamReader reader = File.OpenText ("file.txt"))
+{
+...
+}
+is precisely equivalent to:
+StreamReader reader = File.OpenText ("file.txt");
+try
+{
+...
+}
+finally
+{
+if (reader != null)
+((IDisposable)reader).Dispose();
+}
+
+----throwing exceptions
+
+if (name == null)
+throw new ArgumentNullException ("name");
+
+
+--rethrowing an excpetion
+
+Rethrowing an exception
+You can capture and rethrow an exception as follows:
+try { ... }
+catch (Exception ex)
+{
+// Log error
+...
+throw; // Rethrow same exception
+}
+
+
+-----Key Properties of System.Exception
+The most important properties of System.Exception are the following:
+StackTrace
+A string representing all the methods that are called from the origin of the
+exception to the catch block.
+Message
+A string with a description of the error.
+InnerException
+The inner exception (if any) that caused the outer exception. This, itself, may
+have another InnerException.
+
+
+----The TryXXX Method Pattern
+When writing a method, you have a choice, when something goes wrong, to return
+some kind of failure code or throw an exception. In general, you throw an exception
+when the error is outside the normal workflow—or if you expect that the immediate
+caller won’t be able to cope with it. Occasionally, though, it can be best to offer both
+choices to the consumer. An example of this is the int type, which defines two
+versions of its Parse method:
+public int Parse (string input);
+public bool TryParse (string input, out int returnValue);
+If parsing fails, Parse throws an exception; TryParse returns false.
+You can implement this pattern by having the XXX method call the TryXXX method
+as follows:
+public return-type XXX (input-type input)
+{
+return-type returnValue;
+if (!TryXXX (input, out returnValue))
+throw new YYYException (...)
+return returnValue;
+}
+
+
+// Enumerators
+
+Enumeration
+An enumerator is a read-only, forward-only cursor over a sequence of values. An
+enumerator is an object that implements either of the following interfaces:
+• System.Collections.IEnumerator
+• System.Collections.Generic.IEnumerator<T>
+
+Here is the high-level way of iterating through the characters in the word beer using
+a foreach statement:
+foreach (char c in "beer")
+Console.WriteLine (c);
+Here is the low-level way of iterating through the characters in beer without using a
+foreach statement:
+using (var enumerator = "beer".GetEnumerator())
+while (enumerator.MoveNext())
+{
+var element = enumerator.Current;
+Console.WriteLine (element);
+}
+
+
+----collection initializers
+
+You can instantiate and populate an enumerable object in a single step. For example:
+using System.Collections.Generic;
+...
+List<int> list = new List<int> {1, 2, 3};
+The compiler translates this to the following:
+using System.Collections.Generic;
+...
+List<int> list = new List<int>();
+list.Add (1);
+list.Add (2);
+list.Add (3);
+This requires that the enumerable object implements the System.Collec
+tions.IEnumerable interface, and that it has an Add method that has the appropriate
+number of parameters for the call.
+
+
+// Iterators
+
+-----iterator semantics
+
+Multiple yield statements are permitted. For example:
+class Test
+{
+static void Main()
+{
+foreach (string s in Foo())
+Console.WriteLine(s); // Prints "One","Two","Three"
+}
+static IEnumerable<string> Foo()
+{
+yield return "One";
+yield return "Two";
+yield return "Three";
+}
+}
+
+
+--yield break
+
+
+yield break
+The yield break statement indicates that the iterator block should exit early, without
+returning more elements. We can modify Foo as follows to demonstrate:
+static IEnumerable<string> Foo (bool breakEarly)
+{
+yield return "One";
+yield return "Two";
+if (breakEarly)
+yield break;
+yield return "Three";
+}
+
+
+// Nullable types
+
+Reference types can represent a nonexistent value with a null reference. Value types,
+however, cannot ordinarily represent null values. For example:
+string s = null; // OK, Reference Type
+int i = null; // Compile Error, Value Type cannot be null
+To represent null in a value type, you must use a special construct called a nullable
+type. A nullable type is denoted with a value type followed by the ? symbol:
+int? i = null; // OK, Nullable Type
+Console.WriteLine (i == null); // True
+
+----- Nullable <T> Struct
+T? translates into System.Nullable<T>. Nullable<T> is a lightweight immutable structure,
+having only two fields, to represent Value and HasValue. The essence of Sys
+tem.Nullable<T> is very simple:
+public struct Nullable<T> where T : struct
+{
+public T Value {get;}
+public bool HasValue {get;}
+public T GetValueOrDefault();
+
+public T GetValueOrDefault (T defaultValue);
+...
+}
+The code:
+int? i = null;
+Console.WriteLine (i == null); // True
+translates to:
+Nullable<int> i = new Nullable<int>();
+Console.WriteLine (! i.HasValue); // True
+Attempting to retrieve Value when HasValue is false throws an InvalidOperationEx
+ception. GetValueOrDefault() returns Value if HasValue is true; otherwise, it returns
+new T() or a specified custom default value.
+The default value of T? is null.
+
+-------Boxing and unboxing nullable values
+When T? is boxed, the boxed value on the heap contains T, not T?. This optimization
+is possible because a boxed value is a reference type that can already express null.
+C# also permits the unboxing of nullable types with the as operator. The result will
+be null if the cast fails:
+object o = "string";
+int? x = o as int?;
+Console.WriteLine (x.HasValue); // False
+
+
+------operator lifting
+
+The Nullable<T> struct does not define operators such as <, >, or even ==. Despite
+this, the following code compiles and executes correctly:
+int? x = 5;
+int? y = 10;
+bool b = x < y; // true
+This works because the compiler borrows or “lifts” the less-than operator from the
+underlying value type
+
+// Equality operator examples
+Console.WriteLine (x == y); // False
+Console.WriteLine (x == null); // False
+Console.WriteLine (x == 5); // True
+Console.WriteLine (y == null); // True
+Console.WriteLine (y == 5); // False
+Console.WriteLine (y != 5); // True
+// Relational operator examples
+Console.WriteLine (x < 6); // True
+Console.WriteLine (y < 6); // False
+Console.WriteLine (y > 6); // False
+// All other operator examples
+Console.WriteLine (x + 5); // 10
+Console.WriteLine (x + y); // null (prints empty line)
+
+
+bool? n = null;
+bool? f = false;
+bool? t = true;
+Console.WriteLine (n | n); // (null)
+Console.WriteLine (n | f); // (null)
+Console.WriteLine (n | t); // True
+Console.WriteLine (n & n); // (null)
+Console.WriteLine (n & f); // False
+Console.WriteLine (n & t); // (null)
+
+int? a = null;
+int b = 2;
+int? c = a + b; // c is null - equivalent to a + (int?)b
+
+Console.WriteLine ( null == null); // True
+Console.WriteLine ((bool?)null == (bool?)null); // True
+
+bool b = x < y; // Translation:
+bool b = (x.HasValue && y.HasValue) ? (x.Value < y.Value) : false;
+// b is false (assuming x is 5 and y is null)
+Nullable
+
+
+--- Null Coalescing Operator
+The ?? operator is the null coalescing operator, and it can be used with both nullable
+types and reference types. It says “If the operand is non-null, give it to me; otherwise,
+give me a default value.” For example:
+int? x = null;
+int y = x ?? 5; // y is 5
+
+
+// Operator Overloading
+
+In the following example, we define a struct called Note representing a musical note,
+and then overload the + operator:
+public struct Note
+{
+int value;
+public Note (int semitonesFromA) { value = semitonesFromA; }
+public static Note operator + (Note x, int semitones)
+{
+return new Note (x.value + semitones);
+}
+}
+This overload allows us to add an int to a Note:
+Note B = new Note (2);
+Note CSharp = B + 2;
+
+
+---overloading boolean 
+
+The following code is a reimplementation of the parts of SqlBoolean necessary to
+demonstrate the true and false operators:
+public struct SqlBoolean
+{
+public static bool operator true (SqlBoolean x)
+{
+return x.m_value == True.m_value;
+}
+public static bool operator false (SqlBoolean x)
+{
+return x.m_value == False.m_value;
+}
+public static SqlBoolean operator ! (SqlBoolean x)
+{
+if (x.m_value == Null.m_value) return Null;
+if (x.m_value == False.m_value) return True;
+return False;
+}
+public static readonly SqlBoolean Null = new SqlBoolean(0);
+public static readonly SqlBoolean False = new SqlBoolean(1);
+
+public static readonly SqlBoolean True = new SqlBoolean(2);
+private SqlBoolean (byte value) { m_value = value; }
+private byte m_value;
+}
+
+
+Extension Methods
+Extension methods allow an existing type to be extended with new methods without
+altering the definition of the original type. An extension method is a static method
+of a static class, where the this modifier is applied to the first parameter. The type
+of the first parameter will be the type that is extended. For example:
+public static class StringHelper
+{
+public static bool IsCapitalized (this string s)
+{
+if (string.IsNullOrEmpty(s)) return false;
+return char.IsUpper (s[0]);
+}
+}
+The IsCapitalized extension method can be called as though it were an instance
+method on a string, as follows:
+Console.WriteLine ("Perth".IsCapitalized());
+An extension method call, when compiled, is translated back into an ordinary static
+method call:
+Console.WriteLine (StringHelper.IsCapitalized ("Perth"));
+The translation works as follows:
+arg0.Method (arg1, arg2, ...); // Extension method call
+StaticClass.Method (arg0, arg1, arg2, ...); // Static method call
+Interfaces can be extended too:
+public static T First<T> (this IEnumerable<T> sequence)
+{
+foreach (T element in sequence)
+return element;
+throw new InvalidOperationException ("No elements!");
+}
+...
+Console.WriteLine ("Seattle".First()); // S
+
+
+----------Anonymous Types
+An anonymous type is a simple class created by the compiler on the fly to store a set
+of values. To create an anonymous type, use the new keyword followed by an object
+initializer, specifying the properties and values the type will contain. For example:
+var dude = new { Name = "Bob", Age = 23 };
+
+You must use the var keyword to reference an anonymous type, because it doesn’t
+have a name.
+The property name of an anonymous type can be inferred from an expression that
+is itself an identifier (or ends with one). For example:
+int Age = 23;
+var dude = new { Name = "Bob", Age, Age.ToString().Length };
+is equivalent to:
+var dude = new { Name = "Bob", Age = Age, Length = Age.ToString().Length };
+Two anonymous type instances declared within the same assembly will have the
+same underlying type if their elements are named and typed identically:
+var a1 = new { X = 2, Y = 4 };
+var a2 = new { X = 2, Y = 4 };
+Console.WriteLine (a1.GetType() == a2.GetType()); // True
+Additionally, the Equals method is overridden to perform equality comparisons:
+Console.WriteLine (a1 == a2); // False
+Console.WriteLine (a1.Equals (a2)); // True
+You can create arrays of anonymous types as follows:
+var dudes = new[]
+{
+new { Name = "Bob", Age = 30 },
+new { Name = "Tom", Age = 40 }
+};
+
+
+
+// Dynamic Binding
+Dynamic binding defers binding—the process of resolving types, members, and
+operations—from compile time to runtime.
