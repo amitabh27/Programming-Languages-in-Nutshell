@@ -1,0 +1,2421 @@
+
+===========================================================================================================================================
+MongoDB Overview
+===========================================================================================================================================
+
+MongoDB is a document-oriented database.
+
+Features:
+
+1. Ease of Use=A document-oriented database replaces the concept of a “row” with a more flexible
+model, the “document.”
+
+2. Scaling=Its document-oriented data model makes it easier
+for it to split up data across multiple servers. MongoDB automatically takes care of
+balancing data and load across a cluster, redistributing documents automatically and
+routing user requests to the correct machines.
+
+3. Indexing
+MongoDB supports generic secondary indexes, allowing a variety of fast queries,
+and provides unique, compound, geospatial, and full-text indexing capabilities as
+well.
+
+4.Aggregation
+MongoDB supports an “aggregation pipeline” that allows you to build complex
+aggregations from simple pieces and allow the database to optimize it.
+
+5.Special collection types
+MongoDB supports time-to-live collections for data that should expire at a certain
+time, such as sessions. It also supports fixed-size collections, which are useful for
+holding recent data, such as logs.
+
+6.File storage
+MongoDB supports an easy-to-use protocol for storing large files and file metadata.
+
+
+==================
+Terminologies
+==================
+
+A document is the basic unit of data for MongoDB and is roughly equivalent to a
+row in a relational database management system.
+
+A collection can be thought of as a table with a dynamic schema.
+
+A single instance of MongoDB can host multiple independent databases, each of
+which can have its own collections.
+
+Every document has a special key, "_id" , that is unique within a collection.
+
+MongoDB comes with a simple but powerful JavaScript shell, which is useful for
+the administration of MongoDB instances and data manipulation.
+
+====================
+DOCUMENTS
+====================
+
+document: an ordered set of keys with associated values.
+
+{"greeting" : "Hello, world!"}
+This simple document contains a single key, "greeting" , with a value of "Hello,
+world!" .
+
+The keys in a document are strings. Any UTF-8 character is allowed in a key, with a few
+notable exceptions:
+>>Keys must not contain the character \0 (the null character). This character is used
+to signify the end of a key.
+>>The . and $ characters have some special properties and should be used only in
+certain circumstances. In general, they should be
+considered reserved, and drivers will complain if they are used inappropriately.
+
+
+MongoDB is type-sensitive and case-sensitive. For example, these documents are
+distinct:
+{"foo" : 3}
+{"foo" : "3"}
+as are as these:
+{"foo" : 3}
+{"Foo" : 3}
+A final important thing to note is that documents in MongoDB cannot contain duplicate
+keys. For example, the following is not a legal document:
+{"greeting" : "Hello, world!", "greeting" : "Hello, MongoDB!"}
+
+
+========================
+COLLECTIONS
+========================
+
+A collection is a group of documents. If a document is the MongoDB analog of a row in
+a relational database, then a collection can be thought of as the analog to a table.
+
+------------DYNAMIC SCHEMAS:
+
+Collections have dynamic schemas. This means that the documents within a single col‐
+lection can have any number of different “shapes.” For example, both of the following
+documents could be stored in a single collection:
+
+{"greeting" : "Hello, world!"}
+{"foo" : 5}
+
+
+--------------Naming Collections:
+
+A collection is identified by its name. Collection names can be any UTF-8 string, with
+a few restrictions:
+-The empty string ( "" ) is not a valid collection name.
+-Collection names may not contain the character \0 (the null character) because
+this delineates the end of a collection name.
+-You should not create any collections that start with system., a prefix reserved for
+internal collections. For example, the system.users collection contains the database’s
+users, and the system.namespaces collection contains information about all of the
+database’s collections.
+-User-created collections should not contain the reserved character $ in the name.
+The various drivers available for the database do support using $ in collection names
+because some system-generated collections contain it. You should not use $ in a
+name unless you are accessing one of these collections.
+
+For example, suppose we are trying to access the version collection. We cannot say
+db.version because db.version is a method on db (it returns the version of the running
+MongoDB server):
+> db.version
+function () {
+return this.serverBuildInfo().version;
+}
+To actually access the version collection, you must use the getCollection function:
+> db.getCollection("version");
+
+
+
+-------------Subcollections:
+
+One convention for organizing collections is to use namespaced subcollections sepa‐
+rated by the . character. For example, an application containing a blog might have a
+collection named blog.posts and a separate collection named blog.authors. This is for
+organizational purposes only—there is no relationship between the blog collection (it
+doesn’t even have to exist) and its “children.”
+
+
+-------------Databases:
+In addition to grouping documents by collection, MongoDB groups collections into
+databases.
+
+Naming:
+Like collections, databases are identified by name. Database names can be any UTF-8
+string, with the following restrictions:
+--The empty string ( "" ) is not a valid database name.
+--A database name cannot contain any of these characters: /, \, ., " , *, <, >, :, |, ?, $, (a
+single space), or \0 (the null character). Basically, stick with alphanumeric ASCII.
+Names are case-sensitive and max upto 64 bytes.
+
+Reserved names that cant be used as database names=admin,config,local
+
+
+
+===============================
+Mongo Shell & Server
+===============================
+
+-------------------Starting mongo server:
+To start the server,
+run the mongod executable using the below command in cmd:
+>mongod
+
+By default MongoDB listens for socket connections on port
+27017.
+This means that you can get some administrative
+information about your database by opening a web browser and going to http://local
+host:28017.
+
+
+To start the shell, run the mongo executable:
+>mongo
+The shell automatically attempts to connect to a MongoDB server on startup, so make
+sure you start mongod before starting the shell.
+
+
+=================================
+Mongo DB client
+=================================
+
+On startup, the shell connects
+to the test database on a MongoDB server and assigns this database connection to the global variable db . This variable is the primary access point to your MongoDB server
+through the shell.
+To see the database db is currently assigned to, type in db and hit Enter:
+> db
+test
+
+For instance, one of the most
+important operations is selecting which database to use:
+> use foobar
+switched to db foobar
+Now if you look at the db variable, you can see that it refers to the foobar database:
+> db
+foobar
+
+===================================
+CRUD Operations in SHELL
+===================================
+
+1. CREATE :
+
+The insert function adds a document to a collection. For example, suppose we want
+to store a blog post. First, we’ll create a local variable called post that is a JavaScript
+object representing our document. It will have the keys "title" , "content" , and "date"
+(the date that it was published):
+> post = {"title" : "My Blog Post",
+... "content" : "Here's my blog post.",
+... "date" : new Date()}
+{
+"title" : "My Blog Post",
+"content" : "Here's my blog post.",
+"date" : ISODate("2012-08-24T21:12:09.982Z")
+}
+This object is a valid MongoDB document, so we can save it to the blog collection using
+the insert method:
+
+> db.blog.insert(post)
+The blog post has been saved to the database.
+
+We can see it by calling find on the
+collection:
+> db.blog.find()
+{
+"_id" : ObjectId("5037ee4a1084eb3ffeef7228"),
+"title" : "My Blog Post",
+"content" : "Here's my blog post.",
+"date" : ISODate("2012-08-24T21:12:09.982Z")
+}
+
+
+2 . READ :
+
+
+find and findOne can be used to query a collection. If we just want to see one document
+from a collection, we can use findOne :
+
+> db.blog.findOne()
+{
+"_id" : ObjectId("5037ee4a1084eb3ffeef7228"),
+"title" : "My Blog Post",
+"content" : "Here's my blog post.",
+"date" : ISODate("2012-08-24T21:12:09.982Z")
+}
+
+3. UPDATE :
+
+The first step is to modify the variable post and add a "comments" key:
+> post.comments = []
+[ ]
+Then we perform the update, replacing the post titled “My Blog Post” with our new
+version of the document:
+> db.blog.update({title : "My Blog Post"}, post)
+
+
+
+4. DELETE :
+
+remove permanently deletes documents from the database. Called with no parameters,
+it removes all documents from a collection.
+> db.blog.remove({title : "My Blog Post"})
+
+
+
+=================================
+DATA TYPES
+=================================
+
+null : {"x" : null}
+boolean : {"x" : true}
+number : {"x" : 3.14},{"x" : 3}
+string : {"x" : "foobar"}
+date : {"x" : new Date()}
+
+regular expression : {"x" : /foobar/i}
+array: {"x" : ["a", "b", "c"]}
+embedded document : {"x" : {"foo" : "bar"}}
+
+object id : An object id is a 12-byte ID for documents. {"x" : ObjectId()}
+code :
+Queries and documents can also contain arbitrary JavaScript code:
+{"x" : function() { /* ... */ }}
+
+
+------------Date:
+In JavaScript, the Date class is used for MongoDB’s date type. When creating a new Date
+object, always call new Date(...).
+
+-----------_id and ObjectIds :
+
+Every document stored in MongoDB must have an "_id" key. The "_id" key’s value
+can be any type, but it defaults to an ObjectId . In a single collection, every document
+must have a unique value for "_id" , which ensures that every document in a collection
+can be uniquely identified. That is, if you had two collections, each one could have a
+document where the value for "_id" was 123. However, neither collection could contain
+more than one document with an "_id" of 123.
+
+The 12 bytes of an ObjectId are generated
+as follows:
+0 1 2 3 	4 5 6 		7 8 	9 10 11
+Timestamp	Machine		PID	Increment
+
+The first four bytes of an ObjectId are a timestamp in seconds since the epoch.
+
+--------------Autogeneration of _id
+As stated previously, if there is no "_id" key present when a document is inserted, one
+will be automatically added to the inserted document.
+
+
+======================================
+Running JS through Mongo Shell
+=======================================
+$ mongo script1.js script2.js script3.js
+The mongo shell will execute each script listed and exit.
+
+Connecting to the locally-running database on the
+given port and sets db to that connection:
+// defineConnectTo.js
+/**
+* Connect to a database and set db.
+*/
+
+var connectTo = function(port, dbname) {
+if (!port) {
+port = 27017;
+}
+if (!dbname) {
+dbname = "test";
+}
+db = connect("localhost:"+port+"/"+dbname);
+return db;
+};
+
+
+If we load this script in the shell, connectTo is now defined:
+> typeof connectTo
+undefined
+> load('defineConnectTo.js')
+> typeof connectTo
+function
+
+
+-------------mongorc.js
+If you have frequently-loaded scripts you might want to put them in your mongorc.js
+file. This file is run whenever you start up the shell.
+
+
+
+==========================================================================================================================================
+CREATING,UPDATING and DELETING documents
+==========================================================================================================================================
+
+=========================
+INSERTING
+=========================
+
+> db.foo.insert({"bar" : "baz"})
+This will add an "_id" key to the document (if one does not already exist) and store it
+in MongoDB.
+
+> db.foo.batchInsert([{"_id" : 0}, {"_id" : 1}, {"_id" : 2}])  //muliple insertions at one go
+
+>db.foo.batchInsert([{"_id" : 0}, {"_id" : 1}, {"_id" : 1}, {"_id" : 2}])
+Only the first two documents will be inserted, as the third will produce an error: you
+cannot insert two documents with the same "_id" .
+
+----Insert Validation:
+all documents must be smaller than 16 MB.
+
+
+===========================
+REMOVING
+===========================
+
+Now that there’s data in our database, let’s delete it:
+> db.foo.remove()
+This will remove all of the documents in the foo collection. This doesn’t actually remove
+the collection, and any meta information about it will still exist.
+
+Suppose, for instance, that we
+want to remove everyone from the mailing.list collection where the value for "opt-
+out" is true :
+> db.mailing.list.remove({"opt-out" : true})
+
+Removing documents is usually a fairly quick operation, but if you want to clear an
+entire collection, it is faster to drop it.
+>db.tester.drop()
+
+===============================
+UPDATING
+===============================
+
+Once a document is stored in the database, it can be changed using the update method.
+update takes two parameters: a query document, which locates documents to update,
+and a modifier document, which describes the changes to make to the documents found.
+
+For example, suppose we are making
+major changes to a user document, which looks like the following:
+{
+"_id" : ObjectId("4b2b9f67a1f631733d917a7a"),
+"name" : "joe",
+"friends" : 32,
+"enemies" : 2
+}
+We want to move the "friends" and "enemies" fields to a "relationships" subdo‐
+cument. We can change the structure of the document in the shell and then replace the
+database’s version with an update :
+> var joe = db.users.findOne({"name" : "joe"});
+> joe.relationships = {"friends" : joe.friends, "enemies" : joe.enemies};
+{
+"friends" : 32,
+"enemies" : 2
+}> joe.username = joe.name;
+"joe"
+> delete joe.friends;
+true
+> delete joe.enemies;
+true
+> delete joe.name;
+true
+> db.users.update({"name" : "joe"}, joe);
+
+Now, doing a findOne shows that the structure of the document has been updated:
+{
+"_id" : ObjectId("4b2b9f67a1f631733d917a7a"),
+"username" : "joe",
+"relationships" : {
+"friends" : 32,
+"enemies" : 2
+}
+}
+
+
+---------------------Update fails if the key "Joe" was present multiple times.
+Thus, the update will fail, because "_id" values
+must be unique. The best way to avoid this situation is to make sure that your update
+always specifies a unique document, perhaps by matching on a key like "_id" .
+
+
+---------------------USING MODIFIERS :
+
+Usually only certain portions of a document need to be updated. You can update specific
+fields in a document using atomic update modifiers. Update modifiers are special keys
+that can be used to specify complex update operations, such as altering, adding, or
+removing keys, and even manipulating arrays and embedded documents.
+
+
+{
+"_id" : ObjectId("4b253b067525f35f94b60a31"),
+"url" : "www.example.com",
+"pageviews" : 52
+}
+
+Every time someone visits a page, we can find the page by its URL and use the "$inc"
+modifier to increment the value of the "pageviews" key:
+> db.analytics.update({"url" : "www.example.com"},
+... {"$inc" : {"pageviews" : 1}})
+
+
+-----------------------$set,$unset modifier
+
+> db.users.findOne()
+{
+"_id" : ObjectId("4b253b067525f35f94b60a31"),
+"name" : "joe",
+"age" : 30,
+"sex" : "male",
+"location" : "Wisconsin"
+}
+
+If the user wanted to store his favorite book in
+his profile, he could add it using "$set" :
+> db.users.update({"_id" : ObjectId("4b253b067525f35f94b60a31")},
+... {"$set" : {"favorite book" : "War and Peace"}})
+
+If the user decides that he actually enjoys a different book, "$set" can be used again to
+change the value:
+> db.users.update({"name" : "joe"},
+... {"$set" : {"favorite book" : "Green Eggs and Ham"}})
+
+If the user realizes that he actually doesn’t like reading, he can remove the key altogether
+with "$unset" :
+> db.users.update({"name" : "joe"},
+... {"$unset" : {"favorite book" : 1}})
+
+
+--------------------------INCREMENTING AND DECREMENTING :
+
+> db.games.update({"game" : "pinball", "user" : "joe"},
+... {"$inc" : {"score" : 50}})
+
+The score key did not already exist, so it was created by "$inc" and set to the increment
+amount: 50.
+
+"$inc" can be used only on values of type integer, long, or double.
+
+Decrementing:
+> db.games.update({"game" : "pinball", "user" : "joe"},
+... {"$inc" : {"score" : -20}})
+
+
+-------------------------ARRAY MODIFIERS :
+
+1.Adding elemnts:
+
+> db.blog.posts.findOne()
+{
+"_id" : ObjectId("4b2d75476cc613d5ee930164"),
+"title" : "A blog post",
+"content" : "..."
+}
+
+> db.blog.posts.update({"title" : "A blog post"},
+... {"$push" : {"comments" :
+...
+{"name" : "joe", "email" : "joe@example.com",
+...
+"content" : "nice post."}}})
+
+
+
+This is the “simple” form of push, but you can use it for more complex array operations
+as well. You can push multiple values in one operation using the "$each" suboperator:
+> db.stock.ticker.update({"_id" : "GOOG"},
+... {"$push" : {"hourly" : {"$each" : [562.776, 562.790, 559.123]}}})
+
+
+
+
+If you only want the array to grow to a certain length, you can also use the "$slice"
+operator in conjunction with "$push" to prevent an array from growing beyond a certain
+size, effectively making a “top N” list of items:
+> db.movies.find({"genre" : "horror"},
+... {"$push" : {"top10" : {
+...
+"$each" : ["Nightmare on Elm Street", "Saw"],
+...
+"$slice" : -10}}})
+This example would limit the array to the last 10 elements pushed. Slices must always
+be negative numbers.
+If the array was smaller than 10 elements (after the push), all elements would be kept.
+If the array was larger than 10 elements, only the last 10 elements would be kept. Thus,
+"$slice" can be used to create a queue in a document.
+
+
+Finally, you can "$sort" before trimming, so long as you are pushing subobjects onto
+the array:
+> db.movies.find({"genre" : "horror"},
+... {"$push" : {"top10" : {
+...
+"$each" : [{"name" : "Nightmare on Elm Street", "rating" : 6.6},
+...
+{"name" : "Saw", "rating" : 4.3}],
+...
+"$slice" : -10,
+...
+"$sort" : {"rating" : -1}}}})
+
+
+
+
+-----------------------USING ARRAY AS SETS
+
+You might want to treat an array as a set, only adding values if they are not present. This
+can be done using a "$ne" in the query document. For example, to push an author onto
+a list of citations, but only if he isn’t already there, use the following:
+> db.papers.update({"authors cited" : {"$ne" : "Richie"}},
+... {$push : {"authors cited" : "Richie"}})
+
+This can also be done with "$addToSet" , which is useful for cases where "$ne" won’t
+work or where "$addToSet" describes what is happening better.
+For instance, suppose you have a document that represents a user. You might have a set
+of email addresses that they have added:
+> db.users.findOne({"_id" : ObjectId("4b2d75476cc613d5ee930164")})
+{
+"_id" : ObjectId("4b2d75476cc613d5ee930164"),
+"username" : "joe",
+"emails" : [
+"joe@example.com",
+"joe@gmail.com",
+"joe@yahoo.com"
+]
+When adding another address, you can use "$addToSet" to prevent duplicates:
+> db.users.update({"_id" : ObjectId("4b2d75476cc613d5ee930164")},
+... {"$addToSet" : {"emails" : "joe@gmail.com"}})
+> db.users.findOne({"_id" : ObjectId("4b2d75476cc613d5ee930164")})
+{
+"_id" : ObjectId("4b2d75476cc613d5ee930164"),
+"username" : "joe",
+"emails" : [
+"joe@example.com",
+"joe@gmail.com",
+"joe@yahoo.com",
+]
+}
+
+
+You can also use "$addToSet" in conjunction with "$each" to add multiple unique
+values, which cannot be done with the "$ne" / "$push" combination. For instance, we
+could use these modifiers if the user wanted to add more than one email address:
+> db.users.update({"_id" : ObjectId("4b2d75476cc613d5ee930164")}, {"$addToSet" :
+... {"emails" : {"$each" :
+...
+["joe@php.net", "joe@example.com", "joe@python.org"]}}})
+
+
+
+===================================
+REMOVING ELEMENTS
+===================================
+
+There are a few ways to remove elements from an array. If you want to treat the array
+like a queue or a stack, you can use "$pop" , which can remove elements from either
+end. {"$pop" : {"key" : 1}} removes an element from the end of the array. {"$pop" :
+{"key" : -1}} removes it from the beginning.
+
+Sometimes an element should be removed based on specific criteria, rather than its
+position in the array. "$pull" is used to remove elements of an array that match the
+given criteria.
+
+> db.lists.update({}, {"$pull" : {"todo" : "laundry"}})
+
+
+-----------Positional Array Modifications:
+Arrays use 0-based indexing, and elements can be selected as though their index were
+a document key.
+
+> db.blog.update({"post" : post_id},
+... {"$inc" : {"comments.0.votes" : 1}})  //increment the value of key "votes" of 0th element of Array "comments" by integer 1.
+
+In many cases, though, we don’t know what index of the array to modify without query‐
+ing for the document first and examining it. To get around this, MongoDB has a posi‐
+tional operator, "$" , that figures out which element of the array the query document
+matched and updates that element. For example, if we have a user named John who
+updates his name to Jim, we can replace it in the comments by using the positional
+operator:
+db.blog.update({"comments.author" : "John"},
+... {"$set" : {"comments.$.author" : "Jim"}})
+The positional operator updates only the first match. Thus, if John had left more than
+one comment, his name would be changed only for the first comment he left.
+
+
+
+====================================
+Upserts
+====================================
+
+An upsert is a special type of update. If no document is found that matches the update
+criteria, a new document will be created by combining the criteria and updated docu‐
+ments. If a matching document is found, it will be updated normally.
+
+db.analytics.update({"url" : "/blog"}, {"$inc" : {"pageviews" : 1}}, true)
+
+Sometimes a field needs to be seeded when a document is created, but not changed on
+subsequent updates. This is what "$setOnInsert" is for. "$setOnInsert" is a modifier
+that only sets the value of a field when the document is being inserted. Thus, we could
+do something like this:
+> db.users.update({}, {"$setOnInsert" : {"createdAt" : new Date()}}, true)
+> db.users.findOne()
+{
+"_id" : ObjectId("512b8aefae74c67969e404ca"),
+"createdAt" : ISODate("2013-02-25T16:01:50.742Z")
+}
+If we run this update again, it will match the existing document, nothing will be inserted,
+and so the "createdAt" field will not be changed:
+> db.users.update({}, {"$setOnInsert" : {"createdAt" : new Date()}}, true)
+> db.users.findOne()
+{
+"_id" : ObjectId("512b8aefae74c67969e404ca"),
+"createdAt" : ISODate("2013-02-25T16:01:50.742Z")
+}
+
+
+-----------------UPDATING MULTIPLE DOCUMENTS
+
+Updates, by default, update only the first document found that matches the criteria. If
+there are more matching documents, they will remain unchanged. To modify all of the
+documents matching the criteria, you can pass true as the fourth parameter to update .
+
+> db.users.update({"birthday" : "10/13/1978"},
+... {"$set" : {"gift" : "Happy Birthday!"}}, false, true)
+This would add the "gift" field to all user documents with birthdays on October 13,
+1978.
+
+To see the number of documents updated by a multiupdate, you can run the
+getLastError database command:
+The "n" key will contain the number of documents affected by the
+update:
+> db.runCommand({getLastError : 1})
+{
+"err" : null,
+"updatedExisting" : true,
+"n" : 5,
+"ok" : true
+}
+
+
+
+--------------------RETURNING UPDATED DOCUMENTS
+
+The findAndModify command has the following fields:
+
+findAndModify
+A string, the collection name
+query
+A query document; the criteria with which to search for documents
+sort
+Criteria by which to sort results (optional)
+update
+A modifier document; the update to perform on the document found (either this
+or " remove " must be specified)
+remove
+Boolean specifying whether the document should be removed (either this or " up
+date " must be specified)
+new
+Boolean specifying whether the document returned should be the updated docu‐
+ment or the pre-update document, to which it defaults
+fields
+The fields of the document to return (optional)
+upsert
+Boolean specifying whether or not this should be an upsert, and which defaults to
+false.
+
+
+
+
+
+
+===========================================================================================================================================
+QUERYING
+===========================================================================================================================================
+
+------------find
+
+> db.c.find()
+matches every document in the collection c (and returns these documents in batches).
+
+> db.users.find({"age" : 27})
+
+
+-----------Specifying which keys to return
+
+For example, if you have a user collection and you are interested only in the "user
+name" and "email" keys, you could return just those keys with the following query:
+> db.users.find({}, {"username" : 1, "email" : 1})
+{
+"_id" : ObjectId("4ba0f0dfd22aa494fd523620"),
+"username" : "joe",
+"email" : "joe@example.com"
+}
+
+
+//to remove _id from above output
+> db.users.find({}, {"username" : 1, "_id" : 0})
+{
+"username" : "joe",
+}
+
+
+------------------Query Conditionals
+
+"$lt" , "$lte" , "$gt" , and "$gte" are all comparison operators, corresponding to <,
+<=, >, and >=, respectively. They can be combined to look for a range of values. For
+example, to look for users who are between the ages of 18 and 30, we can do this:
+> db.users.find({"age" : {"$gte" : 18, "$lte" : 30}})
+This would find all documents where the " age " field was greater than or equal to 18
+AND less than or equal to 30.
+
+-----------------OR Queries
+
+There are two ways to do an OR query in MongoDB. "$in" can be used to query for a
+variety of values for a single key. "$or" is more general; it can be used to query for any
+of the given values across multiple keys.
+
+> db.raffle.find({"ticket_no" : {"$in" : [725, 542, 390]}})
+"$in" is very flexible and allows you to specify criteria of different types as well as values.
+For example, if we are gradually migrating our schema to use usernames instead of user
+ID numbers, we can query for either by using this:
+> db.users.find({"user_id" : {"$in" : [12345, "joe"]})
+This matches documents with a "user_id" equal to 12345, and documents with a
+"user_id" equal to "joe"
+
+The opposite of "$in" is "$nin" , which returns documents that don’t match any of the
+criteria in the array.
+
+> db.raffle.find({"$or" : [{"ticket_no" : 725}, {"winner" : true}]})
+
+
+-----------------$not
+
+"$not" is a metaconditional: it can be applied on top of any other criteria. As an example,
+let’s consider the modulus operator, "$mod" . "$mod" queries for keys whose values, when
+divided by the first value given, have a remainder of the second value:
+> db.users.find({"id_num" : {"$mod" : [5, 1]}})
+The previous query returns users with "id_num" s of 1, 6, 11, 16, and so on. If we want,
+instead, to return users with "id_num" s of 2, 3, 4, 5, 7, 8, 9, 10, 12, etc., we can use "$not" :
+> db.users.find({"id_num" : {"$not" : {"$mod" : [5, 1]}}})
+
+
+--------------------$and,$or,$nor
+
+There are a few “meta-operators” that go in the outer document: " $and “, " $or “, and
+" $nor “. They all have a similar form:
+> db.users.find({"$and" : [{"x" : {"$lt" : 1}}, {"x" : 4}]})
+
+
+
+======================================================
+Type SPECIFIC QUERIES
+======================================================
+
+
+------NULL
+
+null behaves a bit strangely. It does match itself, so if we have a collection with the
+following documents:
+>
+{
+{
+{
+db.c.find()
+"_id" : ObjectId("4ba0f0dfd22aa494fd523621"), "y" : null }
+"_id" : ObjectId("4ba0f0dfd22aa494fd523622"), "y" : 1 }
+"_id" : ObjectId("4ba0f148d22aa494fd523623"), "y" : 2 }
+we can query for documents whose "y" key is null in the expected way:
+> db.c.find({"y" : null})
+{ "_id" : ObjectId("4ba0f0dfd22aa494fd523621"), "y" : null }
+
+
+However, null not only matches itself but also matches “does not exist.” Thus, querying
+for a key with the value null will return all documents lacking that key:
+>db.c.find({"z" : null})
+{"_id" : ObjectId("4ba0f0dfd22aa494fd523621"), "y" : null }
+{"_id" : ObjectId("4ba0f0dfd22aa494fd523622"), "y" : 1 }
+{"_id" : ObjectId("4ba0f148d22aa494fd523623"), "y" : 2 }
+
+
+If we only want to find keys whose value is null , we can check that the key is null and
+exists using the "$exists" conditional:
+> db.c.find({"z" : {"$in" : [null], "$exists" : true}})
+
+
+----------REGULAR EXPRESSIONS
+
+if we want to
+find all users with the name Joe or joe, we can use a regular expression to do case-
+insensitive matching:
+> db.users.find({"name" : /joe/i})
+
+If we want to
+match not only various capitalizations of joe, but also joey, we can continue to improve
+our regular expression:
+> db.users.find({"name" : /joey?/i})
+MongoDB uses the Perl Compatible Regular Expression (PCRE) library to match reg‐
+ular expressions; any regular expression syntax allowed by PCRE is allowed in
+MongoDB.
+
+
+
+--------------------QUERYING ARRAYS
+
+if the array is a list of fruits, like this:
+> db.food.insert({"fruit" : ["apple", "banana", "peach"]})
+the following query:
+> db.food.find({"fruit" : "banana"})
+will successfully match the document.
+
+1. $all
+
+If you need to match arrays by more than one element, you can use "$all" . This allows
+you to match a list of elements.
+> db.food.find({fruit : {$all : ["apple", "banana"]}})
+
+
+2. Exact match
+
+> db.food.insert({"_id" : 1, "fruit" : ["apple", "banana", "peach"]})
+For example, this will
+match the first document above:
+> db.food.find({"fruit" : ["apple", "banana", "peach"]})
+But this will not:
+> db.food.find({"fruit" : ["apple", "banana"]})
+
+
+If you want to query for a specific element of an array, you can specify an index using
+the syntax key . index :
+> db.food.find({"fruit.2" : "peach"})
+
+3. $size
+
+A useful conditional for querying arrays is "$size" , which allows you to query for arrays
+of a given size. Here’s an example:
+> db.food.find({"fruit" : {"$size" : 3}})
+> db.food.find({"size" : {"$gt" : 3}})
+
+4. $slice
+
+or example, suppose we had a blog post document and we wanted to return the first
+10 comments:
+> db.blog.posts.findOne(criteria, {"comments" : {"$slice" : 10}})
+Alternatively, if we wanted the last 10 comments, we could use −10:
+> db.blog.posts.findOne(criteria, {"comments" : {"$slice" : -10}})
+
+"$slice" can also return pages in the middle of the results by taking an offset and the
+number of elements to return:
+> db.blog.posts.findOne(criteria, {"comments" : {"$slice" : [23, 10]}})
+
+
+Example:
+{
+"_id" : ObjectId("4b2d75476cc613d5ee930164"),
+"title" : "A blog post",
+"content" : "...",
+"comments" : [
+{
+"name" : "bob",
+"email" : "bob@example.com",
+"content" : "good post."
+}
+]
+}
+
+Sometimes you want whichever array element matched your criteria. You can return the matching element
+with the $ -operator. Given the blog example above, you could get Bob’s comment back
+with:
+> db.blog.posts.find({"comments.name" : "bob"}, {"comments.$" : 1})
+{
+"_id" : ObjectId("4b2d75476cc613d5ee930164"),
+"comments" : [
+{
+"name" : "bob",
+"email" : "bob@example.com",
+"content" : "good post."
+}
+]
+}
+
+
+------------------Array and Range Query Interactions
+
+Scalars (non-array elements) in documents must match each clause of a query’s criteria.
+For example, if you queried for {"x" : {"$gt" : 10, "$lt" : 20}} , " x " would have
+to be both greater than 10 and less than 20. However, if a document’s " x " field is an array,
+the document matches if there is an element of " x " that matches each part of the criteria
+but each query clause can match a different array element.
+
+If we wanted to find all documents where " x " is between 10 and 20, one might naively
+structure a query as db.test.find({"x" : {"$gt" : 10, "$lt" : 20}})
+
+> db.test.find({"x" : {"$gt" : 10, "$lt" : 20}})
+{"x" : 15}
+{"x" : [5, 25]}
+Neither 5 nor 25 is between 10 and 20, but the document is returned because 25 matches
+the first clause (it is greater than 25) and 5 matches the second clause (it is less than 20).
+
+This makes range queries against arrays essentially useless: a range will match any multi-
+element array. There are a couple of ways to get the expected behavior.
+
+First, you can use " $elemMatch " to force MongoDB to compare both clauses with a single
+array element. However, the catch is that " $elemMatch " won’t match non-array elements:
+> db.test.find({"x" : {"$elemMatch" : {"$gt" : 10, "$lt" : 20}})
+
+
+-----------------------Querying on Embeded documents
+
+{
+"name" : {
+"first" : "Joe",
+"last" : "Schmoe"
+},
+"age" : 45
+}
+we can query for someone named Joe Schmoe with the following:
+> db.people.find({"name" : {"first" : "Joe", "last" : "Schmoe"}})
+
+
+This type of query is also order-sensitive:
+{"last" : "Schmoe", "first" : "Joe"} would not be a match.
+
+You can query for embedded keys using dot-
+notation:
+> db.people.find({"name.first" : "Joe", "name.last" : "Schmoe"})
+Now, if Joe adds more keys, this query will still match his first and last names.
+
+
+--------------$where queries
+
+The most common case for using " $where " is to compare the values for two keys in a
+document.
+
+For instance, suppose we have documents that look like this:
+> db.foo.insert({"apple" : 1, "banana" : 6, "peach" : 3})
+> db.foo.insert({"apple" : 8, "spinach" : 4, "watermelon" : 4})
+
+We’d like to return documents where any two of the fields are equal. For example, in
+the second document, "spinach" and "watermelon" have the same value, so we’d like
+that document returned. It’s unlikely MongoDB will ever have a $-conditional for this,
+so we can use a "$where" clause to do it with JavaScript:
+
+> db.foo.find({"$where" : function () {
+... for (var current in this) {
+...for (var other in this) {
+...if (current != other && this[current] == this[other]) {
+...return true;
+...}
+...}
+... }
+... return false;
+... }});
+
+
+
+
+============================================
+CURSORS
+============================================
+
+The database returns results from find using a cursor. The client-side implementations
+of cursors generally allow you to control a great deal about the eventual output of a
+query. You can limit the number of results, skip over some number of results, sort results
+by any combination of keys in any direction, and perform a number of other powerful
+operations.
+
+
+To create a cursor with the shell:
+put some documents into a collection, do a query on
+them, and assign the results to a local variable
+
+> for(i=0; i<100; i++) {
+...
+db.collection.insert({x : i});
+... }
+> var cursor = db.collection.find();
+
+To iterate through the results, you can use the next method on the cursor. You can use
+hasNext to check whether there is another result. A typical loop through results looks
+like the following:
+> while (cursor.hasNext()) {
+...
+obj = cursor.next();
+...
+// do stuff
+... }
+
+The cursor class also implements JavaScript’s iterator interface, so you can use it in a
+forEach loop:
+> var cursor = db.people.find();
+> cursor.forEach(function(x) {
+...
+print(x.name);
+...});
+
+
+Almost every method on a cursor object
+returns the cursor itself so that you can chain options in any order. For instance, all of
+the following are equivalent:
+> var cursor = db.foo.find().sort({"x" : 1}).limit(1).skip(10);
+> var cursor = db.foo.find().limit(1).sort({"x" : 1}).skip(10);
+> var cursor = db.foo.find().skip(10).limit(1).sort({"x" : 1});
+At this point, the query has not been executed yet. All of these functions merely build
+the query. Now, suppose we call the following:
+> cursor.hasNext()
+At this point, the query will be sent to the server. The shell fetches the first 100 results
+or first 4 MB of results (whichever is smaller) at once so that the next calls to next or
+hasNext will not have to make trips to the server.
+
+
+
+-----------------------------Limit,Skips and Sorts
+To set a limit, chain the limit function onto your call to find . For example, to only
+return three results, use this:
+> db.c.find().limit(3)
+
+skip works similarly to limit :
+> db.c.find().skip(3)
+This will skip the first three matching documents and return the rest of the matches.
+
+sort takes an object: a set of key/value pairs where the keys are key names and the values
+are the sort directions. Sort direction can be 1 (ascending) or −1 (descending).
+
+> db.c.find().sort({username : 1, age : -1})
+
+
+------------------------Pagination
+
+The easiest way to do pagination is to return the first page of results using limit and
+then return each subsequent page as an offset from the beginning:
+> var page1= db.foo.find(criteria).limit(100)
+> var page2= db.foo.find(criteria).skip(100).limit(100)
+> var page3= db.foo.find(criteria).skip(200).limit(100)
+
+----------------------Finding a random document
+
+It takes a little forethought, but if you know you’ll be looking up a random element on
+a collection, there’s a much more efficient way to do so. The trick is to add an extra
+random key to each document when it is inserted. For instance, if we’re using the shell,
+we could use the Math.random() function (which creates a random number between 0
+and 1):
+> db.people.insert({"name" : "joe", "random" : Math.random()})
+> db.people.insert({"name" : "john", "random" : Math.random()})
+> db.people.insert({"name" : "jim", "random" : Math.random()})
+Now, when we want to find a random document from the collection, we can calculate
+a random number and use that as query criteria, instead of doing a skip :
+> var random = Math.random()
+> result = db.foo.findOne({"random" : {"$gt" : random}})
+
+
+-----------------------Advanced Queries
+
+$maxscan : integer
+Specify the maximum number of documents that should be scanned for the query.
+> db.foo.find(criteria)._addSpecial("$maxscan", 20)
+
+$min : document
+Start criteria for querying. document must exactly match the keys of an index used
+for the query. This forces the given index to be used for the query.
+
+$max : document
+End criteria for querying. document must exactly match the keys of an index used
+for the query. This forces the given index to be used for the query.
+
+$showDiskLoc : true
+Adds a " $diskLoc " field to the results that shows where on disk that particular result
+lives. For example:
+> db.foo.find()._addSpecial('$showDiskLoc',true)
+{ "_id" : 0, "$diskLoc" : { "file" : 2, "offset" : 154812592 } }
+{ "_id" : 1, "$diskLoc" : { "file" : 2, "offset" : 154812628 } }
+The file number shows which file the document is in. In this case, if we’re using the
+test database, the document is in test.2. The second field gives the byte offset of each
+document within the file.
+
+
+-----------------------DATABASE COMMANDS- A special type of Query
+
+For example, dropping a collection is done via
+the " drop " database command:
+> db.runCommand({"drop" : "test"});
+{
+"nIndexesWas" : 1,
+"msg" : "indexes dropped for collection",
+"ns" : "test.test",
+"ok" : true
+}
+
+You might be more familiar with the shell helper, which wraps the command and pro‐
+vides a simpler interface:
+> db.test.drop()
+
+
+=========================================================================================================================================
+APPLICATION DESIGN
+=========================================================================================================================================
+
+=================================================================
+INDEXING
+=================================================================
+
+//To Understand how much time it took to execute query,rows scanned,fields macthed etc we have explain() command.
+>db.users.find({username: "user101"}).explain()
+
+
+----------------SINGLE FIELD INDEXES
+By default, all collections have an index on the _id field.
+
+Consider a collection named records that holds documents that resemble the following sample document:
+
+{
+  "_id": ObjectId("570c04a4ad233577f97dc459"),
+  "score": 1034,
+  "location": { state: "NY", city: "New York" }
+}
+
+The following operation creates an ascending index on the score field of the records collection:
+db.records.createIndex( { score: 1 } )
+
+The value of the field in the index specification describes the kind of index for that field. For example, a value of 1 specifies an index that orders items in ascending order. A value of -1 specifies an index that orders items in descending order. 
+
+The created index will support queries that select on the field score, such as the following:
+db.records.find( { score: 2 } )
+db.records.find( { score: { $gt: 10 } } )
+
+--------------------Create an index on embedded fields:
+
+{
+  "_id": ObjectId("570c04a4ad233577f97dc459"),
+  "score": 1034,
+  "location": { state: "NY", city: "New York" }
+}
+The following operation creates an index on the location.state field:
+db.records.createIndex( { "location.state": 1 } )
+
+-------------------Create index on embedded documents
+
+{
+  "_id": ObjectId("570c04a4ad233577f97dc459"),
+  "score": 1034,
+  "location": { state: "NY", city: "New York" }
+}
+db.records.createIndex( { location: 1 } )
+
+
+-------------------COMPOUND INDEXES
+
+MongoDB imposes a limit of 31 fields for any compound index.
+To create a compound index use an operation that resembles the following prototype:
+db.collection.createIndex( { <field1>: <type>, <field2>: <type2>, ... } )
+
+{
+ "_id": ObjectId(...),
+ "item": "Banana",
+ "category": ["food", "produce", "grocery"],
+ "location": "4th Street Store",
+ "stock": 4,
+ "type": "cases"
+}
+
+The following operation creates an ascending index on the item and stock fields:
+db.products.createIndex( { "item": 1, "stock": 1 } )
+
+In addition to supporting queries that match on all the index fields, compound indexes can support queries that match on the prefix of the index fields. 
+
+Indexes store references to fields in either ascending (1) or descending (-1) sort order. For single-field indexes, the sort order of keys doesn’t matter because MongoDB can traverse the index in either direction. However, for compound indexes, sort order can matter in determining whether the index can support a sort operation.
+
+Consider a collection events that contains documents with the fields username and date. Applications can issue queries that return results sorted first by ascending username values and then by descending (i.e. more recent to last) date values, such as:
+
+db.events.find().sort( { username: 1, date: -1 } )
+or queries that return results sorted first by descending username values and then by ascending date values, such as:
+
+db.events.find().sort( { username: -1, date: 1 } )
+The following index can support both these sort operations:
+
+db.events.createIndex( { "username" : 1, "date" : -1 } )
+
+However, the above index cannot support sorting by ascending username values and then by ascending date values
+
+
+----------------PREFIXES
+
+Index prefixes are the beginning subsets of indexed fields. For example, consider the following compound index:
+{ "item": 1, "location": 1, "stock": 1 }
+
+The index has the following index prefixes:
+
+{ item: 1 }
+{ item: 1, location: 1 }
+For a compound index, MongoDB can use the index to support queries on the index prefixes. As such, MongoDB can use the index for queries on the following fields:
+
+the item field,
+the item field and the location field,
+the item field and the location field and the stock field.
+MongoDB can also use the index to support a query on item and stock fields since item field corresponds to a prefix. However, the index would not be as efficient in supporting the query as would be an index on only item and stock.
+
+However, MongoDB cannot use the index to support queries that include the following fields since without the item field, none of the listed fields correspond to a prefix index:
+
+the location field,
+the stock field, or
+the location and stock fields.
+
+
+
+------------------------INDEX BUILD OPERATIONS:
+
+For potentially long running index building operations, consider the background operation so that the MongoDB database remains available during the index building operation. For example, to create an index in the background of the zipcode field of the people collection, issue the following:
+
+db.people.createIndex( { zipcode: 1}, {background: true} )
+By default, background is false for building MongoDB indexes.
+
+You can combine the background option with other options, as in the following:
+
+db.people.createIndex( { zipcode: 1}, {background: true, sparse: true } )
+
+
+--------------------INDEX NAMING
+The default name for an index is the concatenation of the indexed keys and each key’s direction in the index, 1 or -1.
+
+EXAMPLE
+Issue the following command to create an index on item and quantity:
+
+db.products.createIndex( { item: 1, quantity: -1 } )
+The resulting index is named: item_1_quantity_-1.
+
+To see the status of an index build operation, you can use the db.currentOp() method.
+o terminate an ongoing index build, use the db.killOp() method in the mongo shell.
+
+
+-------------------------Build Indexes on Replica Sets
+If you need to build an index in a sharded cluster, repeat the following procedure for each replica set that provides each shard.
+
+Stop One Secondary:
+Stop the mongod process on one secondary. Restart the mongod process without the --replSet option and running on a different port. [1] This instance is now in “standalone” mode.
+For example, if your mongod normally runs with on the default port of 27017 with the --replSet option you would use the following invocation:
+mongod --port 47017
+
+Build the Index:
+Create the new index using the createIndex() in the mongo shell
+
+Restart the Program mongod:
+When the index build completes, start the mongod instance with the --replSet option on its usual port:
+mongod --port 27017 --replSet rs0
+Modify the port number (e.g. 27017) or the replica set name (e.g. rs0) as needed.
+
+
+For each secondary in the set, build an index according to the following steps:
+Stop One Secondary
+Build the Index
+Restart the Program mongod
+
+
+Build the Index on the Primary:
+To build an index on the primary you can either:
+Build the index in the background on the primary.Step down the primary using the rs.stepDown() method in the mongo shell to cause the current primary to become a secondary graceful and allow the set to elect another member as primary.
+Then repeat the index building procedure, listed below, to build the index on the primary:
+Stop One Secondary
+Build the Index
+Restart the Program mongod
+
+Building the index on the background, takes longer than the foreground index build and results in a less compact index structure. Additionally, the background index build may impact write performance on the primary.
+
+
+
+--------------------Index Intersection
+
+To illustrate index intersection, consider a collection orders that has the following indexes:
+{ qty: 1 }
+{ item: 1 }
+
+MongoDB can use the intersection of the two indexes to support the following query:
+
+db.orders.find( { item: "abc123", qty: { $gt: 15 } } )
+To determine if MongoDB used index intersection, run explain(); the results of explain() will include either an AND_SORTED stage or an AND_HASH stage.
+
+Index Prefix Intersection:
+{ qty: 1 }
+{ status: 1, ord_date: -1 }
+To fulfill the following query which specifies a condition on both the qty field and the status field, MongoDB can use the intersection of the two indexes:
+
+db.orders.find( { qty: { $gt: 10 } , status: "A" } )
+
+
+
+Index intersection and compound indexes:
+
+For example, if a collection orders has the following compound index, with the status field listed before the ord_date field:
+
+{ status: 1, ord_date: -1 }
+The compound index can support the following queries:
+db.orders.find( { status: { $in: ["A", "P" ] } } )
+db.orders.find(
+   {
+     ord_date: { $gt: new Date("2014-02-01") },
+     status: {$in:[ "P", "A" ] }
+   }
+)
+But not the following two queries:
+
+db.orders.find( { ord_date: { $gt: new Date("2014-02-01") } } )
+db.orders.find( { } ).sort( { ord_date: 1 } )
+However, if the collection has two separate indexes:
+
+{ status: 1 }
+{ ord_date: -1 }
+The two indexes can, either individually or through index intersection, support all four aforementioned queries.
+
+The choice between creating compound indexes that support your queries or relying on index intersection depends on the specifics of your system.
+
+
+
+-----------------------Manage Indexes:
+For example, to view all indexes on the people collection:
+db.people.getIndexes()
+
+Listing all indexes on DB:
+To list all indexes on all collections in a database, you can use the following operation in the mongo shell:
+
+db.getCollectionNames().forEach(function(collection) {
+   indexes = db[collection].getIndexes();
+   print("Indexes for " + collection + ":");
+   printjson(indexes);
+});
+
+Dropping an index:
+db.accounts.dropIndex( { "tax-id": 1 } )
+
+Remove all indexes:
+You can also use the db.collection.dropIndexes() to remove all indexes, except for the _id index from a collection.
+
+Rebuild indexes:
+If you need to rebuild indexes for a collectionn you can use the db.collection.reIndex() method to rebuild all indexes on a collection in a single operation. This operation drops all indexes for a collection, including the _id index, and then rebuilds all indexes.
+
+To hint the MongoDB to use a specific index for executing a query:
+db.people.find(
+   { name: "John Doe", zipcode: { $gt: "63000" } }
+).hint( { zipcode: 1 } )
+
+
+Specify the $natural operator to the hint() method to prevent MongoDB from using any index:
+
+db.people.find(
+   { name: "John Doe", zipcode: { $gt: "63000" } }
+).hint( { $natural: 1 } )
+
+
+------------------------Multikey Indexes:
+
+1. Index Basic Arrays : 
+
+Consider a survey collection with the following document:
+
+{ _id: 1, item: "ABC", ratings: [ 2, 5, 9 ] }
+Create an index on the field ratings:
+
+db.survey.createIndex( { ratings: 1 } )
+Since the ratings field contains an array, the index on ratings is multikey. The multikey index contains the following three index keys, each pointing to the same document:
+
+2,
+5, and
+9.
+
+2. Index Arrays with embedded documents:
+
+Consider an inventory collection with documents of the following form:
+
+{
+  _id: 1,
+  item: "abc",
+  stock: [
+    { size: "S", color: "red", quantity: 25 },
+    { size: "S", color: "blue", quantity: 10 },
+    { size: "M", color: "blue", quantity: 50 }
+  ]
+}
+db.inventory.createIndex( { "stock.size": 1, "stock.quantity": 1 } )
+
+
+3. Intersect Bounds for Multikey Index:
+
+Bounds intersection refers to a logical conjunction (i.e. AND) of multiple bounds. For instance, given two bounds [ [ 3, Infinity ] ] and [ [ -Infinity, 6 ] ], the intersection of the bounds results in [ [ 3, 6 ] ].
+
+Given an indexed array field, consider a query that specifies multiple predicates on the array and can use a multikey index. MongoDB can intersect multikey index bounds if an $elemMatch joins the predicates.
+
+For example, a collection survey contains documents with a field item and an array field ratings:
+
+{ _id: 1, item: "ABC", ratings: [ 2, 9 ] }
+{ _id: 2, item: "XYZ", ratings: [ 4, 3 ] }
+Create a multikey index on the ratings array:
+
+db.survey.createIndex( { ratings: 1 } )
+The following query uses $elemMatch to require that the array contains at least one single element that matches both conditions:
+
+db.survey.find( { ratings : { $elemMatch: { $gte: 3, $lte: 6 } } } )
+Taking the predicates separately:
+
+the bounds for the greater than or equal to 3 predicate (i.e. $gte: 3) are [ [ 3, Infinity ] ];
+the bounds for the less than or equal to 6 predicate (i.e. $lte: 6) are [ [ -Infinity, 6 ] ].
+Because the query uses $elemMatch to join these predicates, MongoDB can intersect the bounds to:
+
+ratings: [ [ 3, 6 ] ]
+If the query does not join the conditions on the array field with $elemMatch, MongoDB cannot intersect the multikey index bounds. Consider the following query:
+
+db.survey.find( { ratings : { $gte: 3, $lte: 6 } } )
+The query searches the ratings array for at least one element greater than or equal to 3 and at least one element less than or equal to 6. Because a single element does not need to meet both criteria, MongoDB does not intersect the bounds and uses either [ [ 3, Infinity ] ] or [ [ -Infinity, 6 ] ]. MongoDB makes no guarantee as to which of these two bounds it chooses.
+
+
+
+----------------------------Compound Bounds for Multikey Index:
+
+Compounding bounds refers to using bounds for multiple keys of compound index. For instance, given a compound index { a: 1, b: 1 } with bounds on field a of [ [ 3, Infinity ] ] and bounds on field b of [ [ -Infinity, 6 ] ], compounding the bounds results in the use of both bounds:
+
+{ a: [ [ 3, Infinity ] ], b: [ [ -Infinity, 6 ] ] }
+If MongoDB cannot compound the two bounds, MongoDB always constrains the index scan by the bound on its leading field, in this case, a: [ [ 3, Infinity ] ].
+
+------------------------------Compound Index on an Array Field
+
+Consider a compound multikey index; i.e. a compound index where one of the indexed fields is an array. For example, a collection survey contains documents with a field item and an array field ratings:
+
+{ _id: 1, item: "ABC", ratings: [ 2, 9 ] }
+{ _id: 2, item: "XYZ", ratings: [ 4, 3 ] }
+Create a compound index on the item field and the ratings field:
+
+db.survey.createIndex( { item: 1, ratings: 1 } )
+The following query specifies a condition on both keys of the index:
+
+db.survey.find( { item: "XYZ", ratings: { $gte: 3 } } )
+Taking the predicates separately:
+
+the bounds for the item: "XYZ" predicate are [ [ "XYZ", "XYZ" ] ];
+the bounds for the ratings: { $gte: 3 } predicate are [ [ 3, Infinity ] ].
+MongoDB can compound the two bounds to use the combined bounds of:
+
+{ item: [ [ "XYZ", "XYZ" ] ], ratings: [ [ 3, Infinity ] ] }
+
+
+
+==========================
+2DSphere Index
+==========================
+
+This type of Index supports queries for spherical project like earth.
+
+==========================
+2D Index
+==========================
+
+Use a 2d index for data stored as points on a two-dimensional plane. The 2d index is intended for legacy coordinate pairs used in MongoDB 2.2 and earlier.
+
+Use a 2d index if:
+
+your database has legacy legacy coordinate pairs from MongoDB 2.2 or earlier, and
+you do not intend to store any location data as GeoJSON objects.
+
+===========================
+GeoHayStack
+===========================
+A geoHaystack index is a special index that is optimized to return results over small areas. geoHaystack indexes improve performance on queries that use flat geometry.
+
+
+===========================
+TTL INDEXES
+===========================
+
+TTL indexes are special single-field indexes that MongoDB can use to automatically remove documents from a collection after a certain amount of time or at a specific clock time.
+
+db.eventlog.createIndex( { "lastModifiedDate": 1 }, { expireAfterSeconds: 3600 } )
+
+===========================
+UNIQUE INDEX
+===========================
+
+A unique index ensures that the indexed fields do not store duplicate values; i.e. enforces uniqueness for the indexed fields. By default, MongoDB creates a unique index on the _id field during the creation of a collection.
+
+db.collection.createIndex( <key and index type specification>, { unique: true } )
+
+db.members.createIndex( { "user_id": 1 }, { unique: true } )
+db.members.createIndex( { groupNumber: 1, lastname: 1, firstname: 1 }, { unique: true } )
+
+If a document does not have a value for the indexed field in a unique index, the index will store a null value for this document. Because of the unique constraint, MongoDB will only permit one document that lacks the indexed field. 
+Bcoz 2 NULLs are same.
+
+==============================
+PARTIAL INDEXES
+==============================
+
+Partial indexes only index the documents in a collection that meet a specified filter expression. By indexing a subset of the documents in a collection, partial indexes have lower storage requirements and reduced performance costs for index creation and maintenance.
+
+To create a partial index, use the db.collection.createIndex() method with the partialFilterExpression option. The partialFilterExpression option accepts a document that specifies the filter condition using:
+
+equality expressions (i.e. field: value or using the $eq operator),
+$exists: true expression,
+$gt, $gte, $lt, $lte expressions,
+$type expressions,
+$and operator at the top-level only
+For example, the following operation creates a compound index that indexes only the documents with a rating field greater than 5.
+
+db.restaurants.createIndex(
+   { cuisine: 1, name: 1 },
+   { partialFilterExpression: { rating: { $gt: 5 } } }
+)
+
+===================================
+CASE INSENSITIVE INDEXES
+===================================
+
+Case insensitive indexes support queries that perform string comparisons without regard for case.
+
+You can create a case insensitive index with db.collection.createIndex() by specifying the collation parameter as an option. For example:
+
+db.collection.createIndex( { "key" : 1 },
+                           { collation: {
+                               locale : <locale>,
+                               strength : <strength>
+                             }
+                           } )
+To specify a collation for a case sensitive index, include:
+
+locale: specifies language rules. See Collation Locales for a list of available locales.
+strength: determines comparison rules. A value of 1 or 2 indicates a case insensitive collation.
+
+
+======================================
+SPARSE INDEX
+======================================
+
+Sparse indexes only contain entries for documents that have the indexed field, even if the index field contains a null value. The index skips over any document that is missing the indexed field. 
+
+To create a sparse index, use the db.collection.createIndex() method with the sparse option set to true. For example, the following operation in the mongo shell creates a sparse index on the xmpp_id field of the addresses collection:
+
+db.addresses.createIndex( { "xmpp_id": 1 }, { sparse: true } )
+The index does not index documents that do not include the xmpp_id field.
+
+==========================================
+TEXT INDEXES
+==========================================
+
+MongoDB provides text indexes to support text search queries on string content. text indexes can include any field whose value is a string or an array of string elements.
+
+To create a text index, use the db.collection.createIndex() method. To index a field that contains a string or an array of string elements, include the field and specify the string literal "text" in the index document, as in the following example:
+
+db.reviews.createIndex( { comments: "text" } )
+You can index multiple fields for the text index. The following example creates a text index on the fields subject and comments:
+
+db.reviews.createIndex(
+   {
+     subject: "text",
+     comments: "text"
+   }
+ )
+A compound index can include text index keys in combination with ascending/descending index keys. 
+
+
+Specify weights:
+For a text index, the weight of an indexed field denotes the significance of the field relative to the other indexed fields in terms of the text search score.
+
+Wildcards:
+When creating a text index on multiple fields, you can also use the wildcard specifier ($**). With a wildcard text index, MongoDB indexes every field that contains string data for each document in the collection. The following example creates a text index using the wildcard specifier:
+
+db.collection.createIndex( { "$**": "text" } )
+This index allows for text search on all fields with string content. Such an index can be useful with highly unstructured data if it is unclear which fields to include in the text index or for ad-hoc querying.
+
+
+-------------Specifying name:
+db.collection.createIndex(
+   {
+     content: "text",
+     "users.comments": "text",
+     "users.profiles": "text"
+   }
+)
+The default name for the index is:
+
+"content_text_users.comments_text_users.profiles_text"
+The text index, like other indexes, must fall within the index name length limit.
+
+Specify a Name for text Index
+
+To avoid creating an index with a name that exceeds the index name length limit, you can pass the name option to the db.collection.createIndex() method:
+
+db.collection.createIndex(
+   {
+     content: "text",
+     "users.comments": "text",
+     "users.profiles": "text"
+   },
+   {
+     name: "MyTextIndex"
+   }
+)
+
+---------------------dropping
+db.collection.dropIndex("MyTextIndex")
+
+---------------------------weights
+To create a text index with different field weights for the content field and the keywords field, include the weights option to the createIndex() method. For example, the following command creates an index on three fields and assigns weights to two of the fields:
+
+db.blog.createIndex(
+   {
+     content: "text",
+     keywords: "text",
+     about: "text"
+   },
+   {
+     weights: {
+       content: 10,
+       keywords: 5
+     },
+     name: "TextIndex"
+   }
+ )
+The text index has the following fields and weights:
+
+content has a weight of 10,
+keywords has a weight of 5, and
+about has the default weight of 1.
+These weights denote the relative significance of the indexed fields to each other. For instance, a term match in the content field has:
+
+2 times (i.e. 10:5) the impact as a term match in the keywords field and
+10 times (i.e. 10:1) the impact as a term match in the about field.
+
+
+=========================================================================================================================================
+AGGREGATION
+=========================================================================================================================================
+
+Aggregation operations process data records and return computed results. Aggregation operations group values from multiple documents together, and can perform a variety of operations on the grouped data to return a single result.
+
+===============================
+Aggregation Pipeline
+===============================
+
+The aggregation pipeline is a framework for data aggregation modeled on the concept of data processing pipelines. Documents enter a multi-stage pipeline that transforms the documents into aggregated results.
+
+To see how the optimizer transforms a particular aggregation pipeline, include the explain option in the db.collection.aggregate() method.
+
+---------------Pipeline Sequence Optimization:
+
+
+1. $sort + $match Sequence Optimization
+
+When you have a sequence with $sort followed by a $match, the $match moves before the $sort to minimize the number of objects to sort. For example, if the pipeline consists of the following stages:
+
+{ $sort: { age : -1 } },
+{ $match: { status: 'A' } }
+During the optimization phase, the optimizer transforms the sequence to the following:
+
+{ $match: { status: 'A' } },
+{ $sort: { age : -1 } }
+
+
+2. $skip + $limit Sequence Optimization
+
+When you have a sequence with $skip followed by a $limit, the $limit moves before the $skip. With the reordering, the $limit value increases by the $skip amount.
+
+For example, if the pipeline consists of the following stages:
+
+{ $skip: 10 },
+{ $limit: 5 }
+During the optimization phase, the optimizer transforms the sequence to the following:
+
+{ $limit: 15 },
+{ $skip: 10 }
+
+
+3. $redact + $match Sequence Optimization
+
+When possible, when the pipeline has the $redact stage immediately followed by the $match stage, the aggregation can sometimes add a portion of the $match stage before the $redact stage. If the added $match stage is at the start of a pipeline, the aggregation can use an index as well as query the collection to limit the number of documents that enter the pipeline. See Pipeline Operators and Indexes for more information.
+
+For example, if the pipeline consists of the following stages:
+
+{ $redact: { $cond: { if: { $eq: [ "$level", 5 ] }, then: "$$PRUNE", else: "$$DESCEND" } } },
+{ $match: { year: 2014, category: { $ne: "Z" } } }
+The optimizer can add the same $match stage before the $redact stage:
+
+{ $match: { year: 2014 } },
+{ $redact: { $cond: { if: { $eq: [ "$level", 5 ] }, then: "$$PRUNE", else: "$$DESCEND" } } },
+{ $match: { year: 2014, category: { $ne: "Z" } } }
+
+4. 
+When you have a sequence with $project followed by either $skip or $limit, the $skip or $limit moves before $project.
+
+
+
+
+------------------------------Pipeline Coalescence Optimization:
+
+$sort + $limit Coalescence:
+
+When a $sort immediately precedes a $limit, the optimizer can coalesce the $limit into the $sort. This allows the sort operation to only maintain the top n results as it progresses, where n is the specified limit, and MongoDB only needs to store n items in memory
+
+$limit + $limit Coalescence:
+
+When a $limit immediately follows another $limit, the two stages can coalesce into a single $limit where the limit amount is the smaller of the two initial limit amounts.
+
+
+$skip + $skip Coalescence:
+
+When a $skip immediately follows another $skip, the two stages can coalesce into a single $skip where the skip amount is the sum of the two initial skip amounts.
+
+
+$match + $match Coalescence:
+
+When a $match immediately follows another $match, the two stages can coalesce into a single $match combining the conditions with an $and.
+
+
+$lookup + $unwind Coalescence:
+
+When a $unwind immediately follows another $lookup, and the $unwind operates on the as field of the $lookup, the optimizer can coalesce the $unwind into the $lookup stage. This avoids creating large intermediate documents.
+
+
+------------------------------The following examples are some sequences that can take advantage of both sequence reordering and coalescence. Generally, coalescence occurs after any sequence reordering optimization.
+
+$limit + $skip + $limit + $skip Sequence
+
+A pipeline contains a sequence of alternating $limit and $skip stages:
+
+{ $limit: 100 },
+{ $skip: 5 },
+{ $limit: 10 },
+{ $skip: 2 }
+The $skip + $limit Sequence Optimization reverses the position of the { $skip: 5 } and { $limit: 10 } stages and increases the limit amount:
+
+{ $limit: 100 },
+{ $limit: 15},
+{ $skip: 5 },
+{ $skip: 2 }
+The optimizer then coalesces the two $limit stages into a single $limit stage and the two $skip stages into a single $skip stage. The resulting sequence is the following:
+
+{ $limit: 15 },
+{ $skip: 7 }
+
+
+
+---------------------------MEMORY RESTRICTIONS:
+Pipeline stages have a limit of 100 megabytes of RAM. If a stage exceeds this limit, MongoDB will produce an error. 
+
+---------------------------Aggregation pipeline and sharded collections:
+
+If the pipeline starts with an exact $match on a shard key, the entire pipeline runs on the matching shard only. Previously, the pipeline would have been split, and the work of merging it would have to be done on the primary shard.
+
+For aggregation operations that must run on multiple shards, if the operations do not require running on the database’s primary shard, these operations will route the results to a random shard to merge the results to avoid overloading the primary shard for that database. The $out stage and the $lookup stage require running on the database’s primary shard.
+
+-----------------Practical Example:
+
+{
+  "_id": "10280",
+  "city": "NEW YORK",
+  "state": "NY",
+  "pop": 5574,
+  "loc": [
+    -74.016323,
+    40.710537
+  ]
+}
+
+Query=Return States with Populations above 10 Million
+
+The following aggregation operation returns all states with total population greater than 10 million:
+
+db.zipcodes.aggregate( [
+   { $group: { _id: "$state", totalPop: { $sum: "$pop" } } },
+   { $match: { totalPop: { $gte: 10*1000*1000 } } }
+] )
+
+Query=Return Average City Population by State
+
+The following aggregation operation returns the average populations for cities in each state:
+
+db.zipcodes.aggregate( [
+   { $group: { _id: { state: "$state", city: "$city" }, pop: { $sum: "$pop" } } },
+   { $group: { _id: "$_id.state", avgCityPop: { $avg: "$pop" } } }
+] )
+
+
+
+Query=Return Largest and Smallest Cities by State
+
+The following aggregation operation returns the smallest and largest cities by population for each state:
+
+db.zipcodes.aggregate( [
+   { $group:
+      {
+        _id: { state: "$state", city: "$city" },
+        pop: { $sum: "$pop" }
+      }
+   },
+   { $sort: { pop: 1 } },
+   { $group:
+      {
+        _id : "$_id.state",
+        biggestCity:  { $last: "$_id.city" },
+        biggestPop:   { $last: "$pop" },
+        smallestCity: { $first: "$_id.city" },
+        smallestPop:  { $first: "$pop" }
+      }
+   },
+
+  // the following $project is optional, and
+  // modifies the output format.
+
+  { $project:
+    { _id: 0,
+      state: "$_id",
+      biggestCity:  { name: "$biggestCity",  pop: "$biggestPop" },
+      smallestCity: { name: "$smallestCity", pop: "$smallestPop" }
+    }
+  }
+] )
+
+SQL       vs         Aggregation
+WHERE			$match
+GROUP BY		$group
+HAVING			$match
+SELECT			$project
+ORDER BY		$sort
+LIMIT			$limit
+SUM()			$sum
+COUNT()			$sum
+join			$lookup
+
+Example:
+
+SELECT cust_id,
+       count(*)
+FROM orders
+GROUP BY cust_id
+HAVING count(*) > 1;
+
+
+db.orders.aggregate( [
+   {
+     $group: {
+        _id: "$cust_id",
+        count: { $sum: 1 }
+     }
+   },
+   { $match: { count: { $gt: 1 } } }
+] )
+
+===========================================
+MAP REDUCE
+===========================================
+
+Map-reduce is a data processing paradigm for condensing large volumes of data into useful aggregated results. For map-reduce operations, MongoDB provides the mapReduce database command.
+
+---------------Map-Reduce and Sharded Collections:
+
+When using sharded collection as the input for a map-reduce operation, mongos will automatically dispatch the map-reduce job to each shard in parallel. 
+
+If the out field for mapReduce has the sharded value, MongoDB shards the output collection using the _id field as the shard key.
+
+To output to a sharded collection:
+
+If the output collection does not exist, MongoDB creates and shards the collection on the _id field.
+For a new or an empty sharded collection, MongoDB uses the results of the first stage of the map-reduce operation to create the initial chunks distributed among the shards.
+mongos dispatches, in parallel, a map-reduce post-processing job to every shard that owns a chunk. During the post-processing, each shard will pull the results for its own chunks from the other shards, run the final reduce/finalize, and write locally to the output collection.
+
+During the operation, map-reduce takes the following locks:
+
+The read phase takes a read lock. It yields every 100 documents.
+The insert into the temporary collection takes a write lock for a single write.
+If the output collection does not exist, the creation of the output collection takes a write lock.
+If the output collection exists, then the output actions (i.e. merge, replace, reduce) take a write lock. This write lock is global, and blocks all operations on the mongod instance.
+
+
+
+------------------------MAP REDUCE EXAMPLE 1
+
+In the mongo shell, the db.collection.mapReduce() method is a wrapper around the mapReduce command. The following examples use the db.collection.mapReduce() method:
+
+Consider the following map-reduce operations on a collection orders that contains documents of the following prototype:
+
+{
+     _id: ObjectId("50a8240b927d5d8b5891743c"),
+     cust_id: "abc123",
+     ord_date: new Date("Oct 04, 2012"),
+     status: 'A',
+     price: 25,
+     items: [ { sku: "mmm", qty: 5, price: 2.5 },
+              { sku: "nnn", qty: 5, price: 2.5 } ]
+}
+Return the Total Price Per Customer
+
+Perform the map-reduce operation on the orders collection to group by the cust_id, and calculate the sum of the price for each cust_id:
+
+Define the map function to process each input document:
+In the function, this refers to the document that the map-reduce operation is processing.
+The function maps the price to the cust_id for each document and emits the cust_id and price pair.
+var mapFunction1 = function() {
+                       emit(this.cust_id, this.price);
+                   };
+Define the corresponding reduce function with two arguments keyCustId and valuesPrices:
+The valuesPrices is an array whose elements are the price values emitted by the map function and grouped by keyCustId.
+The function reduces the valuesPrice array to the sum of its elements.
+var reduceFunction1 = function(keyCustId, valuesPrices) {
+                          return Array.sum(valuesPrices);
+                      };
+Perform the map-reduce on all documents in the orders collection using the mapFunction1 map function and the reduceFunction1 reduce function.
+db.orders.mapReduce(
+                     mapFunction1,
+                     reduceFunction1,
+                     { out: "map_reduce_example" }
+                   )
+This operation outputs the results to a collection named map_reduce_example. If the map_reduce_example collection already exists, the operation will replace the contents with the results of this map-reduce operation
+
+
+
+---------------------------INCREMENTAL MAP REDUCE
+
+If the map-reduce data set is constantly growing, you may want to perform an incremental map-reduce rather than performing the map-reduce operation over the entire data set each time.
+
+To perform incremental map-reduce:
+
+Run a map-reduce job over the current collection and output the result to a separate collection.
+When you have more data to process, run subsequent map-reduce job with:
+the query parameter that specifies conditions that match only the new documents.
+the out parameter that specifies the reduce action to merge the new results into the existing output collection.
+
+EXAMPLE::::::::
+
+The sessions collection contains documents that log users’ sessions each day, for example:
+
+db.sessions.save( { userid: "a", ts: ISODate('2011-11-03 14:17:00'), length: 95 } );
+db.sessions.save( { userid: "b", ts: ISODate('2011-11-03 14:23:00'), length: 110 } );
+db.sessions.save( { userid: "c", ts: ISODate('2011-11-03 15:02:00'), length: 120 } );
+db.sessions.save( { userid: "d", ts: ISODate('2011-11-03 16:45:00'), length: 45 } );
+
+1. MAP :
+var mapFunction = function() {
+                      var key = this.userid;
+                      var value = {
+                                    userid: this.userid,
+                                    total_time: this.length,
+                                    count: 1,
+                                    avg_time: 0
+                                   };
+
+                      emit( key, value );
+                  };
+
+2. Reduce :
+
+var reduceFunction = function(key, values) {
+
+                        var reducedObject = {
+                                              userid: key,
+                                              total_time: 0,
+                                              count:0,
+                                              avg_time:0
+                                            };
+
+                        values.forEach( function(value) {
+                                              reducedObject.total_time += value.total_time;
+                                              reducedObject.count += value.count;
+                                        }
+                                      );
+                        return reducedObject;
+                     };
+
+3. var finalizeFunction = function (key, reducedValue) {
+
+                          if (reducedValue.count > 0)
+                              reducedValue.avg_time = reducedValue.total_time / reducedValue.count;
+
+                          return reducedValue;
+                       };
+
+4. db.sessions.mapReduce( mapFunction,
+                       reduceFunction,
+                       {
+                         out: "session_stat",
+                         finalize: finalizeFunction
+                       }
+                     )
+
+Now data gets added .........
+db.sessions.save( { userid: "a", ts: ISODate('2011-11-05 14:17:00'), length: 100 } );
+db.sessions.save( { userid: "b", ts: ISODate('2011-11-05 14:23:00'), length: 115 } );
+db.sessions.save( { userid: "c", ts: ISODate('2011-11-05 15:02:00'), length: 125 } );
+
+Subsequent Incremental Map-Reduce:
+t the end of the day, perform incremental map-reduce on the sessions collection, but use the query field to select only the new documents. Output the results to the collection session_stat, but reduce the contents with the results of the incremental map-reduce:
+
+db.sessions.mapReduce( mapFunction,
+                       reduceFunction,
+                       {
+                         query: { ts: { $gt: ISODate('2011-11-05 00:00:00') } },
+                         out: { reduce: "session_stat" },
+                         finalize: finalizeFunction
+                       }
+                     );
+
+
+==========================================================================================================================================
+GRIDFS
+==========================================================================================================================================
+
+GridFS is a specification for storing and retrieving files that exceed the BSON-document size limit of 16 MB.
+
+
+
+
+==========================================================================================================================================
+SHARDING
+==========================================================================================================================================
+
+Sharding is a method for distributing data across multiple machines. MongoDB uses sharding to support deployments with very large data sets and high throughput operations.
+
+There are two methods for addressing system growth: vertical and horizontal scaling.
+
+Vertical Scaling involves increasing the capacity of a single server, such as using a more powerful CPU, adding more RAM, or increasing the amount of storage space. 
+
+Horizontal Scaling involves dividing the system dataset and load over multiple servers, adding additional servers to increase capacity as required. While the overall speed or capacity of a single machine may not be high, each machine handles a subset of the overall workload, potentially providing better efficiency than a single high-speed high-capacity server.
+
+A MongoDB sharded cluster consists of the following components:
+
+shard: Each shard contains a subset of the sharded data. Each shard can be deployed as a replica set.
+mongos: The mongos acts as a query router, providing an interface between client applications and the sharded cluster.
+config servers: Config servers store metadata and configuration settings for the cluster. As of MongoDB 3.4, config servers must be deployed as a replica set (CSRS).
+
+
+---------------SHARD KEYS
+To distribute the documents in a collection, MongoDB partitions the collection using the shard key. The shard key consists of an immutable field or fields that exist in every document in the target collection.
+
+
+---------------CHUNKS
+
+MongoDB partitions sharded data into chunks. Each chunk has an inclusive lower and exclusive upper range based on the shard key.
+MongoDB migrates chunks across the shards in the sharded cluster using the sharded cluster balancer. 
+
+-------------SHARDED AND NON-SHARDED COLLECTIONS
+A database can have a mixture of sharded and unsharded collections. Sharded collections are partitioned and distributed across the shards in the cluster. Unsharded collections are stored on a primary shard. Each database has its own primary shard.
+
+
+-------------HASHED SHARDING
+Hashed Sharding involves computing a hash of the shard key field’s value. Each chunk is then assigned a range based on the hashed shard key values.
+Use the sh.shardCollection() method, specifying the full namespace of the collection and the target hashed index to use as the shard key.
+sh.shardCollection( "database.collection", { <field> : "hashed" } )
+
+
+-------------Ranged Sharding
+Ranged sharding involves dividing data into ranges based on the shard key values. Each chunk is then assigned a range based on the shard key values.
+
+-------------COLLATIONS IN SHARDING
+Use the shardCollection command with the collation : { locale : "simple" } option to shard a collection which has a default collation. Successful sharding requires that:
+
+The collection must have an index whose prefix is the shard key
+The index must have the collation { locale: "simple" }
+
+
+====================
+SHARED KEY
+====================
+
+
+The shard key determines the distribution of the collection’s documents among the cluster’s shards. The shard key is either an indexed field or indexed compound fields that exists in every document in the collection.
+
+----------------SHARD KEY SPECIFICATION
+To shard a collection, you must specify the target collection and the shard key to the sh.shardCollection() method:
+
+sh.shardCollection( namespace, key )
+The namespace parameter consists of a string <database>.<collection> specifying the full namespace of the target collection.
+The key parameter consists of a document containing a field and the index traversal direction for that field.
+
+-----------------SHARED KEY INDEXES
+All sharded collections must have an index that supports the shard key; i.e. the index can be an index on the shard key or a compound index where the shard key is a prefix of the index.
+
+If the collection is empty, sh.shardCollection() creates the index on the shard key if such an index does not already exists.
+If the collection is not empty, you must create the index first before using sh.shardCollection().
+
+For a sharded collection, only the _id field index and the index on the shard key or a compound index where the shard key is a prefix can be unique:
+
+You cannot shard a collection that has unique indexes on other fields.
+You cannot create unique indexes on other fields for a sharded collection.
+
+
+------------------Choosing Shard Key
+The choice of shard key affects how the sharded cluster balancer creates and distributes chunks across the available shards. This affects the overall efficiency and performance of operations within the sharded cluster.
+
+The shard key affects the performance and efficiency of the sharding strategy used by the sharded cluster.
+
+The ideal shard key allows MongoDB to distribute documents evenly throughout the cluster.
+
+--------------------Shard Key Cardinality
+The cardinality of a shard key determines the maximum number of chunks the balancer can create. This can reduce or remove the effectiveness of horizontal scaling in the cluster.
+
+A unique shard key value can exist on no more than a single chunk at any given time. If a shard key has a cardinality of 4, then there can be no more than 4 chunks within the sharded cluster, each storing one unique shard key value. This constrains the number of effective shards in the cluster to 4 as well - adding additional shards would not provide any benefit.
+
+
+---------------------SHARD KEY frequency
+Consider a set representing the range of shard key values - the frequency of the shard key represents how often a given value occurs in the data. If the majority of documents contain only a subset of those values, then the chunks storing those documents become a bottleneck within the cluster. Furthermore, as those chunks grow, they may become indivisible chunks as they cannot be split any further. This reduces or removes the effectiveness of horizontal scaling within the cluster.
+
+-------------------------Monotonically changing shard keys
+A shard key on a value that increases or decreases monotonically is more likely to distribute inserts to a single shard within the cluster.
+
+
+
+=========================
+ZONES
+=========================
+
+In sharded clusters, you can create zones of sharded data based on the shard key. You can associate each zone with one or more shards in the cluster. A shard can associate with any number of non-conflicting zones. In a balanced cluster, MongoDB migrates chunks covered by a zone only to those shards associated with the zone.
+
+Some common deployment patterns where zones can be applied are as follows:
+
+Isolate a specific subset of data on a specific set of shards.
+Ensure that the most relevant data reside on shards that are geographically closest to the application servers.
+Route data to shards based on the hardware / performance of the shard hardware.
+
+
+--------------Ranges
+Each zone covers one or more ranges of shard key values. Each range a zone covers is always inclusive of its lower boundary and exclusive of its upper boundary.
+
+Zones cannot share ranges, nor can they have overlapping ranges.
+
+-----------------Balancer
+The balancer attempts to evenly distribute a sharded collection’s chunks across all shards in the cluster.
+
+For each chunk marked for migration, the balancer checks each possible destination shard for any configured zones. If the chunk range falls into a zone, the balancer migrates the chunk into a shard inside that zone. Chunks that do not fall into a zone can exist on any shard in the cluster and are migrated normally.
+
+
+==============================
+DATA PARTITIONING WITH CHUNKS
+==============================
+
+MongoDB uses the shard key associated to the collection to partition the data into chunks. A chunk consists of a subset of sharded data. Each chunk has a inclusive lower and exclusive upper range based on the shard key.
+
+-----------CHUNK SIZE
+The default chunk size in MongoDB is 64 megabytes. You can increase or reduce the chunk size. Consider the implications of changing the default chunk size:
+
+Small chunks lead to a more even distribution of data at the expense of more frequent migrations. This creates expense at the query routing (mongos) layer.
+Large chunks lead to fewer migrations. This is more efficient both from the networking perspective and in terms of internal overhead at the query routing layer. But, these efficiencies come at the expense of a potentially uneven distribution of data.
+Chunk size affects the Maximum Number of Documents Per Chunk to Migrate.
+Chunk size affects the maximum collection size when sharding an existing collection. Post-sharding, chunk size does not constrain collection size.
+
+
+------------CHUNK SPLITS
+Splitting is a process that keeps chunks from growing too large. When a chunk grows beyond a specified chunk size, or if the number of documents in the chunk exceeds Maximum Number of Documents Per Chunk to Migrate, MongoDB splits the chunk based on the shard key values the chunk represent. A chunk may be split into multiple chunks where necessary. Inserts and updates may trigger splits. Splits are an efficient meta-data change. To create splits, MongoDB does not migrate any data or affect the shards.
+
+-------------CHUNK MIGRATION
+MongoDB migrates chunks in a sharded cluster to distribute the chunks of a sharded collection evenly among shards. Migrations may be either:
+
+Manual. Only use manual migration in limited cases, such as to distribute data during bulk inserts. See Migrating Chunks Manually for more details.
+Automatic. The balancer process automatically migrates chunks when there is an uneven distribution of a sharded collection’s chunks across the shards. See Migration Thresholds for more details.
+
+
+**********************************COMMANDS ON SHARDING*************************************************
+
+Databse Commands:
+
+Name			Description
+addShard		Adds a shard to a sharded cluster.
+addShardToZone		Associates a shard with a zone. Supports configuring zones in sharded clusters.
+balancerStart		Starts a balancer thread.
+balancerStatus		Returns information on the balancer status.
+balancerStop		Stops the balancer thread.
+checkShardingIndex	Internal command that validates index on shard key.
+
+
+Commands in Mongo SHELL:
+
+sh.addShard()		Adds a shard to a sharded cluster.
+sh.addShardTag()	In MongoDB 3.4, this method aliases to sh.addShardToZone().
+sh.addShardToZone()	Associates a shard to a zone. Supports configuring zones in sharded clusters.
+sh.addTagRange()	In MongoDB 3.4, this method aliases to sh.updateZoneKeyRange().
+sh.disableBalancing()	Disable balancing on a single collection in a sharded database. Does not affect balancing of other collections in 				a sharded cluster.
+sh.enableBalancing()	Activates the sharded collection balancer process if previously disabled using sh.disableBalancing().
+sh.enableSharding()	Enables sharding on a specific database.
+sh.getBalancerHost()	Deprecated since MongoDB 3.4
+sh.getBalancerState()	Returns a boolean to report if the balancer is currently enabled.
+
+
+
+
+==========================================================================================================================================
+REPLICATION
+==========================================================================================================================================
+
+A replica set in MongoDB is a group of mongod processes that maintain the same data set. 
+
+Replication provides redundancy and increases data availability. With multiple copies of data on different database servers, replication provides a level of fault tolerance against the loss of a single database server.
+
+A replica set is a group of mongod instances that maintain the same data set. A replica set contains several data bearing nodes and optionally one arbiter node. Of the data bearing nodes, one and only one member is deemed the primary node, while the other nodes are deemed secondary nodes.
+
+The primary node receives all write operations. A replica set can have only one primary capable of confirming writes with { w: "majority" } write concern; although in some circumstances, another mongod instance may transiently believe itself to also be primary. [1] The primary records all changes to its data sets in its operation log, i.e. oplog.
+
+The secondaries replicate the primary’s oplog and apply the operations to their data sets such that the secondaries’ data sets reflect the primary’s data set. If the primary is unavailable, an eligible secondary will hold an election to elect itself the new primary. 
+
+When a primary does not communicate with the other members of the set for more than 10 seconds, an eligible secondary will hold an election to elect itself the new primary. The first secondary to hold an election and receive a majority of the members’ votes becomes primary.
+
+--------------READ OPERATIONS
+
+By default, clients read from the primary [1]; however, clients can specify a read preference to send read operations to secondaries. Asynchronous replication to secondaries means that reads from secondaries may return data that does not reflect the state of the data on the primary. 
+
+In MongoDB, clients can see the results of writes before the writes are durable:
+
+Regardless of write concern, other clients using "local" (i.e. the default) readConcern can see the result of a write operation before the write operation is acknowledged to the issuing client.
+Clients using "local" (i.e. the default) readConcern can read data which may be subsequently rolled back.
+
+=====================
+REPLICA SET MEMBERS
+=====================
+
+A replica set in MongoDB is a group of mongod processes that provide redundancy and high availability. The members of a replica set are:
+
+Primary.
+The primary receives all write operations.
+Secondaries.
+Secondaries replicate operations from the primary to maintain an identical data set. Secondaries may have additional configurations for special usage profiles. For example, secondaries may be non-voting or priority 0.
+Arbiter
+An arbiter does not have a copy of data set and cannot become a primary. Replica sets may have arbiters to add a vote in elections for primary. Arbiters always have exactly 1 election vote, and thus allow replica sets to have an uneven number of voting members without the overhead of an additional member that replicates data.
+
+
+===========================
+Oplog
+===========================
+
+The oplog (operations log) is a special capped collection that keeps a rolling record of all operations that modify the data stored in your databases. MongoDB applies database operations on the primary and then records the operations on the primary’s oplog. The secondary members then copy and apply these operations in an asynchronous process. All replica set members contain a copy of the oplog, in the local.oplog.rs collection, which allows them to maintain the current state of the database.
+
+When you start a replica set member for the first time, MongoDB creates an oplog of a default size(for in memory storage engine, its 5%
+of physical memory).
+
+
+To view oplog status, including the size and the time range of operations, issue the rs.printReplicationInfo() method. For more information on oplog status, see Check the Size of the Oplog.
+
+Under various exceptional situations, updates to a secondary’s oplog might lag behind the desired performance time. Use db.getReplicationInfo() from a secondary member and the replication status output to assess the current state of replication and determine if there is any unintended replication delay.
+
+
+========================
+MASTER SLAVE
+========================
+
+Initial Deployment
+To configure a master-slave deployment, start two mongod instances: one in master mode, and the other in slave mode.
+
+To start a mongod instance in master mode, invoke mongod as follows:
+mongod --master --dbpath /data/masterdb/
+With the --master option, the mongod will create a local.oplog.$main collection, which the “operation log” that queues operations that the slaves will apply to replicate operations from the master. The --dbpath is optional.
+
+To start a mongod instance in slave mode, invoke mongod as follows:
+mongod --slave --source <masterhostname><:<port>> --dbpath /data/slavedb/
+Specify the hostname and port of the master instance to the --source argument. The --dbpath is optional.
+
+For slave instances, MongoDB stores data about the source server in the local.sources collection.
+Configuration Options for Master-Slave Deployments
+
+As an alternative to specifying the --source run-time option, can add a document to local.sources specifying the master instance, as in the following operation in the mongo shell:
+
+----------use local
+db.sources.find()
+db.sources.insert( { host: <masterhostname> <,only: <databasename>> } );
+In line 1, you switch context to the local database. In line 2, the find() operation should return no documents, to ensure that there are no documents in the sources collection. Finally, line 3 uses db.collection.insert() to insert the source document into the local.sources collection. The model of the local.sources document is as follows:
+
+-----------host
+The host field specifies the master mongod instance, and holds a resolvable hostname, i.e. IP address, or a name from a host file, or preferably a fully qualified domain name.
+
+You can append <:port> to the host name if the mongod is not running on the default 27017 port.
+
+---------only
+Optional. Specify a name of a database. When specified, MongoDB will only replicate the indicated database.
+
+Operational Considerations for Replication with Master Slave Deployments
+
+Master instances store operations in an oplog which is a capped collection. As a result, if a slave falls too far behind the state of the master, it cannot “catchup” and must re-sync from scratch. Slave may become out of sync with a master if:
+
+The slave falls far behind the data updates available from that master.
+The slave stops (i.e. shuts down) and restarts later after the master has overwritten the relevant operations from the master.
+When slaves are out of sync, replication stops. Administrators must intervene manually to restart replication. Use the resync command. Alternatively, the --autoresync allows a slave to restart replication automatically, after ten second pause, when the slave falls out of sync with the master. With --autoresync specified, the slave will only attempt to re-sync once in a ten minute period.
+
+To prevent these situations you should specify a larger oplog when you start the master instance, by adding the --oplogSize option when starting mongod. If you do not specify --oplogSize, mongod will allocate 5% of available disk space on start up to the oplog, with a minimum of 1 GB for 64-bit machines and 50 MB for 32-bit machines.
+
+----------------Run time Master-Slave Configuration
+
+MongoDB provides a number of command line options for mongod instances in master-slave deployments. See the Master-Slave Replication Command Line Options for options.
+
+-------Diagnostics
+
+On a master instance, issue the following operation in the mongo shell to return replication status from the perspective of the master:
+
+rs.printReplicationInfo()
+New in version 2.6: rs.printReplicationInfo(). For previous versions, use db.printReplicationInfo().
+
+On a slave instance, use the following operation in the mongo shell to return the replication status from the perspective of the slave:
+
+rs.printSlaveReplicationInfo()
+New in version 2.6: rs.printSlaveReplicationInfo(). For previous versions, use db.printSlaveReplicationInfo().
+
+Use the serverStatus as in the following operation, to return status of the replication:
+
+db.serverStatus( { repl: 1 } )
+
+
+-----------------------------CONVERTING MASTER-SLAVE Config to replica set
+
+To convert a master-slave deployment to a replica set, restart the current master as a one-member replica set. Then remove the data directories from previous secondaries and add them as new secondaries to the new replica set.
+
+To confirm that the current instance is master, run:
+db.isMaster()
+This should return a document that resembles the following:
+{
+        "ismaster" : true,
+        "maxBsonObjectSize" : 16777216,
+        "maxMessageSizeBytes" : 48000000,
+        "localTime" : ISODate("2013-07-08T20:15:13.664Z"),
+        "ok" : 1
+}
+Shut down the mongod processes on the master and all slave(s), using the following command while connected to each instance:
+db.adminCommand({shutdown : 1, force : true})
+Back up your /data/db directories, in case you need to revert to the master-slave deployment.
+Start the former master with the --replSet option, as in the following:
+mongod --replSet <setname>
+Connect to the mongod with the mongo shell, and initiate the replica set with the following command:
+rs.initiate()
+When the command returns, you will have successfully deployed a one-member replica set. You can check the status of your replica set at any time by running the following command:
+rs.status()
+
+
+---------------------------Inverting Master and Slave
+
+If you have a master (A) and a slave (B) and you would like to reverse their roles, follow this procedure. The procedure assumes A is healthy, up-to-date and available.
+
+If A is not healthy but the hardware is okay (power outage, server crash, etc.), skip steps 1 and 2 and in step 8 replace all of A’s files with B’s files in step 8.
+
+If A is not healthy and the hardware is not okay, replace A with a new machine. Also follow the instructions in the previous paragraph.
+
+To invert the master and slave in a deployment:
+
+Halt writes on A using the fsync command.
+Make sure B is up to date with the state of A.
+Shut down B.
+Back up and move all data files that begin with local on B from the dbPath to remove the existing local.sources data.
+Start B with the --master option.
+Do a write on B, which primes the oplog to provide a new sync start point.
+Shut down B. B will now have a new set of data files that start with local.
+Shut down A and replace all files in the dbPath of A that start with local with a copy of the files in the dbPath of B that begin with local.
+Considering compressing the local files from B while you copy them, as they may be quite large.
+Start B with the --master option.
+Start A with all the usual slave options, but include fastsync.
+
+
+*************************** COMMANDS ************************************
+Shell commands:
+
+rs.add()			Adds a member to a replica set.
+rs.addArb()			Adds an arbiter to a replica set.
+rs.conf()			Returns the replica set configuration document.
+rs.freeze()			Prevents the current member from seeking election as primary for a period of time.
+rs.help()			Returns basic help text for replica set functions.
+rs.initiate()			Initializes a new replica set.
+rs.printReplicationInfo()	Prints a report of the status of the replica set from the perspective of the primary.
+rs.printSlaveReplicationInfo()	Prints a report of the status of the replica set from the perspective of the secondaries.
+rs.reconfig()			Re-configures a replica set by applying a new replica set configuration object.
+rs.remove()			Remove a member from a replica set.
+
+
+DB commands:
+
+applyOps			Internal command that applies oplog entries to the current data set.
+isMaster			Displays information about this member’s role in the replica set, including whether it is the master.
+replSetFreeze			Prevents the current member from seeking election as primary for a period of time.
+replSetGetConfig		Returns the replica set’s configuration object.
+replSetGetStatus		Returns a document that reports on the status of the replica set.
+replSetInitiate			Initializes a new replica set.
+replSetMaintenance		Enables or disables a maintenance mode, which puts a secondary node in a RECOVERING state.
+replSetReconfig			Applies a new configuration to an existing replica set.
+
