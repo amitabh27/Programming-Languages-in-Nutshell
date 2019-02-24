@@ -1,0 +1,370 @@
+_____________________________________________________________________________________________________________________________
+class MyClass:
+
+	def __init__(self, name): 
+		self.name = name 
+
+	def greet(self):
+		print("Hello World "+self.name)
+		return 'bye'
+
+
+class MyNextClass:
+
+	def greetAgain(self):
+		print("Hello again")
+		
+___________________________________________________________________________________________________________________________________		
+import Classes
+
+if __name__ == '__main__':
+
+	a=Classes.MyClass('amitabh')
+	y=a.greet()
+	print(y)
+
+	b=Classes.MyNextClass()
+	b.greetAgain()		
+	
+___________________________________________________________________________________________________________________________________		
+
+df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
+
+df = (df.sort_values(['Date'])
+        .groupby(['customerid','Age'])['category']
+        .agg(', '.join)
+        .reset_index())
+df
+____________________________________________________________________________________________________________________________________
+
+#filter only 2 rows per customerid
+df = df[df.groupby('customerid')['acc_type'].transform('size') < 3]
+#new column
+df['is'] = 1
+#reshape and replace missing values to 0
+df1 = df.set_index(['customerid','acc_type']).unstack(fill_value=0)
+#check if Y in premium_member
+s = df1.pop('premium_member').eq('Y').any(axis=1)
+s1 = df1.pop('special_member').eq('Y').any(axis=1)
+#change order of columns
+df1 = df1.sort_index(axis=1, ascending=False)
+#flatten MultiIndex
+df1.columns = df1.columns.map(''.join)
+#new column
+df1['premium_member'] = np.where(s, 'Y','N')
+df1['special_member'] = np.where(s1, 'Y','N')
+#convert index to column
+df1 = df1.reset_index().rename_axis(None, axis=1)
+df1
+
+______________________________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#getting number of distinct categories in a categorical_variable (excludes NaN)
+print(df['Gender'].value_counts().count())
+#getting total null values in df
+print(df.isnull().values.sum())
+#getting count of null values in each column
+print(df.isnull().sum())
+
+#func to fill a column with NaN with the mode of column
+def fillna_mode(attribute_list):
+    global df
+    for val in attribute_list:
+        df[val] = df[val].fillna(df[val].value_counts().index[0])
+fillna_mode(['Gender'])
+df
+
+
+#Function to plot a categorical variable
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def plot_categorical_attribute(attribute_name):
+    category_count = df[attribute_name].value_counts()
+    sns.set(style="darkgrid")
+    sns.barplot(category_count.index, category_count.values, alpha=0.9)
+    plt.title('Frequency Distribution of '+attribute_name)
+    plt.ylabel('Number of Occurrences', fontsize=12)
+    plt.xlabel(' '+attribute_name, fontsize=12)
+    plt.show()
+plot_categorical_attribute('Gender')
+
+
+
+#Define a dictionary of mapping categories to numbers and then convert categorical variable into a numeric column.
+
+def categorical_numeric_usingDictionary(attribute_list):
+    
+    global df
+    
+    for val in attribute_list:
+        
+        df[val].fillna('unknown', inplace=True)
+        
+        #Manually define dictionary
+        #replace_map={ val : {'G':'1','F':'0'} }
+
+        #Automate the dictionary creation
+        labels = df[val].astype('category').cat.categories.tolist()
+        replace_map_comp = { val : {k: v for k,v in zip(labels,list(range(1,len(labels)+1)))}}
+        
+        df.replace(replace_map_comp, inplace=True)
+        
+
+categorical_numeric_usingDictionary(['Gender'])
+
+
+
+
+#Label Encoding : Ensures that encoded_values are always between 0 and (n-1) if you have n distinct category labels
+
+def categorical_numeric_usingLabelEncoding(attribute_list):
+    
+    global df
+    
+    for val in attribute_list:
+        
+        #ensuring that the dtype of variable is made category first
+        df[val].fillna('unknown', inplace=True)
+        df[val]=df[val].astype('category')
+        df[val] = df[val].cat.codes
+        
+categorical_numeric_usingLabelEncoding(['Gender'])
+
+
+
+#OneHot Endcoding  : It's way to encode by splitting the variable into multiple binary variables
+def categorical_numeric_usingOneHotEncoding(attribute_list):
+    global df
+    
+   
+    for val in attribute_list:
+        df[val].fillna('unknown', inplace=True)
+        df = pd.get_dummies(df, columns=[val], prefix = [val])
+
+categorical_numeric_usingOneHotEncoding(['Gender'])
+df
+
+
+
+
+
+
+
+
+#Binary Encoding: Categorical to boolean columns where labels are represented using binary representation
+import category_encoders as ce
+def categorical_numeric_usingBinaryEncoding(attribute_list):
+    
+    global df
+    
+    for val in attribute_list:
+        df[val].fillna('unknown', inplace=True)
+
+        encoder = ce.BinaryEncoder(cols=[val])
+        df = encoder.fit_transform(df)
+  
+categorical_numeric_usingBinaryEncoding(['Gender'])
+df
+
+
+
+
+
+
+#Function to replace missing values in a column with mean of column
+def fillna_mean(attribute_list):
+    global df
+    
+    for val in attribute_list:
+        df[val]=df[val].replace(np.nan,df[val].mean())
+        
+#Function to replace missing values in a column with median of column
+def fillna_median(attribute_list):
+    global df
+    
+    for val in attribute_list:
+        df[val]=df[val].replace(np.nan,df[val].median())
+        
+fillna_median(['Age'])
+
+
+
+
+
+#Function to plot a numeric variable with supplied ranges
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+#Function to plot categorical variables
+def plot_numeric_attribute(attribute_name,ranges):
+    
+    dict_count={}
+    for k in range(0,len(ranges)):
+        dict_count[ranges[k]]=0
+    
+    #breaking the ranges based on delimiter '-'
+    start = [(int)(i.split('-', 1)[0]) for i in ranges]
+    end = [(int)(i.split('-', 1)[1]) for i in ranges]
+    
+    print(start)
+    print(end)
+    
+    for k in range(0,len(df.index)):
+        for i in range(0,len(ranges)):
+            if df[attribute_name][k] >= start[i] and df[attribute_name][k] <= end[i]:
+                dict_count[ranges[i]]= dict_count[ranges[i]]+1
+                break
+                
+    count=[]
+    for i in range(0,len(ranges)):
+        count.append(dict_count[ranges[i]])
+    
+    sns.set(style="darkgrid")
+    sns.barplot(ranges,count, alpha=0.9)
+    plt.title('Frequency Distribution of '+attribute_name)
+    plt.ylabel('Number of Occurrences', fontsize=12)
+    plt.xlabel(' '+attribute_name, fontsize=12)
+    plt.show()
+plot_numeric_attribute('Age',['0-10','11-15','16-20'])
+
+
+
+
+
+
+
+#Function to do feature engineering on date columns
+from datetime import datetime
+
+def feature_engineering_dates(attribute_name):
+    
+    global df
+    
+    #df[attribute_name] = pd.to_datetime(df[attribute_name])
+    
+    year = lambda x: datetime.strptime(x,"%m/%d/%Y").year
+    df[attribute_name+'_year'] = df[attribute_name].map(year)
+    
+    day_of_week = lambda x: datetime.strptime(x, "%m/%d/%Y" ).weekday()
+    df[attribute_name+'_day-of-week'] = df[attribute_name].map(day_of_week)
+    
+    month = lambda x: datetime.strptime(x, "%m/%d/%Y" ).month
+    df[attribute_name+'_month'] = df[attribute_name].map(month)
+    
+    
+    week_number = lambda x: datetime.strptime(x,"%m/%d/%Y" ).strftime('%V')
+    df[attribute_name+'_week-number'] = df[attribute_name].map(week_number)
+    
+    seasons = [0,0,1,1,1,2,2,2,3,3,3,0] #dec - feb is winter, then spring, summer, fall etc
+    season = lambda x: seasons[(datetime.strptime(x, "%m/%d/%Y").month-1)]
+    df[attribute_name+'_season'] = df[attribute_name].map(season)
+    
+    quarters = [1,1,1,2,2,2,3,3,3,4,4,4] 
+    quarter = lambda x: quarters[(datetime.strptime(x, "%m/%d/%Y" ).month-1)]
+    df[attribute_name+'_quarter'] = df[attribute_name].map(quarter)
+    
+    curr_date=pd.to_datetime('today').strftime("%m/%d/%Y")
+    curr_date_object=datetime.strptime(curr_date,"%m/%d/%Y")
+    new_values=[]
+    
+    df[attribute_name].fillna(curr_date, inplace=True)
+    
+    for k in range(0,len(df.index)):
+        new_values.append((curr_date_object - datetime.strptime(df[attribute_name][k],"%m/%d/%Y")).days)
+        
+    df[attribute_name+'_days-past'] = new_values
+    df=df.drop([attribute_name], axis=1)
+    
+feature_engineering_dates('Date')
+
+
+
+
+
+
+
+#Plotting variables of any kind numeric or categorical, ensure that the dtypes are set and missing values are not there.
+def plot_twovariables(attribute1,attribute2):
+
+    global df
+
+    values1=df[attribute1].tolist()
+
+    values2=df[attribute2].tolist()
+    
+    plt.scatter(values1,values2)
+    plt.title('Scatter plot')
+    plt.xlabel(attribute1)
+    plt.ylabel(attribute2)
+    plt.show()
+    
+plot_twovariables('Gender','Age')
+
+
+
+
+
+#Plotting variables of any kind numeric or categorical, ensure that the dtypes are set and missing values are not there.
+def plot_threevariables(attribute1,attribute2,attribute3,isCategorical):
+    
+    global df
+    
+    val=[]
+    
+    if isCategorical == 1:
+        categories=list(set(df[attribute3].tolist()))
+        num_categories=len(categories)
+        increment=1.0/num_categories
+        start=increment
+        
+        dict_mapping={}
+        for k in range(0,len(categories)):
+            dict_mapping[categories[k]]=start
+            start=start+increment
+            
+        for k in range(0,len(df.index)):
+            val.append(dict_mapping[df[attribute3][k]])
+        
+    else:
+        
+        max_value=df[attribute3].max()
+        min_value=df[attribute3].min()
+        
+        interval=(max_value-min_value)/5
+        
+        for k in range(0,len(df.index)):
+            if df[attribute3][k] >=min_value and  df[attribute3][k]<min_value+interval:
+                val.append(0.2)
+            elif df[attribute3][k] >=min_value+interval and  df[attribute3][k]<min_value+2*interval:
+                val.append(0.4)
+            elif df[attribute3][k] >=min_value+2*interval and  df[attribute3][k]<min_value+3*interval:
+                val.append(0.6)
+            elif df[attribute3][k] >=min_value+3*interval and  df[attribute3][k]<min_value+4*interval:
+                val.append(0.8)
+            else:
+                val.append(1.0)
+                
+
+    plt.scatter(df[attribute1].tolist(), df[attribute2].tolist(), c=val, s=500)
+    plt.show()
+    
+plot_threevariables('Age','Gender','Height',0)
+
+
+
